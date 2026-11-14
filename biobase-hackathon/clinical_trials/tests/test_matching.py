@@ -132,6 +132,18 @@ Exclusion Criteria:
         self.assertEqual(result.nearest_site["facility"], "Nearby Cancer Center")
         self.assertEqual(result.source_last_updated, "2026-11-10")
 
+    def test_coordinates_take_precedence_over_text_when_radius_is_present(self):
+        profile = PatientProfile.from_dict({
+            "primary_organ": "breast", "age_years": 47, "sex": "female",
+            "location": {
+                "query": "Palo Alto, CA", "latitude": 37.443,
+                "longitude": -122.145, "radius_miles": 25,
+            },
+        })
+        result = assess(profile, trial())
+        self.assertEqual(result.location_status, "within_preferred_radius")
+        self.assertIsNotNone(result.distance_miles)
+
     def test_known_mismatches_are_collapsed_by_default(self):
         profile = PatientProfile.from_dict({
             "primary_organ": "breast", "age_years": 47, "sex": "female",

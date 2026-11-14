@@ -197,6 +197,23 @@ def _distance_miles(lat1, lon1, lat2, lon2):
 
 def _location_result(profile, trial):
     location = profile.location
+    if location.get("latitude") is not None and location.get("longitude") is not None:
+        candidates = []
+        for site in trial.locations:
+            if site.get("latitude") is None or site.get("longitude") is None:
+                continue
+            distance = _distance_miles(
+                float(location["latitude"]), float(location["longitude"]),
+                float(site["latitude"]), float(site["longitude"]),
+            )
+            candidates.append((distance, site))
+        if not candidates:
+            return None, None, "distance_unavailable"
+        distance, site = min(candidates, key=lambda item: item[0])
+        radius = location.get("radius_miles")
+        status = "within_preferred_radius" if radius is None or distance <= float(radius) else "outside_preferred_radius"
+        return site, round(distance, 1), status
+
     location_query = location.get("query")
     if isinstance(location_query, str) and location_query.strip():
         query = location_query.strip().lower()
@@ -205,23 +222,7 @@ def _location_result(profile, trial):
             if query in searchable:
                 return site, None, "preferred_location_match"
         return None, None, "preferred_location_unconfirmed"
-    if location.get("latitude") is None or location.get("longitude") is None:
-        return None, None, None
-    candidates = []
-    for site in trial.locations:
-        if site.get("latitude") is None or site.get("longitude") is None:
-            continue
-        distance = _distance_miles(
-            float(location["latitude"]), float(location["longitude"]),
-            float(site["latitude"]), float(site["longitude"]),
-        )
-        candidates.append((distance, site))
-    if not candidates:
-        return None, None, "distance_unavailable"
-    distance, site = min(candidates, key=lambda item: item[0])
-    radius = location.get("radius_miles")
-    status = "within_preferred_radius" if radius is None or distance <= float(radius) else "outside_preferred_radius"
-    return site, round(distance, 1), status
+    return None, None, None
 
 
 def assess(profile: PatientProfile, trial: TrialRecord, answers=None) -> MatchAssessment:

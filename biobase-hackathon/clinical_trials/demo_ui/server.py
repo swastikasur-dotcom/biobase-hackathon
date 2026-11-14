@@ -8,6 +8,7 @@ from pathlib import Path
 
 from clinical_trials.cache import TTLCache
 from clinical_trials.clinicaltrials_gov import ClinicalTrialsGovClient
+from clinical_trials.geocoding import NominatimGeocoder
 from clinical_trials.models import PatientProfile
 from clinical_trials.service import build_discovery_result
 from clinical_trials.task_a_adapter import profile_from_task_a_fields
@@ -16,6 +17,7 @@ from task_a.parse_reports import parse as parse_pathology_report
 
 STATIC_DIR = Path(__file__).with_name("static")
 CLIENT = ClinicalTrialsGovClient(cache=TTLCache(ttl_seconds=900))
+GEOCODER = NominatimGeocoder(cache=TTLCache(ttl_seconds=30 * 24 * 60 * 60))
 
 
 def _trial_summary(trial):
@@ -33,7 +35,12 @@ def _trial_summary(trial):
 
 
 def run_search(payload):
-    profile = PatientProfile.from_dict(payload.get("profile") or {})
+    profile_data = dict(payload.get("profile") or {})
+    location = dict(profile_data.get("location") or {})
+    if location.get("query") and location.get("radius_miles") is not None:
+        location.update(GEOCODER.geocode(location["query"]))
+        profile_data["location"] = location
+    profile = PatientProfile.from_dict(profile_data)
     page_size = int(payload.get("page_size", 10))
     include_not_matches = bool(payload.get("include_not_matches", False))
     trials = CLIENT.search_open_trials(profile, page_size=page_size)

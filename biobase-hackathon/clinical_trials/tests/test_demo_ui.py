@@ -43,6 +43,31 @@ Synthetic example.
         self.assertEqual(output["results"][0]["trial"]["title"], "Demo breast trial")
         self.assertEqual(output["results"][0]["source_url"], trial.official_url)
 
+    def test_location_radius_is_resolved_before_matching(self):
+        trial = TrialRecord(
+            nct_id="NCT00000004",
+            title="Local breast trial",
+            status="RECRUITING",
+            conditions=["Breast Cancer"],
+            sexes_eligible="ALL",
+            minimum_age="18 Years",
+            locations=[{"facility": "Near site", "latitude": 37.45, "longitude": -122.14}],
+        )
+        payload = {
+            "profile": {
+                "primary_organ": "breast",
+                "age_years": 47,
+                "sex": "female",
+                "location": {"query": "Palo Alto, CA", "radius_miles": 25},
+            }
+        }
+        resolved = {"latitude": 37.443, "longitude": -122.145, "resolved_name": "Palo Alto, California"}
+        with patch("clinical_trials.demo_ui.server.GEOCODER.geocode", return_value=resolved), \
+                patch("clinical_trials.demo_ui.server.CLIENT.search_open_trials", return_value=[trial]):
+            output = run_search(payload)
+        self.assertEqual(output["profile"]["location"]["radius_miles"], 25)
+        self.assertEqual(output["results"][0]["location_status"], "within_preferred_radius")
+
 
 if __name__ == "__main__":
     unittest.main()
