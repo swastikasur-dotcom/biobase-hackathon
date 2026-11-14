@@ -17,6 +17,7 @@ class DemoUiTests(unittest.TestCase):
         self.assertIn("radius_miles: Number(data.get('radius_miles'))", script)
         self.assertIn('Find independent sources', html)
         self.assertIn('Adds public context from hospital, publication, and sponsor pages', html)
+        self.assertNotIn('The report and detailed clinical facts stay local', html)
         self.assertNotIn('Evidence checked:', script)
         self.assertIn("fetch('/api/research'", script)
         self.assertIn("button.dataset.researchLoaded === 'true'", script)
