@@ -2,6 +2,7 @@ import unittest
 
 from clinical_trials.matching import assess
 from clinical_trials.models import PatientProfile, TrialRecord
+from clinical_trials.service import build_discovery_result
 
 
 ELIGIBILITY = """Inclusion Criteria:
@@ -106,6 +107,18 @@ class ConservativeMatcherTests(unittest.TestCase):
         self.assertLess(result.distance_miles, 1)
         self.assertEqual(result.nearest_site["facility"], "Nearby Cancer Center")
         self.assertEqual(result.source_last_updated, "2026-11-10")
+
+    def test_known_mismatches_are_collapsed_by_default(self):
+        profile = PatientProfile.from_dict({
+            "primary_organ": "breast", "age_years": 47, "sex": "female",
+            "histology": "invasive ductal carcinoma", "stage": "Stage II",
+            "biomarkers": {"ER": "negative", "HER2": "negative"},
+        })
+        output = build_discovery_result(profile, [trial()])
+        self.assertEqual(output["summary"]["not_a_match"], 1)
+        self.assertEqual(output["results"], [])
+        expanded = build_discovery_result(profile, [trial()], include_not_matches=True)
+        self.assertEqual(len(expanded["results"]), 1)
 
 
 if __name__ == "__main__":
