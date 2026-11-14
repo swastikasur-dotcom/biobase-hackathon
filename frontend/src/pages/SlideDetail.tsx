@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom'
 import { useDocumentTitle } from '../lib/useDocumentTitle'
 import Breadcrumbs from '../components/Breadcrumbs'
 import ConfidenceBadge from '../components/ConfidenceBadge'
+import PaperclipButton from '../components/PaperclipButton'
 import SimilarMapSection from '../components/SimilarMapSection'
 import TileViewer from '../components/TileViewer'
 import Status from '../components/Status'
@@ -69,6 +70,7 @@ function SlideBody({ slide, similarSlides }: { slide: Slide; similarSlides: Slid
             )}
             {!predicted && <p className="mt-2 text-sm text-slate-500">Known label from the supplier, not a prediction.</p>}
           </div>
+          {organ && <PaperclipButton organ={organ} className="mt-3" />}
           <dl className="mt-4">
             <Row k="Supplier" v={slide.supplierId} />
             <Row k="Stain" v={slide.stain} />

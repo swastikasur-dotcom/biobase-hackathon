@@ -109,3 +109,69 @@ export interface SlideUploadState {
   /** The file the user chose. Absent when they picked "Select test case" instead. */
   file?: { name: string; size: number }
 }
+
+/** One H&E tumour micrograph found by the Paperclip literature search. */
+export interface Micrograph {
+  id: string
+  /** Path relative to the Paperclip dataset folder, e.g. images/thyroid_0001.jpg */
+  image: string
+  diagnosis: string
+  site: string
+  grade: string
+  stage: string
+  stain: string
+  /** Approximate total magnification parsed from the paper (x100 to x600). */
+  magnification: number | null
+  specimen: string
+  features: string
+  caption: string
+  study: string
+  title: string
+  year: number | null
+  journal: string
+  link: string
+  pmcid: string
+  /** Dataset QC flags, e.g. drawn arrows or ambiguous magnification. Empty when none. */
+  qc: string
+  qcNote: string
+}
+
+export interface Biomarker {
+  tumour: string
+  biomarker: string
+  direction: string
+  method: string
+  value: string
+  association: string
+  comparator: string
+  use: string
+  quote: string
+  study: string
+  title: string
+  year: number | null
+  journal: string
+  link: string
+  note: string
+}
+
+/** What the labelled Biobase slides of an organ look like. */
+export interface OrganProfile {
+  slides: number | null
+  diagnoses: string
+  stages: string
+  stains: string
+  markers: string
+  magnification: string
+}
+
+export interface PaperclipOrgan {
+  micrographs: Micrograph[]
+  biomarkers: Biomarker[]
+  profile: OrganProfile | null
+}
+
+export interface PaperclipFile {
+  dataset: string
+  /** Keyed by Biobase organ group. An organ with no results may be absent (Esophagus has none). */
+  organs: Record<string, PaperclipOrgan>
+}

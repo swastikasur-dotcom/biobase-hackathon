@@ -152,6 +152,62 @@ def export_umap():
     print("no 2D map available; skipping umap.json")
 
 
+def export_paperclip():
+    """Paperclip literature search results (dataset v3): H&E micrographs, biomarker findings and a Biobase
+    slide profile, grouped by the 15 Biobase organ groups. Skipped when the dataset folder is absent."""
+    root = os.environ.get("PAPERCLIP_DIR") or os.path.join(BIOBASE, "biobase_paperclip_datasets_v3")
+    if not os.path.isdir(root):
+        print(f"no Paperclip dataset at {root}; skipping paperclip.json")
+        return
+
+    def rows(name):
+        with open(os.path.join(root, name), newline="", encoding="utf-8") as fh:
+            return list(csv.DictReader(fh))
+
+    def num(v):
+        try:
+            return int(float(v))
+        except (TypeError, ValueError):
+            return None
+
+    organs = {}
+
+    def organ(name):
+        return organs.setdefault(name, {"micrographs": [], "biomarkers": [], "profile": None})
+
+    for r in rows("he_tumour_micrographs.csv"):
+        organ(r["organ_group"])["micrographs"].append({
+            "id": os.path.splitext(os.path.basename(r["image_file"]))[0],
+            "image": r["image_file"],  # relative to the dataset folder
+            "diagnosis": r["diagnosis"], "site": r["organ_site"], "grade": r["grade"], "stage": r["stage"],
+            "stain": r["stain"], "magnification": num(r["approx_total_magnification"]),
+            "specimen": r["specimen_type"], "features": r["key_features"], "caption": r["figure_caption"],
+            "study": r["study"], "title": r["title"], "year": num(r["year"]), "journal": r["journal"],
+            "link": r["link"], "pmcid": r["pmcid"], "qc": r["qc_flags"], "qcNote": r["qc_note"],
+        })
+    for r in rows("tumour_biomarkers.csv"):
+        organ(r["organ_group"])["biomarkers"].append({
+            "tumour": r["tumour_type"], "biomarker": r["biomarker"], "direction": r["direction_vs_normal"],
+            "method": r["method"], "value": r["percent_positive_or_fold_change"],
+            "association": r["association_with_stage_or_grade"], "comparator": r["comparator"],
+            "use": r["diagnostic_or_prognostic_use"], "quote": r["evidence_quote"], "study": r["study"],
+            "title": r["title"], "year": num(r["year"]), "journal": r["journal"], "link": r["link"],
+            "note": r["reviewer_note"],
+        })
+    for r in rows("biobase_slide_profile_by_organ.csv"):
+        organ(r["organ_group"])["profile"] = {
+            "slides": num(r["n_labelled_slides"]), "diagnoses": r["diagnoses"], "stages": r["stages"],
+            "stains": r["stains"], "markers": r["reported_markers"], "magnification": r["magnification"],
+        }
+
+    write("paperclip.json", {
+        "dataset": "Paperclip literature datasets v3 (after independent review, 14 Nov 2026)",
+        "organs": organs,
+    })
+    print("paperclip:", sum(len(o["micrographs"]) for o in organs.values()), "micrographs,",
+          sum(len(o["biomarkers"]) for o in organs.values()), "biomarker findings")
+
+
 def export_tiles():
     root = os.path.join(BIOBASE, "tiles20x")
     blank = {(r["slide_id"], r["file"]) for r in read_csv(os.path.join(root, "blank_tiles.csv"))}
@@ -177,6 +233,7 @@ def main():
     export_task_a()
     slides, preds, similar = export_slides()
     export_umap()
+    export_paperclip()
     tiles = export_tiles()
 
     print("\ncounts:",

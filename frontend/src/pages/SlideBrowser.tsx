@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useDocumentTitle } from '../lib/useDocumentTitle'
 import Breadcrumbs from '../components/Breadcrumbs'
+import PaperclipButton from '../components/PaperclipButton'
 import SlideCard from '../components/SlideCard'
 import SlideUploadCard from '../components/SlideUploadCard'
 import Status from '../components/Status'
@@ -73,6 +74,7 @@ export default function SlideBrowser() {
               <option key={g}>{g}</option>
             ))}
           </select>
+          <PaperclipButton organ={organ || undefined} />
           <select aria-label="Supplier" value={supplier} onChange={(e) => setSupplier(e.target.value)} className={select}>
             <option value="">All suppliers</option>
             {suppliers.map((s) => (

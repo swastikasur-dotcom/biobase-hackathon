@@ -33,3 +33,7 @@ frontend/public/data/
 frontend/README.md
 frontend/images/
 frontend/*.csv
+
+# Paperclip dataset (third-party papers; licences not provided) and its dev symlink
+/biobase_paperclip_datasets_v3/
+frontend/public/paperclip

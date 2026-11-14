@@ -2,6 +2,7 @@ import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useEffect, useRef } from 'react'
 import Breadcrumbs from '../components/Breadcrumbs'
 import ConfidenceBadge from '../components/ConfidenceBadge'
+import PaperclipButton from '../components/PaperclipButton'
 import SimilarMapSection from '../components/SimilarMapSection'
 import Status from '../components/Status'
 import { useSimilar, useSlideIndex } from '../data/api'
@@ -79,6 +80,7 @@ export default function SlideUploadResult() {
                     </p>
                   )}
                 </div>
+                <PaperclipButton organ={slide.prediction?.organ} />
                 <Link to={`/slides/${slide.id}`} className="block text-sm text-blue-700 hover:underline">
                   Open the full slide page (tiles, details) →
                 </Link>

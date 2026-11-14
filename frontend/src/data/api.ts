@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
-import type { Cohorts, Criterion, Report, SimilarMap, SlidesFile, TilesMap, UmapFile } from '../types'
+import type { Cohorts, Criterion, Report, SimilarMap, SlidesFile, TilesMap, UmapFile, PaperclipFile } from '../types'
 
 async function fetchJson<T>(name: string): Promise<T> {
   const res = await fetch(`${import.meta.env.BASE_URL}data/${name}`)
@@ -45,3 +45,6 @@ export const useTiles = () =>
 
 export const useUmap = () =>
   useQuery({ queryKey: ['umap'], queryFn: () => fetchJson<UmapFile>('umap.json'), ...staticQuery })
+
+export const usePaperclip = () =>
+  useQuery({ queryKey: ['paperclip'], queryFn: () => fetchJson<PaperclipFile>('paperclip.json'), ...staticQuery })

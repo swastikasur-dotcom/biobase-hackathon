@@ -256,3 +256,57 @@ test('Analysis page shows the same highlighted map', async ({ page }) => {
   await expect(page.getByRole('group', { name: /Map of slides/ })).toBeVisible()
   await expect(page.getByText('all other slides')).toBeVisible()
 })
+
+test('Paperclip: slide page button opens the stored literature results for its organ', async ({ page }) => {
+  await page.goto('/slides/SUPP-02-bb_02_wsi_0176') // predicted Prostate
+  await page.getByRole('button', { name: 'Paperclip' }).click()
+
+  const panel = page.getByRole('dialog', { name: /Paperclip results: Prostate/ })
+  await expect(panel).toBeVisible()
+  await expect(panel.getByRole('tab', { name: /H&E micrographs\s*11/ })).toBeVisible()
+  await expect(panel.getByRole('tab', { name: /Biomarkers\s*6/ })).toBeVisible()
+  await expect(panel.getByText('not a live query')).toBeVisible()
+
+  // The 11 micrographs are real, loaded images.
+  const images = panel.locator('ul img')
+  await expect(images).toHaveCount(11)
+  await expect.poll(() => images.first().evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true)
+
+  // Opening one shows its details and a link to the source paper.
+  await panel.locator('ul button').first().click()
+  await expect(panel.getByRole('button', { name: '← All micrographs' })).toBeVisible()
+  await expect(panel.getByRole('link', { name: /↗/ })).toHaveAttribute('href', /^https:\/\//)
+  await panel.getByRole('button', { name: '← All micrographs' }).click()
+
+  await panel.getByRole('tab', { name: /Biomarkers/ }).click()
+  await expect(panel.getByText('Evidence from the paper').first()).toBeVisible()
+  await panel.getByRole('tab', { name: /Biobase slides/ }).click()
+  await expect(panel.getByText('Labelled slides')).toBeVisible()
+
+  await page.keyboard.press('Escape')
+  await expect(panel).toBeHidden()
+})
+
+test('Paperclip: slide browser button needs an organ, and says when nothing was found', async ({ page }) => {
+  await page.goto('/slides')
+  const button = page.getByRole('button', { name: 'Paperclip' })
+  await expect(button).toBeDisabled()
+
+  await page.getByLabel('Organ').selectOption('Esophagus')
+  await expect(button).toBeEnabled()
+  await button.click()
+  await expect(page.getByText('The search found no H&E tumour micrographs for Esophagus.')).toBeVisible()
+  await page.getByRole('button', { name: 'Close Paperclip results' }).click()
+  await expect(page.getByRole('dialog')).toBeHidden()
+
+  await page.getByLabel('Organ').selectOption('Breast')
+  await button.click()
+  await expect(page.getByRole('tab', { name: /H&E micrographs\s*14/ })).toBeVisible()
+})
+
+test('Paperclip: also on the slide analysis page', async ({ page }) => {
+  await page.goto('/slides')
+  await page.getByRole('button', { name: 'Select test case' }).click()
+  await page.getByRole('button', { name: 'Paperclip' }).click()
+  await expect(page.getByRole('dialog', { name: /Paperclip results:/ })).toBeVisible()
+})
