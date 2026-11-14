@@ -50,6 +50,26 @@ count. Pass `include_not_matches=True` for an audit/expanded view.
 5. The UI links to `official_url` and retains the unmodified official eligibility
    text for coordinator review.
 
+### Clarification-answer contract
+
+Each question is returned with a stable `question_id`, display prompt, quoted
+criterion evidence, and the implications of Yes and No. The frontend can render
+three buttons and post this JSON back to its own backend:
+
+```json
+{
+  "NCT00000002": {
+    "has_metastatic_disease": "no",
+    "minimum_tumor_size": "yes",
+    "treatment_naive": "unknown"
+  }
+}
+```
+
+Pass the object as `answers_by_trial` to `build_discovery_result()`. `yes`, `no`,
+and `unknown` are intentionally UI-framework independent. Unknown leaves the
+question open; Yes or No can move the study to likely relevant or not a match.
+
 The module has no framework or third-party dependencies. It can be retained if
 the frontend uses Python, wrapped in an API route, or reimplemented in another
 language from this contract.
