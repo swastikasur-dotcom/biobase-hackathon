@@ -4,6 +4,7 @@ const summaryEl = document.querySelector('#summary');
 const emptyEl = document.querySelector('#emptyState');
 const loadingEl = document.querySelector('#loadingState');
 const errorEl = document.querySelector('#errorState');
+const mismatchExplanation = document.querySelector('#mismatchExplanation');
 const showExcluded = document.querySelector('#showExcluded');
 const template = document.querySelector('#trialTemplate');
 
@@ -79,11 +80,19 @@ function render(payload) {
   summaryEl.innerHTML = `
     <div class="summary-item"><strong>${payload.summary.likely_relevant}</strong><span>Likely relevant</span></div>
     <div class="summary-item"><strong>${payload.summary.needs_more_information}</strong><span>Need information</span></div>
-    <div class="summary-item"><strong>${payload.summary.not_a_match}</strong><span>Known mismatches</span></div>`;
+    <div class="summary-item"><strong>${payload.summary.not_a_match}</strong><span>Filtered registry results</span></div>`;
   summaryEl.classList.remove('hidden');
+  if (payload.summary.not_a_match) {
+    mismatchExplanation.textContent = showExcluded.checked
+      ? `Showing ${payload.summary.not_a_match} additional result${payload.summary.not_a_match === 1 ? '' : 's'}. ClinicalTrials.gov returned these in the broad disease search, but the patient profile contradicts one or more explicit eligibility requirements.`
+      : `${payload.summary.not_a_match} broad ClinicalTrials.gov result${payload.summary.not_a_match === 1 ? ' was' : 's were'} hidden because the patient profile contradicts an explicit eligibility requirement. Turn on “Show filtered registry results” to inspect why.`;
+    mismatchExplanation.classList.remove('hidden');
+  } else {
+    mismatchExplanation.classList.add('hidden');
+  }
   resultsEl.innerHTML = '';
   if (!payload.results.length) {
-    resultsEl.innerHTML = '<div class="error-state">No visible trials in this result set. Turn on “Show known mismatches” to inspect excluded records.</div>';
+    resultsEl.innerHTML = '<div class="error-state">No visible trials in this result set. Turn on “Show filtered registry results” to inspect records removed by the profile checks.</div>';
     return;
   }
   for (const result of payload.results) resultsEl.append(renderTrial(result));
@@ -93,7 +102,7 @@ function renderTrial(result) {
   const node = template.content.firstElementChild.cloneNode(true);
   const trial = result.trial;
   node.dataset.assessment = result.assessment;
-  const labels = {likely_relevant: 'Likely relevant', needs_more_information: 'Needs information', not_a_match: 'Known mismatch'};
+  const labels = {likely_relevant: 'Likely relevant', needs_more_information: 'Needs information', not_a_match: 'Filtered out'};
   node.querySelector('.status-pill').textContent = labels[result.assessment];
   const link = node.querySelector('.nct-link');
   link.textContent = trial.nct_id + ' ↗';
@@ -161,4 +170,4 @@ function renderQuestion(nctId, question) {
 
 form.addEventListener('submit', event => { event.preventDefault(); answersByTrial = {}; search(); });
 showExcluded.addEventListener('change', () => { if (hasSearched) search(); });
-document.querySelector('#resetButton').addEventListener('click', () => { form.reset(); answersByTrial = {}; showExcluded.checked = false; resultsEl.innerHTML = ''; summaryEl.classList.add('hidden'); errorEl.classList.add('hidden'); emptyEl.classList.remove('hidden'); hasSearched = false; });
+document.querySelector('#resetButton').addEventListener('click', () => { form.reset(); answersByTrial = {}; showExcluded.checked = false; resultsEl.innerHTML = ''; summaryEl.classList.add('hidden'); mismatchExplanation.classList.add('hidden'); errorEl.classList.add('hidden'); emptyEl.classList.remove('hidden'); hasSearched = false; });

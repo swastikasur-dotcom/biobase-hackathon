@@ -33,7 +33,16 @@
             <label>Age<input name="age_years" type="number" min="0" max="130" value="47"></label>
             <label>Sex<select name="sex"><option value="female">Female</option><option value="male">Male</option><option value="unknown">Unknown</option></select></label>
           </div>
-          <label>Overall stage<input name="stage" value="Stage II" placeholder="e.g. Stage II"></label>
+          <label>Overall stage
+            <select name="stage">
+              <option value="">Unknown / not available</option>
+              <option>Stage 0</option>
+              <option>Stage I</option>
+              <option selected>Stage II</option>
+              <option>Stage III</option>
+              <option>Stage IV</option>
+            </select>
+          </label>
           <div class="two-col">
             <label>Tumor size (mm)<input name="tumor_size_mm" type="number" min="0" step="0.1" value="24"></label>
             <label>Metastatic status<select name="metastatic_status"><option value="non_metastatic">Non-metastatic</option><option value="metastatic">Metastatic</option><option value="unknown">Unknown</option></select></label>
@@ -65,8 +74,9 @@
       <section class="results-panel" aria-live="polite">
         <div class="section-heading results-heading">
           <div><p class="step">02</p><h2>Review shortlist</h2></div>
-          <label class="toggle"><input id="showExcluded" type="checkbox"><span>Show known mismatches</span></label>
+          <label class="toggle"><input id="showExcluded" type="checkbox"><span>Show filtered registry results</span></label>
         </div>
+        <div id="mismatchExplanation" class="mismatch-explanation hidden"></div>
         <div id="emptyState" class="empty-state">
           <div class="orbit"><span></span></div>
           <h3>Ready to search</h3>
@@ -86,7 +96,7 @@
       <h3 class="trial-title"></h3>
       <p class="conditions"></p>
       <div class="evidence-grid"><div><h4>Evidence</h4><ul class="matched-list"></ul></div><div class="question-column"><h4>Confirm to refine</h4><div class="questions"></div></div></div>
-      <div class="exclusions hidden"><h4>Known mismatch</h4><ul></ul></div>
+      <div class="exclusions hidden"><h4>Why our filters removed it</h4><ul></ul></div>
       <div class="site-line hidden"></div>
       <details class="criteria-details"><summary>Official eligibility text</summary><pre></pre></details>
       <p class="source-line"></p>

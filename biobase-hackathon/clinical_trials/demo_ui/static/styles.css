@@ -51,6 +51,7 @@ details summary { cursor: pointer; color: var(--green); font-size: 12px; font-we
 .primary-button:hover { background: var(--green-dark); }
 .toggle { display: flex; grid-auto-flow: column; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; }
 .toggle input { width: auto; accent-color: var(--green); }
+.mismatch-explanation { margin: -6px 0 16px; padding: 11px 13px; border: 1px solid #eadbc3; border-radius: 9px; color: #74512a; background: #fff8ec; font-size: 11px; line-height: 1.5; }
 .empty-state, .loading-state { min-height: 530px; display: grid; place-content: center; justify-items: center; text-align: center; color: var(--muted); }
 .empty-state h3 { margin: 22px 0 5px; color: var(--ink); font-family: Georgia, serif; font-size: 24px; font-weight: 500; }
 .empty-state p { max-width: 380px; line-height: 1.55; }
@@ -67,7 +68,7 @@ details summary { cursor: pointer; color: var(--green); font-size: 12px; font-we
 .summary-item span { color: var(--muted); font-size: 11px; }
 .results-list { display: grid; gap: 12px; }
 .trial-card { padding: 20px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
-.trial-card[data-assessment="not_a_match"] { opacity: .78; }
+.trial-card[data-assessment="not_a_match"] { border-color: #e6c8c3; background: #fffdfc; }
 .card-topline { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .status-pill { padding: 5px 8px; border-radius: 999px; color: var(--green-dark); background: var(--mint); font-size: 10px; font-weight: 850; letter-spacing: .06em; text-transform: uppercase; }
 .trial-card[data-assessment="needs_more_information"] .status-pill { color: var(--amber); background: var(--amber-bg); }
