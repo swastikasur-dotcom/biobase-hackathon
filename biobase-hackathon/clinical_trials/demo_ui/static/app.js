@@ -206,6 +206,7 @@ async function researchTrial(node, trial) {
   if (button.dataset.researchLoaded === 'true') {
     const isHidden = sources.classList.toggle('hidden');
     dates.classList.toggle('hidden', isHidden);
+    status.classList.toggle('hidden', isHidden);
     button.textContent = isHidden ? 'Show sources' : 'Hide sources';
     button.setAttribute('aria-expanded', String(!isHidden));
     return;
