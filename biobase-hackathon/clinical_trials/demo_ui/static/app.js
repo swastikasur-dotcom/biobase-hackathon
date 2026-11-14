@@ -194,7 +194,67 @@ function renderTrial(result, profileLocation = {}) {
   }
   node.querySelector('.criteria-details pre').textContent = trial.eligibility_text || 'No eligibility text supplied.';
   node.querySelector('.source-line').textContent = `Source: ClinicalTrials.gov · Study updated ${trial.last_update_posted || 'date unavailable'}`;
+  node.querySelector('.research-button').addEventListener('click', () => researchTrial(node, trial));
   return node;
+}
+
+async function researchTrial(node, trial) {
+  const button = node.querySelector('.research-button');
+  const status = node.querySelector('.research-status');
+  const sources = node.querySelector('.research-sources');
+  button.disabled = true;
+  button.textContent = 'Searching public sources…';
+  status.className = 'research-status';
+  status.textContent = 'Keenable is searching recruitment, sponsor, site, protocol, and publication pages.';
+  sources.classList.add('hidden');
+  sources.innerHTML = '';
+  try {
+    const response = await fetch('/api/research', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({nct_id: trial.nct_id, title: trial.title})
+    });
+    const dossier = await response.json();
+    if (!response.ok) throw new Error(dossier.error || 'Public-web research failed');
+    renderResearchSources(sources, dossier.sources);
+    sources.classList.remove('hidden');
+    status.textContent = dossier.sources.length
+      ? `${dossier.sources.length} public source${dossier.sources.length === 1 ? '' : 's'} found. These are context, not eligibility evidence.`
+      : 'No additional public sources were found for this trial.';
+    button.textContent = 'Research complete';
+  } catch (error) {
+    status.classList.add('failure');
+    status.textContent = error.message;
+    button.disabled = false;
+    button.textContent = 'Try Keenable again';
+  }
+}
+
+function renderResearchSources(container, sources) {
+  const labels = {
+    recruitment_or_site: 'Recruitment / site',
+    publication_or_protocol: 'Publication / protocol',
+    sponsor_update: 'Sponsor update',
+    other_public_context: 'Other context'
+  };
+  for (const source of sources) {
+    const article = document.createElement('article');
+    article.className = 'research-source';
+    const category = document.createElement('span');
+    category.className = 'research-category';
+    category.textContent = labels[source.category] || 'Public source';
+    const link = document.createElement('a');
+    link.href = source.url;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.textContent = `${source.title} ↗`;
+    const snippet = document.createElement('p');
+    snippet.textContent = source.snippet || 'Keenable found this page for the trial identifier.';
+    const meta = document.createElement('small');
+    meta.textContent = [source.domain, source.published_at ? `Published ${source.published_at.slice(0, 10)}` : null].filter(Boolean).join(' · ');
+    article.append(category, link, snippet, meta);
+    container.append(article);
+  }
 }
 
 function listItem(text) {

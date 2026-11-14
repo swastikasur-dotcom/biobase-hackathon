@@ -117,6 +117,22 @@ details summary { cursor: pointer; color: var(--green); font-size: 12px; font-we
 .answer-button:hover, .answer-button.selected { color: white; border-color: var(--green); background: var(--green); }
 .site-line { margin-top: 14px; padding: 10px 12px; color: var(--green-dark); background: var(--mint); border-radius: 9px; font-size: 11px; }
 .site-line.outside-radius { color: var(--amber); background: var(--amber-bg); }
+.research-panel { margin-top: 14px; padding: 14px; border: 1px solid #d9e5de; border-radius: 10px; background: #f7fbf8; }
+.research-heading { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+.research-heading h4 { margin-bottom: 4px; color: var(--green-dark); }
+.research-heading p { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.45; }
+.research-button { flex: 0 0 auto; border: 1px solid var(--green); border-radius: 8px; padding: 8px 10px; color: var(--green); background: white; cursor: pointer; font-size: 10px; font-weight: 800; }
+.research-button:hover:not(:disabled) { color: white; background: var(--green); }
+.research-button:disabled { cursor: default; opacity: .7; }
+.research-status { margin: 10px 0 0; color: var(--muted); font-size: 10px; line-height: 1.45; }
+.research-status.failure { color: var(--red); }
+.research-sources { display: grid; gap: 8px; margin-top: 12px; }
+.research-source { display: grid; gap: 6px; padding: 11px; border: 1px solid var(--line); border-radius: 8px; background: white; }
+.research-category { width: fit-content; padding: 3px 6px; border-radius: 999px; color: var(--green-dark); background: var(--mint); font-size: 8px; font-weight: 850; letter-spacing: .06em; text-transform: uppercase; }
+.research-source a { color: var(--green-dark); font-family: Georgia, serif; font-size: 15px; line-height: 1.2; text-decoration: none; }
+.research-source a:hover { text-decoration: underline; }
+.research-source p { margin: 0; color: #46524c; font-size: 10px; line-height: 1.5; }
+.research-source small { color: #87918c; font-size: 9px; }
 .criteria-details { margin-top: 14px; }
 .criteria-details pre { max-height: 250px; overflow: auto; white-space: pre-wrap; padding: 12px; color: #46524c; background: #f7f7f2; border-radius: 9px; font: 11px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .source-line { margin: 12px 0 0; color: #8a948f; font-size: 10px; }
@@ -132,4 +148,5 @@ details summary { cursor: pointer; color: var(--green); font-size: 12px; font-we
   .two-col, .three-col, .evidence-grid, .summary { grid-template-columns: 1fr; }
   .demo-badge { display: none; }
   .profile-panel, .results-panel { padding: 18px; border-radius: 14px; }
+  .research-heading { align-items: stretch; flex-direction: column; }
 }
