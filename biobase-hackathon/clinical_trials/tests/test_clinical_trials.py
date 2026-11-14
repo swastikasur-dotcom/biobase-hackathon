@@ -1,6 +1,7 @@
 import unittest
 
 from clinical_trials.clinicaltrials_gov import ClinicalTrialsGovClient
+from clinical_trials.cache import TTLCache
 from clinical_trials.matching import assess
 from clinical_trials.models import PatientProfile
 from clinical_trials.task_a_adapter import profile_from_task_a_fields
@@ -45,18 +46,28 @@ class ClinicalTrialsContractTests(unittest.TestCase):
         self.assertEqual(trials[0].nct_id, "NCT00000001")
         self.assertEqual(trials[0].locations[0]["city"], "Palo Alto")
 
-    def test_assessment_is_possible_not_eligible(self):
+    def test_assessment_is_likely_relevant_not_eligible(self):
         trial = ClinicalTrialsGovClient(get_json=lambda _: {"studies": [STUDY]}).search_open_trials(self.profile)[0]
         result = assess(self.profile, trial)
-        self.assertEqual(result.assessment, "possible_candidate")
-        self.assertIn("biomarker-specific requirement", result.unknown_requirements)
+        self.assertEqual(result.assessment, "likely_relevant")
+        self.assertIn("must confirm eligibility", result.review_note)
 
     def test_known_age_exclusion_is_flagged(self):
         profile = PatientProfile.from_dict({"primary_organ": "breast", "age_years": 16, "sex": "female"})
         trial = ClinicalTrialsGovClient(get_json=lambda _: {"studies": [STUDY]}).search_open_trials(profile)[0]
         result = assess(profile, trial)
-        self.assertEqual(result.assessment, "excluded_by_structured_field")
+        self.assertEqual(result.assessment, "not_a_match")
         self.assertIn("below trial minimum age of 18 Years", result.exclusions)
+
+    def test_client_cache_avoids_duplicate_registry_calls(self):
+        calls = []
+        client = ClinicalTrialsGovClient(
+            get_json=lambda url: calls.append(url) or {"studies": [STUDY]},
+            cache=TTLCache(ttl_seconds=60),
+        )
+        client.search_open_trials(self.profile)
+        client.search_open_trials(self.profile)
+        self.assertEqual(len(calls), 1)
 
     def test_task_a_adapter_keeps_age_band_as_evidence_not_exact_age(self):
         profile = profile_from_task_a_fields({
