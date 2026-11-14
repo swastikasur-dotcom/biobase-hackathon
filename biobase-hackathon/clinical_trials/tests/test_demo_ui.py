@@ -9,6 +9,7 @@ class DemoUiTests(unittest.TestCase):
     def test_demo_exposes_human_location_and_radius_inputs(self):
         html = (STATIC_DIR / "index.html").read_text()
         script = (STATIC_DIR / "app.js").read_text()
+        self.assertIn('<h1>Patient-specific cancer trial matching</h1>', html)
         self.assertIn('name="use_radius"', html)
         self.assertIn('name="location_query"', html)
         self.assertIn('name="radius_miles"', html)
