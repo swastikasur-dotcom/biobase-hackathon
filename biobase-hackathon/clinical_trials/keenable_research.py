@@ -80,6 +80,7 @@ class KeenableTrialResearchProvider:
                     continue
                 seen_urls.add(url)
                 snippet = str(result.snippet or "").strip()
+                extracted_text = " ".join((str(result.title or ""), url, snippet)).upper()
                 collected.append({
                     "title": str(result.title or parsed.netloc).strip(),
                     "url": url,
@@ -87,6 +88,7 @@ class KeenableTrialResearchProvider:
                     "snippet": snippet,
                     "published_at": result.published_at,
                     "category": _source_category(str(result.title or ""), url, snippet),
+                    "trial_specific": nct_id in extracted_text,
                 })
 
         collected.sort(key=_source_priority)

@@ -205,7 +205,7 @@ async function researchTrial(node, trial) {
   button.disabled = true;
   button.textContent = 'Searching public sources…';
   status.className = 'research-status';
-  status.textContent = 'Keenable is searching recruitment, sponsor, site, protocol, and publication pages.';
+  status.textContent = 'Searching participating-centre pages, related research, and sponsor updates…';
   sources.classList.add('hidden');
   sources.innerHTML = '';
   try {
@@ -221,21 +221,27 @@ async function researchTrial(node, trial) {
     status.textContent = dossier.sources.length
       ? `${dossier.sources.length} public source${dossier.sources.length === 1 ? '' : 's'} found. These are context, not eligibility evidence.`
       : 'No additional public sources were found for this trial.';
-    button.textContent = 'Research complete';
+    button.textContent = 'Sources found';
   } catch (error) {
     status.classList.add('failure');
     status.textContent = error.message;
     button.disabled = false;
-    button.textContent = 'Try Keenable again';
+    button.textContent = 'Try source search again';
   }
 }
 
 function renderResearchSources(container, sources) {
   const labels = {
-    recruitment_or_site: 'Recruitment / site',
-    publication_or_protocol: 'Publication / protocol',
+    recruitment_or_site: 'Participating-centre / recruitment page',
+    publication_or_protocol: 'Research or protocol context',
     sponsor_update: 'Sponsor update',
-    other_public_context: 'Other context'
+    other_public_context: 'Additional public context'
+  };
+  const descriptions = {
+    recruitment_or_site: 'Why open it: it may list a participating centre, local contact details, or recruitment information.',
+    publication_or_protocol: 'Why open it: it may explain the treatment, study design, or related evidence. Check the NCT ID in the source before treating it as trial-specific.',
+    sponsor_update: 'Why open it: it may report a sponsor milestone, enrollment update, or study result.',
+    other_public_context: 'Why open it: it is an additional non-registry mention of the trial. Verify important facts with the study site.'
   };
   for (const source of sources) {
     const article = document.createElement('article');
@@ -243,6 +249,9 @@ function renderResearchSources(container, sources) {
     const category = document.createElement('span');
     category.className = 'research-category';
     category.textContent = labels[source.category] || 'Public source';
+    const purpose = document.createElement('p');
+    purpose.className = 'research-purpose';
+    purpose.textContent = descriptions[source.category] || 'Why open it: review the source for additional public context.';
     const link = document.createElement('a');
     link.href = source.url;
     link.target = '_blank';
@@ -252,7 +261,13 @@ function renderResearchSources(container, sources) {
     snippet.textContent = source.snippet || 'Keenable found this page for the trial identifier.';
     const meta = document.createElement('small');
     meta.textContent = [source.domain, source.published_at ? `Published ${source.published_at.slice(0, 10)}` : null].filter(Boolean).join(' · ');
-    article.append(category, link, snippet, meta);
+    if (!source.trial_specific) {
+      const context = document.createElement('span');
+      context.className = 'related-context';
+      context.textContent = 'Related context — NCT ID not visible in Keenable’s extracted result';
+      article.append(context);
+    }
+    article.append(category, purpose, link, snippet, meta);
     container.append(article);
   }
 }

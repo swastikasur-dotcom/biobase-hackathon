@@ -45,6 +45,8 @@ class KeenableResearchTests(unittest.TestCase):
             {"recruitment_or_site", "publication_or_protocol"},
         )
         self.assertIn("pubmed.ncbi.nlm.nih.gov", dossier["sources"][0]["domain"])
+        self.assertFalse(dossier["sources"][0]["trial_specific"])
+        self.assertTrue(dossier["sources"][1]["trial_specific"])
         self.assertTrue(all("NCT06058377" in query for query, _ in client.calls))
         expected_exclusions = ["clinicaltrials.gov", "clinicaltrialsfind.com", "eligibility.info"]
         self.assertTrue(all(options["exclude_domains"] == expected_exclusions for _, options in client.calls))

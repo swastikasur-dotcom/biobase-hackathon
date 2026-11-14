@@ -15,7 +15,8 @@ class DemoUiTests(unittest.TestCase):
         self.assertIn('id="radiusFields" class="two-col location-inputs hidden"', html)
         self.assertIn('setRadiusEnabled(false)', script)
         self.assertIn("radius_miles: Number(data.get('radius_miles'))", script)
-        self.assertIn('Research with Keenable', html)
+        self.assertIn('Find independent sources', html)
+        self.assertIn('participating-centre pages', html)
         self.assertIn("fetch('/api/research'", script)
         self.assertIn("{nct_id: trial.nct_id, title: trial.title}", script)
 
