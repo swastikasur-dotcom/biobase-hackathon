@@ -9,6 +9,7 @@ from pathlib import Path
 from clinical_trials.cache import TTLCache
 from clinical_trials.clinicaltrials_gov import ClinicalTrialsGovClient
 from clinical_trials.geocoding import NominatimGeocoder
+from clinical_trials.keenable_research import KeenableTrialResearchProvider
 from clinical_trials.models import PatientProfile
 from clinical_trials.service import build_discovery_result
 from clinical_trials.task_a_adapter import profile_from_task_a_fields
@@ -18,6 +19,7 @@ from task_a.parse_reports import parse as parse_pathology_report
 STATIC_DIR = Path(__file__).with_name("static")
 CLIENT = ClinicalTrialsGovClient(cache=TTLCache(ttl_seconds=900))
 GEOCODER = NominatimGeocoder(cache=TTLCache(ttl_seconds=30 * 24 * 60 * 60))
+RESEARCH_PROVIDER = KeenableTrialResearchProvider(cache=TTLCache(ttl_seconds=60 * 60))
 
 
 def _trial_summary(trial):
@@ -70,6 +72,10 @@ def run_parse_report(payload):
     }
 
 
+def run_research(payload):
+    return RESEARCH_PROVIDER.research(payload.get("nct_id"), title=payload.get("title"))
+
+
 class DemoHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         relative = "index.html" if self.path in ("/", "") else self.path.lstrip("/")
@@ -85,18 +91,24 @@ class DemoHandler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_POST(self):
-        if self.path not in ("/api/search", "/api/parse-report"):
+        if self.path not in ("/api/search", "/api/parse-report", "/api/research"):
             self.send_error(404)
             return
         try:
             length = int(self.headers.get("Content-Length", "0"))
             payload = json.loads(self.rfile.read(length) or b"{}")
-            result = run_parse_report(payload) if self.path == "/api/parse-report" else run_search(payload)
+            if self.path == "/api/parse-report":
+                result = run_parse_report(payload)
+            elif self.path == "/api/research":
+                result = run_research(payload)
+            else:
+                result = run_search(payload)
             self._json(200, result)
         except (ValueError, TypeError) as error:
             self._json(400, {"error": str(error)})
         except Exception as error:  # Demo boundary: show a usable error instead of dropping the request.
-            self._json(502, {"error": "ClinicalTrials.gov request failed: {}".format(error)})
+            service = "Keenable" if self.path == "/api/research" else "ClinicalTrials.gov"
+            self._json(502, {"error": "{} request failed: {}".format(service, error)})
 
     def _json(self, status, value):
         body = json.dumps(value).encode("utf-8")

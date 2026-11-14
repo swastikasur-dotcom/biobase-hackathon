@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 
-from clinical_trials.demo_ui.server import STATIC_DIR, run_parse_report, run_search
+from clinical_trials.demo_ui.server import STATIC_DIR, run_parse_report, run_research, run_search
 from clinical_trials.models import TrialRecord
 
 
@@ -77,6 +77,13 @@ Synthetic example.
             output = run_search(payload)
         self.assertEqual(output["profile"]["location"]["radius_miles"], 25)
         self.assertEqual(output["results"][0]["location_status"], "within_preferred_radius")
+
+    def test_research_endpoint_passes_only_public_trial_metadata(self):
+        expected = {"nct_id": "NCT00000004", "sources": []}
+        with patch("clinical_trials.demo_ui.server.RESEARCH_PROVIDER.research", return_value=expected) as research:
+            output = run_research({"nct_id": "NCT00000004", "title": "Public title", "patient": "ignored"})
+        self.assertEqual(output, expected)
+        research.assert_called_once_with("NCT00000004", title="Public title")
 
 
 if __name__ == "__main__":
