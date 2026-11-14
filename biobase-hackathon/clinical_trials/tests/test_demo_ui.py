@@ -1,11 +1,28 @@
 import unittest
 from unittest.mock import patch
 
-from clinical_trials.demo_ui.server import run_search
+from clinical_trials.demo_ui.server import run_parse_report, run_search
 from clinical_trials.models import TrialRecord
 
 
 class DemoUiTests(unittest.TestCase):
+    def test_synthetic_report_can_prefill_profile(self):
+        report = """Patient: F, age band 45-49 | Report year: 2024
+SPECIMEN: Left breast, lumpectomy
+FINAL DIAGNOSIS:
+Invasive ductal carcinoma.
+Histologic type: Invasive ductal carcinoma
+Tumor size: 24 mm
+Biomarkers: ER negative; PR negative; HER2 negative
+Pathologic stage (AJCC 8th ed.): pT2 pN1
+GROSS DESCRIPTION:
+Synthetic example.
+"""
+        output = run_parse_report({"report_text": report})
+        self.assertEqual(output["profile"]["primary_organ"], "breast")
+        self.assertEqual(output["profile"]["tumor_size_mm"], 24)
+        self.assertEqual(output["profile"]["biomarkers"]["HER2"], "negative")
+
     def test_search_response_joins_trial_display_data(self):
         trial = TrialRecord(
             nct_id="NCT00000003",

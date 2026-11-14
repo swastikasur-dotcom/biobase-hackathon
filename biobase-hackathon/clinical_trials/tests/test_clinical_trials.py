@@ -69,6 +69,14 @@ class ClinicalTrialsContractTests(unittest.TestCase):
         client.search_open_trials(self.profile)
         self.assertEqual(len(calls), 1)
 
+    def test_location_query_is_sent_only_when_supplied(self):
+        seen = []
+        profile = PatientProfile.from_dict({
+            "primary_organ": "breast", "location": {"query": "Palo Alto, CA"},
+        })
+        ClinicalTrialsGovClient(get_json=lambda url: seen.append(url) or {"studies": []}).search_open_trials(profile)
+        self.assertIn("query.locn=Palo+Alto%2C+CA", seen[0])
+
     def test_task_a_adapter_keeps_age_band_as_evidence_not_exact_age(self):
         profile = profile_from_task_a_fields({
             "organ": "breast",

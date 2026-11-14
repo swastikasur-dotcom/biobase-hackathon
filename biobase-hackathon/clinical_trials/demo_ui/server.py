@@ -10,6 +10,8 @@ from clinical_trials.cache import TTLCache
 from clinical_trials.clinicaltrials_gov import ClinicalTrialsGovClient
 from clinical_trials.models import PatientProfile
 from clinical_trials.service import build_discovery_result
+from clinical_trials.task_a_adapter import profile_from_task_a_fields
+from task_a.parse_reports import parse as parse_pathology_report
 
 
 STATIC_DIR = Path(__file__).with_name("static")
@@ -48,6 +50,19 @@ def run_search(payload):
     return output
 
 
+def run_parse_report(payload):
+    report_text = payload.get("report_text")
+    if not isinstance(report_text, str) or not report_text.strip():
+        raise ValueError("report_text is required")
+    parsed = parse_pathology_report(report_text)
+    profile = profile_from_task_a_fields(parsed, patient_reference="local-demo")
+    return {
+        "profile": profile.to_dict(),
+        "parsed_fields": {key: value for key, value in parsed.items() if not key.startswith("_")},
+        "review_note": "Review and complete the extracted fields before searching. Age bands and pT/pN values do not establish exact age or overall stage.",
+    }
+
+
 class DemoHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         relative = "index.html" if self.path in ("/", "") else self.path.lstrip("/")
@@ -63,13 +78,14 @@ class DemoHandler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_POST(self):
-        if self.path != "/api/search":
+        if self.path not in ("/api/search", "/api/parse-report"):
             self.send_error(404)
             return
         try:
             length = int(self.headers.get("Content-Length", "0"))
             payload = json.loads(self.rfile.read(length) or b"{}")
-            self._json(200, run_search(payload))
+            result = run_parse_report(payload) if self.path == "/api/parse-report" else run_search(payload)
+            self._json(200, result)
         except (ValueError, TypeError) as error:
             self._json(400, {"error": str(error)})
         except Exception as error:  # Demo boundary: show a usable error instead of dropping the request.

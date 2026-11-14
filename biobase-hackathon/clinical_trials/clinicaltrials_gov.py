@@ -43,6 +43,9 @@ class ClinicalTrialsGovClient:
             "pageSize": page_size,
             "format": "json",
         }
+        location_query = profile.location.get("query")
+        if isinstance(location_query, str) and location_query.strip():
+            params["query.locn"] = location_query.strip()
         url = self._base_url + "?" + urlencode(params)
         cached = self._cache.get(url) if self._cache else None
         if cached is None:

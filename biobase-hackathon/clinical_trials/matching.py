@@ -197,6 +197,14 @@ def _distance_miles(lat1, lon1, lat2, lon2):
 
 def _location_result(profile, trial):
     location = profile.location
+    location_query = location.get("query")
+    if isinstance(location_query, str) and location_query.strip():
+        query = location_query.strip().lower()
+        for site in trial.locations:
+            searchable = " ".join(str(site.get(key, "")) for key in ("facility", "city", "state", "country", "zip")).lower()
+            if query in searchable:
+                return site, None, "preferred_location_match"
+        return None, None, "preferred_location_unconfirmed"
     if location.get("latitude") is None or location.get("longitude") is None:
         return None, None, None
     candidates = []
@@ -316,8 +324,8 @@ def assess(profile: PatientProfile, trial: TrialRecord, answers=None) -> MatchAs
         )
 
     nearest, distance, location_status = _location_result(profile, trial)
-    if location_status == "within_preferred_radius":
-        matched.append("recruiting site is within preferred radius")
+    if location_status in ("within_preferred_radius", "preferred_location_match"):
+        matched.append("recruiting site matches preferred location")
 
     unknown = [question.question_id for question in questions]
     assessment = "not_a_match" if exclusions else "needs_more_information" if questions else "likely_relevant"
