@@ -98,10 +98,12 @@ that folder without changing the matching package. From this repository director
 python3 -m clinical_trials.demo_ui.server
 ```
 
-Open `http://127.0.0.1:8765`. The prefilled example calls the live
-ClinicalTrials.gov API, renders evidence and hidden mismatches, and posts
-Yes/No/Unknown clarification answers back through the stable contract. Stop it
-with `Ctrl-C`. Do not enter real identifying patient information into the demo.
+Open `http://127.0.0.1:8765`. The demo can parse a pasted synthetic-format Task A
+report into an editable profile or start from manually entered facts. The report
+stays local; organ, histology, and an optional city/region are used for the live
+ClinicalTrials.gov query. The UI renders evidence, explains trials excluded by the
+patient profile, and posts Yes/No/Unknown answers through the stable contract.
+Stop it with `Ctrl-C`. Do not enter real identifying patient information.
 
 ## Deferred demo work
 
