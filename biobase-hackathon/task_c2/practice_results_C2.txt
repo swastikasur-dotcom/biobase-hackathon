@@ -1,0 +1,7 @@
+C2 practice check: 190 labelled slides, leave-one-out
+    P@1   P@5  P@10  method
+   0.78  0.56  0.45  cosine similarity, gigapath   <- Biobase baseline
+   0.58  0.40  0.31  cosine similarity, hoptimus
+   0.58  0.43  0.34  cosine similarity, biomedclip
+   0.56  0.34  0.27  cosine similarity, dinov2
+   0.87  0.85  0.83  organ-aware rerank (C1 prediction) + gigapath similarity   <- used

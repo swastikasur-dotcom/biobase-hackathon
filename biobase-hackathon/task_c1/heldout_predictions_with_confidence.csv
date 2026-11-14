@@ -1,0 +1,68 @@
+slide_id,predicted_organ_group,confidence
+SUPP-02-bb_02_wsi_0176,Prostate,0.23
+SUPP-02-bb_02_wsi_0020,Stomach,0.23
+SUPP-01-biobase_77b8a66e-116e-494c-a2d1-5ab7a565d79d,Uterus,0.27
+SUPP-01-biobase_bd3fc079-2e80-4aed-9213-6537dfce9e38,Other or mixed,0.27
+SUPP-02-bb_02_wsi_0155,Kidney,0.33
+SUPP-02-bb_02_wsi_0055,Breast,0.34
+SUPP-02-bb_02_wsi_0079,Colon and rectum,0.35
+SUPP-02-bb_02_wsi_0135,Liver,0.36
+SUPP-02-bb_02_wsi_0160,Liver,0.37
+SUPP-02-bb_02_wsi_0132,Thyroid,0.40
+SUPP-02-bb_02_wsi_0097,Breast,0.42
+SUPP-02-bb_02_wsi_0093,Thyroid,0.44
+SUPP-02-bb_02_wsi_0030,Lung,0.47
+SUPP-02-bb_02_wsi_0171,Uterus,0.52
+SUPP-02-bb_02_wsi_0032,Colon and rectum,0.54
+SUPP-02-bb_02_wsi_0117,Stomach,0.62
+SUPP-02-bb_02_wsi_0016,Stomach,0.64
+SUPP-02-bb_02_wsi_0127,Colon and rectum,0.68
+SUPP-03-bb_03_wsi_0006,Skin,0.69
+SUPP-02-bb_02_wsi_0114,Colon and rectum,0.70
+SUPP-02-bb_02_wsi_0130,Uterus,0.70
+SUPP-02-bb_02_wsi_0172,Bladder,0.73
+SUPP-01-biobase_ced7259e-36d4-42e2-8c7c-fd70a4af49a2,Breast,0.74
+SUPP-02-bb_02_wsi_0198,Bladder,0.80
+SUPP-02-bb_02_wsi_0191,Bladder,0.81
+SUPP-02-bb_02_wsi_0042,Stomach,0.81
+SUPP-02-bb_02_wsi_0193,Bladder,0.88
+SUPP-02-bb_02_wsi_0045,Prostate,0.88
+SUPP-02-bb_02_wsi_0157,Thyroid,0.88
+SUPP-02-bb_02_wsi_0187,Liver,0.88
+SUPP-01-biobase_7cf08652-dc4a-4060-a6c8-a501882d81f9,Prostate,0.90
+SUPP-02-bb_02_wsi_0126,Kidney,0.91
+SUPP-02-bb_02_wsi_0069,Thyroid,0.91
+SUPP-02-bb_02_wsi_0078,Lung,0.91
+SUPP-02-bb_02_wsi_0166,Kidney,0.91
+SUPP-03-bb_03_wsi_0007,Breast,0.92
+SUPP-02-bb_02_wsi_0059,Prostate,0.94
+SUPP-02-bb_02_wsi_0190,Bladder,0.94
+SUPP-02-bb_02_wsi_0104,Colon and rectum,0.94
+SUPP-02-bb_02_wsi_0019,Stomach,0.95
+SUPP-02-bb_02_wsi_0159,Uterus,0.95
+SUPP-02-bb_02_wsi_0131,Uterus,0.96
+SUPP-02-bb_02_wsi_0049,Breast,0.96
+SUPP-02-bb_02_wsi_0161,Colon and rectum,0.96
+SUPP-02-bb_02_wsi_0038,Stomach,0.98
+SUPP-02-bb_02_wsi_0074,Lung,0.98
+SUPP-02-bb_02_wsi_0064,Lung,0.99
+SUPP-02-bb_02_wsi_0047,Prostate,0.99
+SUPP-02-bb_02_wsi_0024,Prostate,0.99
+SUPP-02-bb_02_wsi_0050,Prostate,0.99
+SUPP-02-bb_02_wsi_0090,Thyroid,0.99
+SUPP-02-bb_02_wsi_0107,Colon and rectum,0.99
+SUPP-02-bb_02_wsi_0060,Lung,0.99
+SUPP-02-bb_02_wsi_0092,Thyroid,0.99
+SUPP-01-biobase_e6731e46-9853-4798-9b91-cf1c67502d1f,Breast,0.99
+SUPP-02-bb_02_wsi_0094,Colon and rectum,0.99
+SUPP-02-bb_02_wsi_0058,Lung,0.99
+SUPP-01-biobase_a5531201-e2c1-4f92-a82e-beedf120810c,Breast,0.99
+SUPP-02-bb_02_wsi_0056,Breast,0.99
+SUPP-02-bb_02_wsi_0118,Colon and rectum,1.00
+SUPP-01-biobase_7e6ecf2a-88aa-4921-8652-c9db1c54e4a8,Breast,1.00
+SUPP-02-bb_02_wsi_0182,Liver,1.00
+SUPP-02-bb_02_wsi_0067,Colon and rectum,1.00
+SUPP-02-bb_02_wsi_0138,Colon and rectum,1.00
+SUPP-02-bb_02_wsi_0077,Kidney,1.00
+SUPP-01-biobase_84276032-141e-4d86-baac-8718aef36c9c,Breast,1.00
+SUPP-02-bb_02_wsi_0091,Colon and rectum,1.00

@@ -1,0 +1,33 @@
+C1 PRACTICE CHECK (leave-one-out on 190 labelled slides; produced by practice_check.py)
+Each labelled slide is hidden in turn, the method is trained on the other 189, and its organ group is predicted.
+"SUPP-02" = accuracy on SUPP-02 slides only (57 of the 67 held-out slides are SUPP-02).
+
+     all  SUPP-02  method
+   77.9%   78.9%  baseline 1-NN, gigapath                      <- Biobase's baseline (reported ~70% on held-out)
+   57.9%   57.8%  baseline 1-NN, hoptimus
+   58.4%   57.0%  baseline 1-NN, biomedclip
+   56.3%   53.9%  baseline 1-NN, dinov2
+   72.6%   81.2%  5-NN vote, gigapath
+   52.6%   52.3%  5-NN vote, hoptimus
+   60.0%   62.5%  5-NN vote, biomedclip
+   48.4%   48.4%  5-NN vote, dinov2
+   86.8%   88.3%  logistic regression, gigapath, C=0.01
+   87.4%   89.1%  logistic regression, gigapath, C=0.1       <- BEST, used for the submission
+   63.2%   62.5%  logistic regression, hoptimus, C=0.01
+   62.6%   61.7%  logistic regression, hoptimus, C=0.1
+   59.5%   64.8%  logistic regression, biomedclip, C=0.01
+   61.1%   64.8%  logistic regression, biomedclip, C=0.1
+   55.3%   63.3%  logistic regression, dinov2, C=0.01
+   61.6%   64.8%  logistic regression, dinov2, C=0.1
+   68.9%   68.0%  logistic regression, hoptimus mean+std of tiles, C=0.01
+   68.9%   68.0%  logistic regression, hoptimus mean+std of tiles, C=0.1
+   64.7%   68.0%  logistic regression, biomedclip mean+std of tiles, C=0.01
+   67.4%   67.2%  logistic regression, biomedclip mean+std of tiles, C=0.1
+   85.3%   85.2%  ensemble gigapath + hoptimus
+   80.0%   82.0%  ensemble gigapath + hoptimus + biomedclip
+   82.1%   83.6%  ensemble gigapath + hoptimus(+std) + biomedclip(+std)
+   77.4%   78.9%  ensemble all four models
+   82.6%   84.4%  logistic regression, gigapath+hoptimus+metadata (sex, supplier, stain)
+
+Conclusion: a logistic-regression classifier trained on the GigaPath slide fingerprints beats copying the
+nearest slide by about 10 points (77.9% -> 87.4%). Adding other models or metadata did not help.
