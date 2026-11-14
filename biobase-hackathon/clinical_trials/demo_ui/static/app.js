@@ -203,6 +203,13 @@ async function researchTrial(node, trial) {
   const status = node.querySelector('.research-status');
   const dates = node.querySelector('.research-dates');
   const sources = node.querySelector('.research-sources');
+  if (button.dataset.researchLoaded === 'true') {
+    const isHidden = sources.classList.toggle('hidden');
+    dates.classList.toggle('hidden', isHidden);
+    button.textContent = isHidden ? 'Show sources' : 'Hide sources';
+    button.setAttribute('aria-expanded', String(!isHidden));
+    return;
+  }
   button.disabled = true;
   button.textContent = 'Searching public sources…';
   status.className = 'research-status';
@@ -232,7 +239,10 @@ async function researchTrial(node, trial) {
     status.textContent = dossier.sources.length
       ? `${dossier.sources.length} source${dossier.sources.length === 1 ? '' : 's'} with direct NCT-specific evidence found. These do not establish eligibility.`
       : 'No fetched source contained a direct NCT-specific evidence passage.';
-    button.textContent = 'Sources found';
+    button.disabled = false;
+    button.dataset.researchLoaded = 'true';
+    button.textContent = 'Hide sources';
+    button.setAttribute('aria-expanded', 'true');
   } catch (error) {
     status.classList.add('failure');
     status.textContent = error.message;

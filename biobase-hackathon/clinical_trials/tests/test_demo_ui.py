@@ -19,6 +19,8 @@ class DemoUiTests(unittest.TestCase):
         self.assertIn('Adds public context from hospital, publication, and sponsor pages', html)
         self.assertNotIn('Evidence checked:', script)
         self.assertIn("fetch('/api/research'", script)
+        self.assertIn("button.dataset.researchLoaded === 'true'", script)
+        self.assertIn("button.textContent = isHidden ? 'Show sources' : 'Hide sources'", script)
         self.assertIn('registry_last_updated: trial.last_update_posted', script)
         self.assertIn('source.evidence_quote', script)
 
