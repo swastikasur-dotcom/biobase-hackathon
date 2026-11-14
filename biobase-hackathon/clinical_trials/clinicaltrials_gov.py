@@ -5,6 +5,7 @@ or later cache results in a database, without changing matching or UI code.
 """
 
 import json
+from datetime import datetime, timezone
 from typing import Callable, Dict, List, Optional
 from urllib.parse import urlencode
 from urllib.request import urlopen
@@ -22,9 +23,11 @@ def _default_get(url):
 
 
 class ClinicalTrialsGovClient:
-    def __init__(self, get_json: Optional[Callable] = None, base_url=BASE_URL):
+    def __init__(self, get_json: Optional[Callable] = None, base_url=BASE_URL, cache=None, now=None):
         self._get_json = get_json or _default_get
         self._base_url = base_url
+        self._cache = cache
+        self._now = now or (lambda: datetime.now(timezone.utc))
 
     def search_open_trials(self, profile: PatientProfile, page_size=20):
         """Find open studies using only a de-identified disease query.
@@ -40,11 +43,19 @@ class ClinicalTrialsGovClient:
             "pageSize": page_size,
             "format": "json",
         }
-        payload = self._get_json(self._base_url + "?" + urlencode(params))
-        return [normalize_study(study) for study in payload.get("studies", [])]
+        url = self._base_url + "?" + urlencode(params)
+        cached = self._cache.get(url) if self._cache else None
+        if cached is None:
+            retrieved_at = self._now().isoformat()
+            payload = self._get_json(url)
+            cached = (payload, retrieved_at)
+            if self._cache:
+                self._cache.set(url, cached)
+        payload, retrieved_at = cached
+        return [normalize_study(study, retrieved_at=retrieved_at) for study in payload.get("studies", [])]
 
 
-def normalize_study(study: Dict) -> TrialRecord:
+def normalize_study(study: Dict, retrieved_at=None) -> TrialRecord:
     """Map the API's nested schema to the small stable UI contract."""
     protocol = study.get("protocolSection", {})
     identification = protocol.get("identificationModule", {})
@@ -56,13 +67,18 @@ def normalize_study(study: Dict) -> TrialRecord:
     interventions = [item.get("name", "") for item in design.get("interventions", []) if item.get("name")]
     locations = []
     for location in contacts.get("locations", []):
-        locations.append({
+        normalized = {
             "facility": location.get("facility", ""),
             "city": location.get("city", ""),
             "state": location.get("state", ""),
             "country": location.get("country", ""),
             "zip": location.get("zip", ""),
-        })
+        }
+        geo = location.get("geoPoint") or {}
+        if geo.get("lat") is not None and geo.get("lon") is not None:
+            normalized["latitude"] = geo["lat"]
+            normalized["longitude"] = geo["lon"]
+        locations.append(normalized)
     nct_id = identification.get("nctId", "")
     return TrialRecord(
         nct_id=nct_id,
@@ -76,4 +92,6 @@ def normalize_study(study: Dict) -> TrialRecord:
         maximum_age=eligibility.get("maximumAge"),
         locations=locations,
         official_url="https://clinicaltrials.gov/study/" + nct_id if nct_id else None,
+        retrieved_at=retrieved_at,
+        last_update_posted=(status.get("studyLastUpdatePostDateStruct") or {}).get("date"),
     )
