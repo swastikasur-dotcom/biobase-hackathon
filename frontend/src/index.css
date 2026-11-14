@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+body {
+  @apply bg-slate-50 text-slate-900 antialiased;
+}
+
+/* ---------- Motion ---------- */
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Smooth hover, focus and press feedback on every interactive element. */
+@layer base {
+  button, a, summary, label, select, input, textarea {
+    transition:
+      background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease,
+      box-shadow 0.15s ease, opacity 0.15s ease, transform 0.12s ease;
+  }
+  button:not(:disabled):active { transform: scale(0.97); }
+}
+
+/* A whole page fading up when you navigate (the wrapper is keyed by route). */
+.page-enter { animation: fade-up 0.3s ease-out both; }
+
+/* Content that appears after loading, or swaps in place. */
+.fade-in { animation: fade-in 0.25s ease-out both; }
+[role="alert"], [role="status"] { animation: fade-up 0.25s ease-out both; }
+details[open] > :not(summary) { animation: fade-in 0.25s ease-out both; }
+
+/* Cards that rise slightly on hover. */
+.lift { transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; }
+.lift:hover { transform: translateY(-2px); box-shadow: 0 6px 16px -6px rgb(15 23 42 / 0.25); }
+
+/* Children appear one after another (capped so long grids do not feel slow). */
+.stagger > * { animation: fade-up 0.35s ease-out both; }
+.stagger > :nth-child(2) { animation-delay: 0.03s; }
+.stagger > :nth-child(3) { animation-delay: 0.06s; }
+.stagger > :nth-child(4) { animation-delay: 0.09s; }
+.stagger > :nth-child(5) { animation-delay: 0.12s; }
+.stagger > :nth-child(6) { animation-delay: 0.15s; }
+.stagger > :nth-child(7) { animation-delay: 0.18s; }
+.stagger > :nth-child(8) { animation-delay: 0.21s; }
+.stagger > :nth-child(9) { animation-delay: 0.24s; }
+.stagger > :nth-child(10) { animation-delay: 0.27s; }
+.stagger > :nth-child(n + 11) { animation-delay: 0.3s; }
+
+/* People who ask for less motion get none. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

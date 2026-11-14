@@ -1,0 +1,9 @@
+fastapi>=0.115
+uvicorn>=0.30
+# tests
+pytest>=8
+httpx>=0.27
+
+# Data export script (frontend/scripts/export_data.py): 2D projection of the GigaPath slide embeddings
+numpy>=1.24
+scikit-learn>=1.3

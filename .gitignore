@@ -1,0 +1,35 @@
+# Hackathon data (large, not redistributed)
+/pack_reports/
+/pack_slides/
+/tilepack/
+/tiles20x/
+/thumbnails/
+/data/Biobase/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Misc
+.DS_Store
+.Rhistory
+
+# Symlinks to the data folders (dev only)
+frontend/public/thumbnails
+frontend/public/tiles20x
+
+frontend/test-results/
+frontend/playwright-report/
+
+# Backend
+backend/.venv/
+__pycache__/
+.pytest_cache/
+
+# Generated from the hackathon data by `npm run export-data` (reports, slide metadata); not redistributed
+frontend/public/data/
+
+# Paperclip literature dataset copied into frontend/ (third-party paper content; its README also overwrote the Vite one)
+frontend/README.md
+frontend/images/
+frontend/*.csv
