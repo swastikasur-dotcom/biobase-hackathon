@@ -239,7 +239,7 @@ function renderResearchSources(container, sources) {
   };
   const descriptions = {
     recruitment_or_site: 'Why open it: it may list a participating centre, local contact details, or recruitment information.',
-    publication_or_protocol: 'Why open it: it may explain the treatment, study design, or related evidence. Check the NCT ID in the source before treating it as trial-specific.',
+    publication_or_protocol: 'Why open it: it may explain this trial’s treatment, study design, or published evidence.',
     sponsor_update: 'Why open it: it may report a sponsor milestone, enrollment update, or study result.',
     other_public_context: 'Why open it: it is an additional non-registry mention of the trial. Verify important facts with the study site.'
   };
@@ -261,12 +261,6 @@ function renderResearchSources(container, sources) {
     snippet.textContent = source.snippet || 'Keenable found this page for the trial identifier.';
     const meta = document.createElement('small');
     meta.textContent = [source.domain, source.published_at ? `Published ${source.published_at.slice(0, 10)}` : null].filter(Boolean).join(' · ');
-    if (!source.trial_specific) {
-      const context = document.createElement('span');
-      context.className = 'related-context';
-      context.textContent = 'Related context — NCT ID not visible in Keenable’s extracted result';
-      article.append(context);
-    }
     article.append(category, purpose, link, snippet, meta);
     container.append(article);
   }

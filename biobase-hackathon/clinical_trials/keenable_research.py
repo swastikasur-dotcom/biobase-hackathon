@@ -36,6 +36,12 @@ def _source_priority(source):
     return 2
 
 
+def _mentions_trial_identifier(title, snippet, nct_id):
+    """Require the NCT identifier in retrieved content, not merely a search URL."""
+    extracted_text = " ".join((str(title or ""), str(snippet or ""))).upper()
+    return nct_id in extracted_text
+
+
 class KeenableTrialResearchProvider:
     """Create a cited public-web dossier from an NCT identifier only."""
 
@@ -78,9 +84,10 @@ class KeenableTrialResearchProvider:
                 parsed = urlparse(url)
                 if parsed.scheme not in ("http", "https") or not parsed.netloc or url in seen_urls:
                     continue
-                seen_urls.add(url)
                 snippet = str(result.snippet or "").strip()
-                extracted_text = " ".join((str(result.title or ""), url, snippet)).upper()
+                if not _mentions_trial_identifier(result.title, snippet, nct_id):
+                    continue
+                seen_urls.add(url)
                 collected.append({
                     "title": str(result.title or parsed.netloc).strip(),
                     "url": url,
@@ -88,7 +95,7 @@ class KeenableTrialResearchProvider:
                     "snippet": snippet,
                     "published_at": result.published_at,
                     "category": _source_category(str(result.title or ""), url, snippet),
-                    "trial_specific": nct_id in extracted_text,
+                    "trial_specific": True,
                 })
 
         collected.sort(key=_source_priority)

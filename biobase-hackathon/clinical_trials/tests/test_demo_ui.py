@@ -17,6 +17,7 @@ class DemoUiTests(unittest.TestCase):
         self.assertIn("radius_miles: Number(data.get('radius_miles'))", script)
         self.assertIn('Find independent sources', html)
         self.assertIn('participating-centre pages', html)
+        self.assertIn('Sources must visibly mention this NCT ID', html)
         self.assertIn("fetch('/api/research'", script)
         self.assertIn("{nct_id: trial.nct_id, title: trial.title}", script)
 

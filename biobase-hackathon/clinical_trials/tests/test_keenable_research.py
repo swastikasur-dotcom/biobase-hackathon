@@ -14,16 +14,16 @@ class FakeKeenableClient:
         self.calls.append((query, options))
         if "recruiting" in query:
             results = [SimpleNamespace(
-                title="Cancer Center trial listing",
+                title="Cancer Center trial listing for NCT06058377",
                 url="https://hospital.example/trials/NCT06058377",
-                snippet="This study is recruiting at our cancer center.",
+                snippet="NCT06058377 is recruiting at our cancer center.",
                 published_at="2026-10-01T00:00:00Z",
             )]
         else:
             results = [SimpleNamespace(
-                title="Protocol publication",
+                title="Protocol publication for NCT06058377",
                 url="https://pubmed.ncbi.nlm.nih.gov/12345/",
-                snippet="The published protocol describes the study design.",
+                snippet="The published protocol describes the NCT06058377 study design.",
                 published_at="2025-02-01T00:00:00Z",
             )]
         return SimpleNamespace(results=results)
@@ -45,11 +45,24 @@ class KeenableResearchTests(unittest.TestCase):
             {"recruitment_or_site", "publication_or_protocol"},
         )
         self.assertIn("pubmed.ncbi.nlm.nih.gov", dossier["sources"][0]["domain"])
-        self.assertFalse(dossier["sources"][0]["trial_specific"])
+        self.assertTrue(dossier["sources"][0]["trial_specific"])
         self.assertTrue(dossier["sources"][1]["trial_specific"])
         self.assertTrue(all("NCT06058377" in query for query, _ in client.calls))
         expected_exclusions = ["clinicaltrials.gov", "clinicaltrialsfind.com", "eligibility.info"]
         self.assertTrue(all(options["exclude_domains"] == expected_exclusions for _, options in client.calls))
+
+    def test_drops_results_that_only_match_a_search_url_or_other_trial(self):
+        class OffTargetClient:
+            def search(self, query, **options):
+                return SimpleNamespace(results=[SimpleNamespace(
+                    title="Unrelated article NCT00496288",
+                    url="https://pmc.ncbi.nlm.nih.gov/?term=NCT06058377",
+                    snippet="This article discusses a different NCT00496288 trial.",
+                    published_at=None,
+                )])
+
+        dossier = KeenableTrialResearchProvider(client=OffTargetClient()).research("NCT06058377")
+        self.assertEqual(dossier["sources"], [])
 
     def test_caches_dossier_by_public_trial_id(self):
         client = FakeKeenableClient()
