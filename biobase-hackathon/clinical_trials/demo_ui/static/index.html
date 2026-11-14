@@ -25,7 +25,7 @@
           <div><p class="step">01</p><h2>Patient profile</h2></div>
           <button class="text-button" id="resetButton" type="button">Reset example</button>
         </div>
-        <p class="privacy-note">The report and clinical facts stay local. Only organ, histology, and an optional city/region are sent to ClinicalTrials.gov.</p>
+        <p class="privacy-note">The report and detailed clinical facts stay local. Organ, histology, and an optional city/ZIP are sent to ClinicalTrials.gov; the city/ZIP is also sent to OpenStreetMap for distance calculation. Do not enter an exact home address.</p>
         <div class="source-tabs" role="group" aria-label="Patient profile input method">
           <button class="source-tab active" id="reportMode" type="button">Paste a report</button>
           <button class="source-tab" id="manualMode" type="button">Enter facts manually</button>
@@ -81,7 +81,19 @@ Synthetic example.</textarea>
           <label>Prior treatment for this diagnosis
             <select name="treatment_naive"><option value="unknown">Unknown / not available</option><option value="yes" selected>No prior treatment</option><option value="no">Has received treatment</option></select>
           </label>
-          <label>Preferred city or region <span class="optional">Optional</span><input name="location_query" placeholder="e.g. Palo Alto, CA"></label>
+          <div class="two-col location-inputs">
+            <label>Preferred city or ZIP <span class="optional">Optional</span><input name="location_query" placeholder="e.g. Palo Alto, CA"></label>
+            <label>Travel radius
+              <select name="radius_miles">
+                <option value="10">10 miles</option>
+                <option value="25">25 miles</option>
+                <option value="50" selected>50 miles</option>
+                <option value="100">100 miles</option>
+                <option value="250">250 miles</option>
+              </select>
+            </label>
+          </div>
+          <p class="geocoder-note">Location lookup © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>. Radius is measured straight-line to listed trial sites.</p>
           <div class="search-row">
             <label>Trials to fetch<select name="page_size"><option>5</option><option selected>10</option><option>20</option></select></label>
             <button class="primary-button" type="submit"><span>Search trials</span><span aria-hidden="true">→</span></button>

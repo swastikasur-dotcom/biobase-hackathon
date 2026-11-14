@@ -1,11 +1,18 @@
 import unittest
 from unittest.mock import patch
 
-from clinical_trials.demo_ui.server import run_parse_report, run_search
+from clinical_trials.demo_ui.server import STATIC_DIR, run_parse_report, run_search
 from clinical_trials.models import TrialRecord
 
 
 class DemoUiTests(unittest.TestCase):
+    def test_demo_exposes_human_location_and_radius_inputs(self):
+        html = (STATIC_DIR / "index.html").read_text()
+        script = (STATIC_DIR / "app.js").read_text()
+        self.assertIn('name="location_query"', html)
+        self.assertIn('name="radius_miles"', html)
+        self.assertIn("radius_miles: Number(data.get('radius_miles'))", script)
+
     def test_synthetic_report_can_prefill_profile(self):
         report = """Patient: F, age band 45-49 | Report year: 2024
 SPECIMEN: Left breast, lumpectomy

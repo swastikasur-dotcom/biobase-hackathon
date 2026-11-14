@@ -43,7 +43,10 @@ function profileFromForm() {
     tumor_size_mm: optionalNumber(data, 'tumor_size_mm'),
     treatment_naive: treatmentValue === 'unknown' ? null : treatmentValue === 'yes',
     biomarkers,
-    location: locationQuery ? {query: locationQuery} : {},
+    location: locationQuery ? {
+      query: locationQuery,
+      radius_miles: Number(data.get('radius_miles'))
+    } : {},
     fact_sources: {histology: 'demo_input', stage: 'demo_input', biomarkers: 'demo_input'}
   };
 }

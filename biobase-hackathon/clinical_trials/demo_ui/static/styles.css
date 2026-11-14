@@ -59,7 +59,9 @@ legend { color: #4d5a54; font-size: 12px; font-weight: 700; margin-bottom: 8px; 
 .check-row input { width: auto; accent-color: var(--green); }
 .optional { margin-left: 4px; color: #8d9792; font-weight: 500; }
 details summary { cursor: pointer; color: var(--green); font-size: 12px; font-weight: 750; }
-.location-inputs { margin-top: 12px; }
+.location-inputs { margin-top: 2px; }
+.geocoder-note { margin: -8px 0 0; color: #7a8580; font-size: 10px; line-height: 1.45; }
+.geocoder-note a { color: var(--green); }
 .search-row { display: grid; grid-template-columns: 120px 1fr; align-items: end; gap: 12px; margin-top: 3px; }
 .primary-button { min-height: 43px; border: 0; border-radius: 10px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; color: #fff; background: var(--green); cursor: pointer; font-weight: 750; box-shadow: 0 8px 18px rgba(23,107,75,.18); }
 .primary-button:hover { background: var(--green-dark); }
