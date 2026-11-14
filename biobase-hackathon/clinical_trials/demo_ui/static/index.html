@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trial Match — Local Demo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">DF</span><span>DNA Forge</span></div>
+    <div class="demo-badge">Local demo · temporary UI</div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">PATHOLOGY-INFORMED DISCOVERY</p>
+      <h1>Find trials worth reviewing.</h1>
+      <p class="lede">See how a de-identified pathology profile becomes an explainable ClinicalTrials.gov shortlist.</p>
+    </section>
+
+    <div class="workspace">
+      <aside class="profile-panel">
+        <div class="section-heading">
+          <div><p class="step">01</p><h2>Patient profile</h2></div>
+          <button class="text-button" id="resetButton" type="button">Reset example</button>
+        </div>
+        <p class="privacy-note">The report and detailed clinical facts stay local. Organ, histology, and an optional city/ZIP are sent to ClinicalTrials.gov; the city/ZIP is also sent to OpenStreetMap for distance calculation. Do not enter an exact home address.</p>
+        <div class="source-tabs" role="group" aria-label="Patient profile input method">
+          <button class="source-tab active" id="reportMode" type="button">Paste a report</button>
+          <button class="source-tab" id="manualMode" type="button">Enter facts manually</button>
+        </div>
+        <section id="reportInput" class="report-input">
+          <label>Pathology report
+            <textarea id="reportText" rows="9">Patient: F, age band 45-49 | Report year: 2024
+SPECIMEN: Left breast, lumpectomy
+FINAL DIAGNOSIS:
+Invasive ductal carcinoma.
+Histologic type: Invasive ductal carcinoma
+Tumor size: 24 mm
+Nottingham grade: 3
+Lymph nodes: 2 of 12 positive
+Biomarkers: ER negative; PR negative; HER2 negative
+Pathologic stage (AJCC 8th ed.): pT2 pN1
+GROSS DESCRIPTION:
+Synthetic example.</textarea>
+          </label>
+          <button class="secondary-button" id="parseReport" type="button">Parse report into profile</button>
+          <p id="parseStatus" class="parse-status">Uses the synthetic report format from Task A. Review anything extracted below.</p>
+        </section>
+        <div class="profile-divider"><span id="profileDividerText">Review extracted profile</span></div>
+        <form id="profileForm">
+          <label>Primary organ<input name="primary_organ" required value="breast"></label>
+          <label>Histology<input name="histology" value="invasive ductal carcinoma"></label>
+          <div class="two-col">
+            <label>Age<input name="age_years" type="number" min="0" max="130" value="47"></label>
+            <label>Sex<select name="sex"><option value="female">Female</option><option value="male">Male</option><option value="unknown">Unknown</option></select></label>
+          </div>
+          <label>Overall stage
+            <select name="stage">
+              <option value="">Unknown / not available</option>
+              <option>Stage 0</option>
+              <option>Stage I</option>
+              <option selected>Stage II</option>
+              <option>Stage III</option>
+              <option>Stage IV</option>
+            </select>
+          </label>
+          <div class="two-col">
+            <label>Tumor size (mm)<input name="tumor_size_mm" type="number" min="0" step="0.1" value="24"></label>
+            <label>Metastatic status<select name="metastatic_status"><option value="non_metastatic">Non-metastatic</option><option value="metastatic">Metastatic</option><option value="unknown">Unknown</option></select></label>
+          </div>
+          <fieldset>
+            <legend>Biomarkers</legend>
+            <div class="three-col">
+              <label>ER<select name="ER"><option>negative</option><option>positive</option><option>unknown</option></select></label>
+              <label>PR<select name="PR"><option>negative</option><option>positive</option><option>unknown</option></select></label>
+              <label>HER2<select name="HER2"><option>negative</option><option>positive</option><option>mutated</option><option>unknown</option></select></label>
+            </div>
+          </fieldset>
+          <label>Prior treatment for this diagnosis
+            <select name="treatment_naive"><option value="unknown">Unknown / not available</option><option value="yes" selected>No prior treatment</option><option value="no">Has received treatment</option></select>
+          </label>
+          <section class="location-filter">
+            <label class="radius-toggle" for="useRadius">
+              <span><strong>Use travel radius</strong><small id="radiusStatus">Off — location does not affect results</small></span>
+              <input id="useRadius" name="use_radius" type="checkbox" role="switch" aria-controls="radiusFields" aria-expanded="false">
+            </label>
+            <div id="radiusFields" class="two-col location-inputs hidden">
+              <label>Preferred city or ZIP<input name="location_query" placeholder="e.g. Palo Alto, CA" disabled></label>
+              <label>Maximum distance
+                <select name="radius_miles" disabled>
+                  <option value="10">10 miles</option>
+                  <option value="25">25 miles</option>
+                  <option value="50" selected>50 miles</option>
+                  <option value="100">100 miles</option>
+                  <option value="250">250 miles</option>
+                </select>
+              </label>
+            </div>
+            <p id="radiusNote" class="geocoder-note hidden">Location lookup © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>. Radius is measured straight-line to listed trial sites.</p>
+          </section>
+          <div class="search-row">
+            <label>Trials to fetch<select name="page_size"><option>5</option><option selected>10</option><option>20</option></select></label>
+            <button class="primary-button" type="submit"><span>Search trials</span><span aria-hidden="true">→</span></button>
+          </div>
+        </form>
+      </aside>
+
+      <section class="results-panel" aria-live="polite">
+        <div class="section-heading results-heading">
+          <div><p class="step">02</p><h2>Review shortlist</h2></div>
+          <label class="toggle"><input id="showExcluded" type="checkbox"><span>Show trials excluded by patient profile</span></label>
+        </div>
+        <div id="mismatchExplanation" class="mismatch-explanation hidden"></div>
+        <div id="emptyState" class="empty-state">
+          <div class="orbit"><span></span></div>
+          <h3>Ready to search</h3>
+          <p>Use the example profile, or change any value to see how evidence affects the shortlist.</p>
+        </div>
+        <div id="loadingState" class="loading-state hidden"><span class="spinner"></span><p>Reading current trial records…</p></div>
+        <div id="errorState" class="error-state hidden"></div>
+        <div id="summary" class="summary hidden"></div>
+        <div id="results" class="results-list"></div>
+      </section>
+    </div>
+  </main>
+
+  <template id="trialTemplate">
+    <article class="trial-card">
+      <div class="card-topline"><span class="status-pill"></span><a class="nct-link" target="_blank" rel="noopener"></a></div>
+      <h3 class="trial-title"></h3>
+      <p class="conditions"></p>
+      <div class="evidence-grid"><div><h4>Evidence</h4><ul class="matched-list"></ul></div><div class="question-column"><h4>Confirm to refine</h4><div class="questions"></div></div></div>
+      <div class="exclusions hidden"><h4>Why our filters removed it</h4><ul></ul></div>
+      <div class="site-line hidden"></div>
+      <section class="research-panel">
+        <div class="research-heading">
+          <div><h4>Independent public sources</h4><p>Finds participating-centre pages with possible recruitment contacts, trial-specific papers or protocols, and sponsor updates. Sources must visibly mention this NCT ID; ClinicalTrials.gov mirrors are excluded. This uses the NCT ID only—not patient information.</p></div>
+          <button class="research-button" type="button">Find independent sources</button>
+        </div>
+        <p class="research-status hidden"></p>
+        <p class="research-dates hidden"></p>
+        <div class="research-sources hidden"></div>
+      </section>
+      <details class="criteria-details"><summary>Official eligibility text</summary><pre></pre></details>
+      <p class="source-line"></p>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
