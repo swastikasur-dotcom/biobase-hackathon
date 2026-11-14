@@ -21,13 +21,15 @@ facts—not the pathology report itself and never a patient name or MRN.
   "metastatic_status": "non_metastatic",
   "tumor_size_mm": 24,
   "treatment_naive": true,
-  "biomarkers": {"ER": "negative", "PR": "negative", "HER2": "negative"}
+  "biomarkers": {"ER": "negative", "PR": "negative", "HER2": "negative"},
+  "location": {"query": "Palo Alto, CA", "radius_miles": 50}
 }
 ```
 
 The `ClinicalTrialsGovClient` sends only the disease descriptors needed to search
-the official registry. Age, sex, biomarkers, stage, location, and pathology facts
-stay local. It returns normalized `TrialRecord` objects with retrieval provenance.
+the official registry, plus the optional city/ZIP used to narrow registry results.
+Age, sex, biomarkers, stage, and detailed pathology facts stay local. It returns
+normalized `TrialRecord` objects with retrieval provenance.
 
 `assess()` conservatively recognizes organ, histology, ER/PR/HER2, overall stage,
 metastatic status, minimum tumor size, and treatment-naive requirements. A fact it
@@ -100,14 +102,33 @@ python3 -m clinical_trials.demo_ui.server
 
 Open `http://127.0.0.1:8765`. The demo can parse a pasted synthetic-format Task A
 report into an editable profile or start from manually entered facts. The report
-stays local; organ, histology, and an optional city/region are used for the live
-ClinicalTrials.gov query. The UI renders evidence, explains trials excluded by the
-patient profile, and posts Yes/No/Unknown answers through the stable contract.
+stays local; organ, histology, and an optional city/ZIP are used for the live
+ClinicalTrials.gov query. When a travel radius is selected, the demo resolves the
+city/ZIP and measures straight-line distance to each registry site. The UI renders
+evidence, explains trials excluded by the patient profile, and posts
+Yes/No/Unknown answers through the stable contract.
 Stop it with `Ctrl-C`. Do not enter real identifying patient information.
+
+The local demo uses the public OpenStreetMap Nominatim service for low-volume,
+user-triggered place lookup and caches results for 30 days. It deliberately asks
+for city/ZIP rather than a home address. This public endpoint is not a production
+dependency: it is limited to one request per second, requires attribution and an
+identifying User-Agent, prohibits autocomplete, and may withdraw access. Replace
+the injected geocoder for a production deployment.
+
+## Keenable boundary
+
+The core shortlist is now stable enough for a narrow Keenable integration. Add it
+behind a separate `TrialResearchProvider`-style adapter after matching, not inside
+the eligibility rules. Send only public trial identifiers and titles—not the
+patient profile or report—and use the result to show cited sponsor recruitment
+pages, trial-center pages, and recent public context. Keenable evidence may help a
+human investigate a shortlisted trial but must not silently change its match
+classification.
 
 ## Deferred demo work
 
 After the end-to-end frontend flow is connected, add synthetic patient profiles
 covering strong matches, biomarker conflicts, stage conflicts, missing facts, and
-location tradeoffs. Keenable should then be added as a separate public-web research
-panel; its results must not change the ClinicalTrials.gov match assessment.
+location tradeoffs. Keenable research should remain a separate public-web panel;
+its results must not change the ClinicalTrials.gov match assessment.
