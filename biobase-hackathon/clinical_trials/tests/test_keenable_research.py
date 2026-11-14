@@ -40,8 +40,11 @@ class KeenableResearchTests(unittest.TestCase):
 
         self.assertEqual(dossier["nct_id"], "NCT06058377")
         self.assertEqual(len(dossier["sources"]), 2)
-        self.assertEqual(dossier["sources"][0]["category"], "recruitment_or_site")
-        self.assertEqual(dossier["sources"][1]["category"], "publication_or_protocol")
+        self.assertEqual(
+            {source["category"] for source in dossier["sources"]},
+            {"recruitment_or_site", "publication_or_protocol"},
+        )
+        self.assertIn("pubmed.ncbi.nlm.nih.gov", dossier["sources"][0]["domain"])
         self.assertTrue(all("NCT06058377" in query for query, _ in client.calls))
         expected_exclusions = ["clinicaltrials.gov", "clinicaltrialsfind.com", "eligibility.info"]
         self.assertTrue(all(options["exclude_domains"] == expected_exclusions for _, options in client.calls))
@@ -51,7 +54,7 @@ class KeenableResearchTests(unittest.TestCase):
         provider = KeenableTrialResearchProvider(client=client, cache=TTLCache(ttl_seconds=60))
         provider.research("NCT06058377")
         provider.research("NCT06058377")
-        self.assertEqual(len(client.calls), 2)
+        self.assertEqual(len(client.calls), 3)
 
     def test_rejects_non_nct_input(self):
         provider = KeenableTrialResearchProvider(client=FakeKeenableClient())

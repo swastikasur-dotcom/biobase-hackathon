@@ -125,10 +125,11 @@ the injected geocoder for a production deployment.
 {"nct_id": "NCT06058377", "title": "Public trial title"}
 ```
 
-It runs two narrow searches for recruitment/site/sponsor context and
-protocol/publication context, excludes ClinicalTrials.gov and low-value registry
+It runs three narrow searches for institutional recruitment contacts, scholarly
+publication context, and sponsor updates; excludes ClinicalTrials.gov and low-value registry
 mirror domains, deduplicates URLs, and returns cited snippets grouped by source
-type. The patient profile, report, match facts, location, and clarification
+type. Institutional, government, and scholarly domains are ranked first. The
+patient profile, report, match facts, location, and clarification
 answers are never sent to Keenable. Search queries and results may be retained by
 Keenable under its default data policy, which is why this boundary is enforced.
 

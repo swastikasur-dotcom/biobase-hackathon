@@ -27,6 +27,15 @@ def _source_category(title, url, snippet):
     return "other_public_context"
 
 
+def _source_priority(source):
+    host = source["domain"].lower()
+    if host.endswith((".edu", ".gov")) or any(value in host for value in ("pubmed.", "ncbi.nlm.nih.gov")):
+        return 0
+    if host.endswith(".org"):
+        return 1
+    return 2
+
+
 class KeenableTrialResearchProvider:
     """Create a cited public-web dossier from an NCT identifier only."""
 
@@ -50,8 +59,9 @@ class KeenableTrialResearchProvider:
                 return cached
 
         queries = [
-            '"{}" recruiting sponsor hospital cancer center'.format(nct_id),
-            '"{}" protocol publication results'.format(nct_id),
+            '"{}" recruiting "principal investigator" OR "contact"'.format(nct_id),
+            '"{}" site:pubmed.ncbi.nlm.nih.gov OR site:pmc.ncbi.nlm.nih.gov'.format(nct_id),
+            '"{}" sponsor announces results'.format(nct_id),
         ]
         collected = []
         seen_urls = set()
@@ -78,6 +88,8 @@ class KeenableTrialResearchProvider:
                     "published_at": result.published_at,
                     "category": _source_category(str(result.title or ""), url, snippet),
                 })
+
+        collected.sort(key=_source_priority)
 
         dossier = {
             "nct_id": nct_id,
