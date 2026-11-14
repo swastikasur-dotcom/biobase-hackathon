@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
-import type { Cohorts, Criterion, Report, SimilarMap, SlidesFile, TilesMap, UmapFile, PaperclipFile } from '../types'
+import type { Cohorts, Criterion, JevFile, Report, SimilarMap, SlidesFile, TilesMap, UmapFile, PaperclipFile } from '../types'
 
 async function fetchJson<T>(name: string): Promise<T> {
   const res = await fetch(`${import.meta.env.BASE_URL}data/${name}`)
@@ -16,6 +16,10 @@ export const useCriteria = () =>
 
 export const useCohorts = () =>
   useQuery({ queryKey: ['cohorts'], queryFn: () => fetchJson<Cohorts>('cohorts.json'), ...staticQuery })
+
+/** Jev's yes-probabilities. A load failure is not fatal: callers just get no scores. */
+export const useJev = () =>
+  useQuery({ queryKey: ['jev'], queryFn: () => fetchJson<JevFile>('jev.json'), ...staticQuery })
 
 export const useReports = () =>
   useQuery({ queryKey: ['reports'], queryFn: () => fetchJson<Report[]>('reports.json'), ...staticQuery })

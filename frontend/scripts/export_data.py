@@ -73,6 +73,28 @@ def export_task_a():
     write("reports.json", out_reports)
 
 
+def export_jev():
+    """Jev's yes-probabilities per criterion and report (task_a/jev_results, made by task_a/jev_run.py).
+
+    Written as {criterion: {report: p_yes}}, keeping only p >= 0.05; a missing entry means "below 5%".
+    Writes {} if the results are not there, and the app then simply hides the Jev column.
+    """
+    raw = os.path.join(TASK_A, "jev_results", "raw.jsonl")
+    out = {}
+    if os.path.exists(raw):
+        for line in open(raw):
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            for cid, ans in row["answers"].items():
+                p = ans.get("noul")
+                if p is not None and p >= 0.05:
+                    out.setdefault(cid, {})[row["id"]] = round(p, 2)
+    else:
+        print("no Jev results found; writing an empty jev.json")
+    write("jev.json", out)
+
+
 def export_slides():
     manifest = json.load(open(os.path.join(BIOBASE, "pack_slides", "slides_manifest.json")))
 
@@ -231,6 +253,7 @@ def export_tiles():
 def main():
     os.makedirs(OUT, exist_ok=True)
     export_task_a()
+    export_jev()
     slides, preds, similar = export_slides()
     export_umap()
     export_paperclip()

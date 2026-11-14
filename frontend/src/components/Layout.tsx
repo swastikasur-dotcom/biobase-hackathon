@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import ModelsModal from './ModelsModal'
 
 const link = ({ isActive }: { isActive: boolean }) =>
   `rounded px-3 py-1.5 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 ${
@@ -7,6 +9,7 @@ const link = ({ isActive }: { isActive: boolean }) =>
 
 export default function Layout() {
   const { pathname } = useLocation()
+  const [showModels, setShowModels] = useState(false)
   return (
     <div className="min-h-screen">
       <a
@@ -29,11 +32,19 @@ export default function Layout() {
           <NavLink to="/slides/map" className={link}>
             Slide map
           </NavLink>
-          <NavLink to="/about" className={(s) => `${link(s)} sm:ml-auto`}>
+          <button
+            type="button"
+            onClick={() => setShowModels(true)}
+            className="rounded px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 sm:ml-auto"
+          >
+            About the models
+          </button>
+          <NavLink to="/about" className={link}>
             About the data
           </NavLink>
         </nav>
       </header>
+      {showModels && <ModelsModal onClose={() => setShowModels(false)} />}
       <main id="main" tabIndex={-1} className="mx-auto max-w-6xl px-4 py-6">
         <div key={pathname} className="page-enter">
           <Outlet />

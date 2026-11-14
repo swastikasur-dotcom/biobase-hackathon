@@ -23,7 +23,7 @@ export default function Home() {
           to="/patients"
           title="Find patients"
           steps="Task A"
-          body="Upload a pathology report to see which of 30 clinical criteria it meets and why, with a plain-language summary and similar reports. Or browse the matching cohorts and export them."
+          body="Browse patient cohorts that meet each of 30 clinical trial criteria and export them. You can also analyse a single pathology report to see which criteria it meets and why."
         />
         <Card
           to="/slides"

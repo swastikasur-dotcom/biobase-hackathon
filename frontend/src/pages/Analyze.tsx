@@ -11,7 +11,7 @@ import type { ResultLocationState } from '../types'
 const MAX_BYTES = 200_000
 
 export default function Analyze() {
-  useDocumentTitle('Find patients')
+  useDocumentTitle('Analyse a pathology report')
   const reports = useReports()
   const navigate = useNavigate()
   const { text, setText } = useDraft()
@@ -50,7 +50,7 @@ export default function Analyze() {
 
   return (
     <div>
-      <Breadcrumbs items={[{ label: 'Find patients' }]} />
+      <Breadcrumbs items={[{ label: 'Find patients', to: '/patients' }, { label: 'Analyse a report' }]} />
       <h1 className="text-2xl font-semibold">Analyse a pathology report</h1>
       <p className="mt-1 max-w-2xl text-slate-600">
         Upload or paste a report. It is read by the same rules used for the hackathon search, categorised against the 30
@@ -144,7 +144,7 @@ export default function Analyze() {
 
       <p className="mt-10 text-sm text-slate-600">
         Prefer to start from a criterion?{' '}
-        <Link to="/patients/browse" className="text-blue-700 hover:underline">
+        <Link to="/patients" className="text-blue-700 hover:underline">
           Browse cohorts
         </Link>
         .

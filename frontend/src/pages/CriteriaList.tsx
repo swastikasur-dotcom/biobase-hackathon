@@ -8,7 +8,7 @@ import { criterionOrgans, titleCase } from '../lib/organs'
 import type { Criterion } from '../types'
 
 export default function CriteriaList() {
-  useDocumentTitle('Browse cohorts')
+  useDocumentTitle('Find patients')
   const criteria = useCriteria()
   const cohorts = useCohorts()
   const reports = useReportIndex()
@@ -26,11 +26,18 @@ export default function CriteriaList() {
 
   return (
     <div>
-      <Breadcrumbs items={[{ label: 'Find patients', to: '/patients' }, { label: 'Browse cohorts' }]} />
-      <h1 className="text-2xl font-semibold">Choose a criterion</h1>
-      <p className="mt-1 text-slate-600">
-        Each criterion lists the matching pathology reports among the 979 test reports.
-      </p>
+      <Breadcrumbs items={[{ label: 'Find patients' }]} />
+      <header className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">Browse cohorts</h1>
+          <p className="mt-1 max-w-2xl text-slate-600">
+            Choose a trial criterion to see the matching pathology reports among the 979 test reports, then export the cohort.
+          </p>
+        </div>
+        <Link to="/patients/analyze" className="rounded bg-slate-900 px-3 py-1.5 text-sm font-medium text-white">
+          Analyse a pathology report
+        </Link>
+      </header>
       <div className="mt-6">
         <Status queries={[criteria, cohorts, reports]}>
           {groups.map(([organ, items]) => (

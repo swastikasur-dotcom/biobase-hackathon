@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
 import About from './pages/About'
 import AnalysisResultPage from './pages/AnalysisResultPage'
@@ -25,9 +25,10 @@ export default function App() {
           <Routes>
             <Route element={<Layout />}>
               <Route index element={<Home />} />
-              <Route path="patients" element={<Analyze />} />
+              <Route path="patients" element={<CriteriaList />} />
+              <Route path="patients/analyze" element={<Analyze />} />
               <Route path="patients/result" element={<AnalysisResultPage />} />
-              <Route path="patients/browse" element={<CriteriaList />} />
+              <Route path="patients/browse" element={<Navigate to="/patients" replace />} />
               <Route path="patients/:criterionId" element={<Cohort />} />
               <Route path="patients/:criterionId/:reportId" element={<ReportDetail />} />
               <Route path="slides" element={<SlideBrowser />} />

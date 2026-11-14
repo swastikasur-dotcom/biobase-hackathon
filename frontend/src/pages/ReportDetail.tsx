@@ -1,8 +1,10 @@
 import { Link, useParams } from 'react-router-dom'
 import { useDocumentTitle } from '../lib/useDocumentTitle'
 import Breadcrumbs from '../components/Breadcrumbs'
+import JevBadge from '../components/JevBadge'
 import Status from '../components/Status'
-import { useCriteria, useReportIndex } from '../data/api'
+import { useCriteria, useJev, useReportIndex } from '../data/api'
+import { jevScore } from '../lib/jev'
 
 const META = new Set(['sex', 'age_band', 'report_year', 'specimen', 'organ'])
 
@@ -11,6 +13,7 @@ export default function ReportDetail() {
   useDocumentTitle(`Report ${reportId}`)
   const criteria = useCriteria()
   const reports = useReportIndex()
+  const jev = useJev()
   const report = reports.index.get(reportId)
   const criterionText = new Map((criteria.data ?? []).map((c) => [c.id, c.text]))
 
@@ -19,7 +22,6 @@ export default function ReportDetail() {
       <Breadcrumbs
         items={[
           { label: 'Find patients', to: '/patients' },
-          { label: 'Browse cohorts', to: '/patients/browse' },
           { label: criterionId, to: `/patients/${criterionId}` },
           { label: reportId },
         ]}
@@ -50,6 +52,11 @@ export default function ReportDetail() {
                           <span className="font-mono">{cid}</span>
                         </Link>{' '}
                         {criterionText.get(cid)}
+                        {jev.data && Object.keys(jev.data).length > 0 && (
+                          <span className="ml-2 align-middle">
+                            <JevBadge p={jevScore(jev.data, cid, report.id) ?? 0} />
+                          </span>
+                        )}
                       </li>
                     ))}
                   </ul>

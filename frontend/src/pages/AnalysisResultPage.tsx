@@ -19,12 +19,12 @@ export default function AnalysisResultPage() {
   }, [])
 
   // Opened directly (no analysis in history): nothing to show, so go to the upload page.
-  if (!state?.result) return <Navigate to="/patients" replace />
+  if (!state?.result) return <Navigate to="/patients/analyze" replace />
   const { result, text } = state
 
   return (
     <div>
-      <Breadcrumbs items={[{ label: 'Find patients', to: '/patients' }, { label: 'Report analysis' }]} />
+      <Breadcrumbs items={[{ label: 'Find patients', to: '/patients' }, { label: 'Analyse a report', to: '/patients/analyze' }, { label: 'Report analysis' }]} />
 
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
@@ -42,7 +42,7 @@ export default function AnalysisResultPage() {
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
-            onClick={() => navigate('/patients')}
+            onClick={() => navigate('/patients/analyze')}
             className="rounded border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium hover:bg-slate-100"
           >
             ← Edit report
@@ -51,7 +51,7 @@ export default function AnalysisResultPage() {
             type="button"
             onClick={() => {
               setText('')
-              navigate('/patients')
+              navigate('/patients/analyze')
             }}
             className="rounded bg-slate-900 px-3 py-1.5 text-sm font-medium text-white"
           >
@@ -71,7 +71,7 @@ export default function AnalysisResultPage() {
 
       <p className="mt-10 text-sm text-slate-600">
         Want to explore a criterion further?{' '}
-        <Link to="/patients/browse" className="text-blue-700 hover:underline">
+        <Link to="/patients" className="text-blue-700 hover:underline">
           Browse cohorts
         </Link>
         .

@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useDocumentTitle } from '../lib/useDocumentTitle'
-import Breadcrumbs from '../components/Breadcrumbs'
 import PaperclipButton from '../components/PaperclipButton'
 import SlideCard from '../components/SlideCard'
 import SlideUploadCard from '../components/SlideUploadCard'
@@ -48,7 +47,6 @@ export default function SlideBrowser() {
 
   return (
     <div>
-      <Breadcrumbs items={[{ label: 'Explore slides' }]} />
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Slides</h1>

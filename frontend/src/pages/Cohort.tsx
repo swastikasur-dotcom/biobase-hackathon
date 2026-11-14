@@ -2,9 +2,11 @@ import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useDocumentTitle } from '../lib/useDocumentTitle'
 import Breadcrumbs from '../components/Breadcrumbs'
+import JevBadge from '../components/JevBadge'
 import Status from '../components/Status'
-import { useCohorts, useCriteria, useReportIndex } from '../data/api'
+import { useCohorts, useCriteria, useJev, useReportIndex } from '../data/api'
 import { downloadCsv } from '../lib/csv'
+import { jevPercent, jevScore } from '../lib/jev'
 import { titleCase } from '../lib/organs'
 import type { Report } from '../types'
 
@@ -18,7 +20,11 @@ export default function Cohort() {
   const criteria = useCriteria()
   const cohorts = useCohorts()
   const reports = useReportIndex()
+  const jev = useJev()
   const [query, setQuery] = useState('')
+  const [reviewFirst, setReviewFirst] = useState(false)
+  const score = (rid: string) => jevScore(jev.data, criterionId, rid)
+  const hasJev = !!jev.data && Object.keys(jev.data).length > 0
 
   const criterion = criteria.data?.find((c) => c.id === criterionId)
   const members = useMemo(
@@ -27,13 +33,16 @@ export default function Cohort() {
   )
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase()
-    return q ? members.filter((r) => `${r.id} ${diagnosis(r)} ${stage(r)} ${str(r.fields.specimen)}`.toLowerCase().includes(q)) : members
-  }, [members, query])
+    const filtered = q ? members.filter((r) => `${r.id} ${diagnosis(r)} ${stage(r)} ${str(r.fields.specimen)}`.toLowerCase().includes(q)) : members
+    if (!reviewFirst || !jev.data) return filtered
+    return [...filtered].sort((a, b) => (jevScore(jev.data, criterionId, a.id) ?? 0) - (jevScore(jev.data, criterionId, b.id) ?? 0))
+  }, [members, query, reviewFirst, jev.data, criterionId])
+  const toReview = hasJev ? members.filter((r) => (score(r.id) ?? 1) < 0.5).length : 0
 
   const exportCsv = () =>
     downloadCsv(`${criterionId}_cohort.csv`, [
-      ['report_id', 'organ', 'sex', 'age_band', 'report_year', 'diagnosis', 'stage'],
-      ...shown.map((r) => [r.id, str(r.fields.organ), str(r.fields.sex), str(r.fields.age_band), str(r.fields.report_year), diagnosis(r), stage(r)]),
+      ['report_id', 'organ', 'sex', 'age_band', 'report_year', 'diagnosis', 'stage', ...(hasJev ? ['jev_probability'] : [])],
+      ...shown.map((r) => [r.id, str(r.fields.organ), str(r.fields.sex), str(r.fields.age_band), str(r.fields.report_year), diagnosis(r), stage(r), ...(hasJev ? [jevPercent(score(r.id) ?? 0)] : [])]),
     ])
 
   return (
@@ -41,7 +50,6 @@ export default function Cohort() {
       <Breadcrumbs
         items={[
           { label: 'Find patients', to: '/patients' },
-          { label: 'Browse cohorts', to: '/patients/browse' },
           { label: criterionId },
         ]}
       />
@@ -54,8 +62,9 @@ export default function Cohort() {
             <p className="mt-1 text-slate-600">
               {members.length} matching report{members.length === 1 ? '' : 's'}
               {shown.length !== members.length && ` (${shown.length} shown)`}
+              {hasJev && toReview > 0 && ` · ${toReview} to review (Jev under 50%)`}
             </p>
-            <div className="mt-4 flex gap-3">
+            <div className="mt-4 flex flex-wrap items-center gap-3">
               <input
                 type="search"
                 value={query}
@@ -64,6 +73,12 @@ export default function Cohort() {
                 aria-label="Filter reports"
                 className="w-full max-w-md rounded border border-slate-300 bg-white px-3 py-1.5"
               />
+              {hasJev && (
+                <label className="flex items-center gap-2 text-sm">
+                  <input type="checkbox" checked={reviewFirst} onChange={(e) => setReviewFirst(e.target.checked)} />
+                  Lowest Jev score first
+                </label>
+              )}
               <button
                 type="button"
                 onClick={exportCsv}
@@ -77,7 +92,7 @@ export default function Cohort() {
               <table className="w-full text-left text-sm">
                 <thead className="bg-slate-100 text-xs uppercase text-slate-500">
                   <tr>
-                    {['Report', 'Organ', 'Sex', 'Age', 'Year', 'Diagnosis', 'Stage'].map((h) => (
+                    {['Report', 'Organ', 'Sex', 'Age', 'Year', 'Diagnosis', 'Stage', ...(hasJev ? ['Jev'] : [])].map((h) => (
                       <th key={h} className="px-3 py-2">
                         {h}
                       </th>
@@ -98,6 +113,11 @@ export default function Cohort() {
                       <td className="px-3 py-2">{str(r.fields.report_year)}</td>
                       <td className="px-3 py-2">{diagnosis(r)}</td>
                       <td className="px-3 py-2">{stage(r)}</td>
+                      {hasJev && (
+                        <td className="px-3 py-2">
+                          <JevBadge p={score(r.id) ?? 0} />
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>

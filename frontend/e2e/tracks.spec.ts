@@ -9,7 +9,6 @@ const sample = reports.find((r) => r.matches.length > 0)!
 
 test('Track 1: criterion -> cohort -> report -> CSV export', async ({ page }) => {
   await page.goto('/patients')
-  await page.getByRole('link', { name: 'Browse cohorts' }).click()
   await page.getByRole('link', { name: /c03/ }).click()
 
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Triple-negative breast cancer')
@@ -44,7 +43,7 @@ test('Track 2: low-confidence slide -> prediction -> tiles -> similar slide', as
 })
 
 test('Track 1: upload a report -> categories, evidence, similar reports, related slides', async ({ page }) => {
-  await page.goto('/patients')
+  await page.goto('/patients/analyze')
   await page.getByLabel('Report text').fill(sample.text)
   await page.getByRole('button', { name: 'Analyse report' }).click()
 
@@ -62,14 +61,14 @@ test('Track 1: upload a report -> categories, evidence, similar reports, related
 })
 
 test('Track 1: an unreadable upload shows a clear error', async ({ page }) => {
-  await page.goto('/patients')
+  await page.goto('/patients/analyze')
   await page.getByLabel('Report text').fill('hello world')
   await page.getByRole('button', { name: 'Analyse report' }).click()
   await expect(page.getByRole('alert')).toContainText('FINAL DIAGNOSIS')
 })
 
 test('Track 1: a .txt file can be uploaded', async ({ page }) => {
-  await page.goto('/patients')
+  await page.goto('/patients/analyze')
   await page.locator('input[type=file]').setInputFiles({ name: 'r.txt', mimeType: 'text/plain', buffer: Buffer.from(sample.text) })
   await expect(page.getByLabel('Report text')).toHaveValue(sample.text)
 })
@@ -80,7 +79,7 @@ test('Unknown routes show a not-found page', async ({ page }) => {
 })
 
 test('Track 1: the sample button loads a held-out report that has results', async ({ page }) => {
-  await page.goto('/patients')
+  await page.goto('/patients/analyze')
   const button = page.getByRole('button', { name: 'Try a held-out sample report' })
   await expect(button).toBeEnabled()
   await button.click()
@@ -90,23 +89,23 @@ test('Track 1: the sample button loads a held-out report that has results', asyn
 })
 
 test('Result page: Edit report keeps the text, Analyse another clears it', async ({ page }) => {
-  await page.goto('/patients')
+  await page.goto('/patients/analyze')
   await page.getByLabel('Report text').fill(sample.text)
   await page.getByRole('button', { name: 'Analyse report' }).click()
   await expect(page).toHaveURL(/\/patients\/result$/)
 
   await page.getByRole('button', { name: '← Edit report' }).click()
-  await expect(page).toHaveURL(/\/patients$/)
+  await expect(page).toHaveURL(/\/patients\/analyze$/)
   await expect(page.getByLabel('Report text')).toHaveValue(sample.text)
 
   await page.getByRole('button', { name: 'Analyse report' }).click()
   await page.getByRole('button', { name: 'Analyse another report' }).click()
-  await expect(page).toHaveURL(/\/patients$/)
+  await expect(page).toHaveURL(/\/patients\/analyze$/)
   await expect(page.getByLabel('Report text')).toHaveValue('')
 })
 
 test('Result page: browser back returns to the input, and the result survives a reload', async ({ page }) => {
-  await page.goto('/patients')
+  await page.goto('/patients/analyze')
   await page.getByLabel('Report text').fill(sample.text)
   await page.getByRole('button', { name: 'Analyse report' }).click()
   await expect(page).toHaveURL(/\/patients\/result$/)
@@ -115,12 +114,12 @@ test('Result page: browser back returns to the input, and the result survives a 
   await expect(page.getByRole('heading', { level: 1, name: 'Report analysis' })).toBeVisible()
 
   await page.goBack()
-  await expect(page).toHaveURL(/\/patients$/)
+  await expect(page).toHaveURL(/\/patients\/analyze$/)
 })
 
 test('Result page opened directly redirects to the input', async ({ page }) => {
   await page.goto('/patients/result')
-  await expect(page).toHaveURL(/\/patients$/)
+  await expect(page).toHaveURL(/\/patients\/analyze$/)
   await expect(page.getByRole('heading', { name: 'Analyse a pathology report' })).toBeVisible()
 })
 
@@ -128,14 +127,10 @@ const slideFile = { name: 'my-slide.svs', mimeType: 'application/octet-stream', 
 
 test('Slide upload card (demo): file -> labelled demo result with prediction and 10 similar slides', async ({ page }) => {
   await page.goto('/slides')
-  await expect(page.getByRole('heading', { name: 'Analyse a slide' })).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Analyse a slide' })).toHaveCount(0) // no separate page or nav item
+  await expect(page.getByText('Analyse a slide', { exact: true })).toBeVisible() // one-line button, no separate page or nav item
+  await expect(page.getByRole('link', { name: 'Analyse a slide' })).toHaveCount(0)
 
-  const analyse = page.getByRole('button', { name: 'Analyse slide' })
-  await expect(analyse).toBeDisabled()
-  await page.locator('input[type=file]').setInputFiles(slideFile)
-  await expect(page.getByText('my-slide.svs')).toBeVisible()
-  await analyse.click()
+  await page.locator('input[type=file]').setInputFiles(slideFile) // choosing a file runs the demo analysis
 
   await expect(page).toHaveURL(/\/slides\/analysis$/)
   await expect(page.getByRole('heading', { level: 1, name: 'Slide analysis' })).toBeVisible()
@@ -147,7 +142,6 @@ test('Slide upload card (demo): file -> labelled demo result with prediction and
 test('Slide analysis (demo): another random slide changes the result, and back returns to the card', async ({ page }) => {
   await page.goto('/slides')
   await page.locator('input[type=file]').setInputFiles(slideFile)
-  await page.getByRole('button', { name: 'Analyse slide' }).click()
   const fullPage = page.getByRole('link', { name: /Open the full slide page/ })
   const before = await fullPage.getAttribute('href')
 
@@ -156,7 +150,7 @@ test('Slide analysis (demo): another random slide changes the result, and back r
 
   await page.getByRole('button', { name: '← Back to slides' }).click()
   await expect(page).toHaveURL(/\/slides$/)
-  await expect(page.getByRole('heading', { name: 'Analyse a slide' })).toBeVisible()
+  await expect(page.getByText('Analyse a slide', { exact: true })).toBeVisible()
 })
 
 test('Slide analysis opened directly redirects to the slide browser', async ({ page }) => {
@@ -309,4 +303,57 @@ test('Paperclip: also on the slide analysis page', async ({ page }) => {
   await page.getByRole('button', { name: 'Select test case' }).click()
   await page.getByRole('button', { name: 'Paperclip' }).click()
   await expect(page.getByRole('dialog', { name: /Paperclip results:/ })).toBeVisible()
+})
+
+test('Browse cohorts is the Find patients landing page, with an Analyse a report button', async ({ page }) => {
+  await page.goto('/patients')
+  await expect(page.getByRole('heading', { level: 1, name: 'Browse cohorts' })).toBeVisible()
+  await page.getByRole('link', { name: 'Analyse a pathology report' }).click()
+  await expect(page).toHaveURL(/\/patients\/analyze$/)
+  await expect(page.getByRole('heading', { level: 1, name: 'Analyse a pathology report' })).toBeVisible()
+  await page.goto('/patients/browse')
+  await expect(page).toHaveURL(/\/patients$/)
+})
+
+test('Jev: cohort table shows Jev probabilities and flags low-scoring matches for review', async ({ page }) => {
+  await page.goto('/patients/c30')
+  await expect(page.getByRole('columnheader', { name: 'Jev' })).toBeVisible()
+  await expect(page.getByText('5 to review (Jev under 50%)')).toBeVisible()
+  await expect(page.locator('tbody tr').filter({ hasText: 'review' })).toHaveCount(5)
+
+  // Lowest Jev first puts a flagged report at the top.
+  await page.getByLabel('Lowest Jev score first').check()
+  await expect(page.locator('tbody tr').first()).toContainText('review')
+
+  // The report page shows the score next to each matched criterion.
+  await page.locator('tbody tr').first().getByRole('link').click()
+  await expect(page.getByText('Matches 1 criterion')).toBeVisible()
+  await expect(page.locator('aside').getByText(/· review/)).toBeVisible()
+})
+
+test('About the models: nav button opens a modal with one tab per task, Escape closes it', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'About the models' }).click()
+  const modal = page.getByRole('dialog', { name: 'About the models' })
+  await expect(modal).toBeVisible()
+  await expect(modal.getByRole('tab')).toHaveCount(3)
+
+  // Task A is open first.
+  await expect(modal.getByRole('tab', { name: /Task A/ })).toHaveAttribute('aria-selected', 'true')
+  await expect(modal.getByRole('img', { name: /read by rules and by Jev/ })).toBeVisible()
+  await expect(modal.getByRole('img', { name: 'Whole slide' })).toHaveCount(0)
+
+  await modal.getByRole('tab', { name: /Task C1/ }).click()
+  await expect(modal.getByRole('img', { name: /GigaPath embedding/ })).toBeVisible()
+  await expect.poll(() => modal.getByRole('img', { name: 'Whole slide' }).evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth > 0)).toBe(true)
+
+  await modal.getByRole('tab', { name: /Task C2/ }).click()
+  await expect(modal.getByRole('img', { name: /predicted organ are ranked first/ })).toBeVisible()
+  await expect(modal.getByText('Precision@10: 0.83')).toBeVisible()
+
+  await page.keyboard.press('Escape')
+  await expect(modal).toBeHidden()
+  await page.getByRole('button', { name: 'About the models' }).click()
+  await page.getByRole('button', { name: 'Close About the models' }).click()
+  await expect(modal).toBeHidden()
 })

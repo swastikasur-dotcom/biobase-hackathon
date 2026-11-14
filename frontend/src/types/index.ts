@@ -3,6 +3,9 @@ export interface Criterion {
   text: string
 }
 
+/** Criterion id -> report id -> Jev's probability (0-1) that the report meets it. Missing = below 5%. */
+export type JevFile = Record<string, Record<string, number>>
+
 /** Criterion id -> ids of the reports that match it. */
 export type Cohorts = Record<string, string[]>
 
