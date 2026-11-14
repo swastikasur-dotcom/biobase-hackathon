@@ -10,6 +10,7 @@ class DemoUiTests(unittest.TestCase):
         html = (STATIC_DIR / "index.html").read_text()
         script = (STATIC_DIR / "app.js").read_text()
         self.assertIn('<h1>Patient-specific cancer trial matching</h1>', html)
+        self.assertIn('Find relevant cancer trials using pathology, biomarkers, and clinical criteria.', html)
         self.assertIn('name="use_radius"', html)
         self.assertIn('name="location_query"', html)
         self.assertIn('name="radius_miles"', html)
