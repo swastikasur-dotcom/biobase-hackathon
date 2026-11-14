@@ -6,6 +6,10 @@ from urllib.parse import urlparse
 
 
 NCT_ID_PATTERN = re.compile(r"^NCT\d{8}$", re.I)
+LOW_VALUE_MIRROR_DOMAINS = [
+    "clinicaltrials.gov", "clinicaltrialsfind.com", "eligibility.info",
+    "trialytics.ai", "medpath.com", "plaintrial.com", "tundraspace.com",
+]
 
 
 def _source_category(title, url, snippet):
@@ -49,9 +53,10 @@ def _evidence_prompt(category, nct_id):
         "sponsor_update": "a sponsor milestone, enrollment update, or study result",
     }.get(category, "a concrete fact about the study")
     return (
-        "Find direct evidence about clinical trial {} on this page. Return ONLY one or two short "
-        "verbatim sentences that include {} and describe {}. If the page does not contain that "
-        "evidence, return exactly NOT_FOUND. Do not infer or summarize."
+        "Find direct evidence about clinical trial {} on this page. Return ONLY one or two complete "
+        "verbatim sentences that include {} and describe {}. Do not return a page title, directory "
+        "label, identifier-only line, or a sentence about another trial. If the page does not contain "
+        "that evidence, return exactly NOT_FOUND. Do not infer or summarize."
     ).format(nct_id, nct_id, focus)
 
 
@@ -64,6 +69,8 @@ def _clean_evidence_quote(content, nct_id):
 
 def _is_useful_evidence(quote, category):
     text = quote.lower()
+    if len(re.findall(r"[a-z0-9]+", text)) < 12:
+        return False
     required_terms = {
         "recruitment_or_site": (
             "recruit", "enroll", "contact", "investigator", "site", "center", "centre", "hospital", "location",
@@ -116,7 +123,7 @@ class KeenableTrialResearchProvider:
             response = self.client.search(
                 query,
                 mode="pro",
-                exclude_domains=["clinicaltrials.gov", "clinicaltrialsfind.com", "eligibility.info"],
+                exclude_domains=LOW_VALUE_MIRROR_DOMAINS,
                 snippet_max_length=700,
                 max_results=3,
             )

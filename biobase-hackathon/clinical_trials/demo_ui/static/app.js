@@ -203,6 +203,14 @@ async function researchTrial(node, trial) {
   const status = node.querySelector('.research-status');
   const dates = node.querySelector('.research-dates');
   const sources = node.querySelector('.research-sources');
+  if (button.dataset.researchLoaded === 'true') {
+    const isHidden = sources.classList.toggle('hidden');
+    dates.classList.toggle('hidden', isHidden);
+    status.classList.toggle('hidden', isHidden);
+    button.textContent = isHidden ? 'Show sources' : 'Hide sources';
+    button.setAttribute('aria-expanded', String(!isHidden));
+    return;
+  }
   button.disabled = true;
   button.textContent = 'Searching public sources…';
   status.className = 'research-status';
@@ -222,17 +230,20 @@ async function researchTrial(node, trial) {
     });
     const dossier = await response.json();
     if (!response.ok) throw new Error(dossier.error || 'Public-web research failed');
-    renderResearchSources(sources, dossier.sources, dossier.researched_at);
+    renderResearchSources(sources, dossier.sources);
     sources.classList.remove('hidden');
     dates.textContent = [
       dossier.registry_last_updated ? `ClinicalTrials.gov record last updated: ${dossier.registry_last_updated}` : null,
-      `Sources checked: ${formatDate(dossier.researched_at)}`
+      null
     ].filter(Boolean).join(' · ');
     dates.classList.remove('hidden');
     status.textContent = dossier.sources.length
       ? `${dossier.sources.length} source${dossier.sources.length === 1 ? '' : 's'} with direct NCT-specific evidence found. These do not establish eligibility.`
       : 'No fetched source contained a direct NCT-specific evidence passage.';
-    button.textContent = 'Sources found';
+    button.disabled = false;
+    button.dataset.researchLoaded = 'true';
+    button.textContent = 'Hide sources';
+    button.setAttribute('aria-expanded', 'true');
   } catch (error) {
     status.classList.add('failure');
     status.textContent = error.message;
@@ -241,7 +252,7 @@ async function researchTrial(node, trial) {
   }
 }
 
-function renderResearchSources(container, sources, researchedAt) {
+function renderResearchSources(container, sources) {
   const labels = {
     recruitment_or_site: 'Participating-centre / recruitment page',
     publication_or_protocol: 'Research or protocol context',
@@ -274,16 +285,11 @@ function renderResearchSources(container, sources, researchedAt) {
     const meta = document.createElement('small');
     meta.textContent = [
       source.domain,
-      source.published_at ? `Source published: ${source.published_at.slice(0, 10)}` : 'Source publication date unavailable',
-      `Evidence checked: ${formatDate(researchedAt)}`
+      source.published_at ? `Source published: ${source.published_at.slice(0, 10)}` : 'Source publication date unavailable'
     ].join(' · ');
     article.append(category, purpose, link, evidence, meta);
     container.append(article);
   }
-}
-
-function formatDate(value) {
-  return value ? value.slice(0, 10) : 'today';
 }
 
 function listItem(text) {

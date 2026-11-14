@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Trial Match — Local Demo</title>
+  <title>Patient-specific cancer trial matching — Local Demo</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -15,8 +15,8 @@
   <main>
     <section class="hero">
       <p class="eyebrow">PATHOLOGY-INFORMED DISCOVERY</p>
-      <h1>Find trials worth reviewing.</h1>
-      <p class="lede">See how a de-identified pathology profile becomes an explainable ClinicalTrials.gov shortlist.</p>
+      <h1>Patient-specific cancer trial matching</h1>
+      <p class="lede">Find relevant cancer trials using pathology, biomarkers, and clinical criteria.</p>
     </section>
 
     <div class="workspace">
@@ -25,7 +25,6 @@
           <div><p class="step">01</p><h2>Patient profile</h2></div>
           <button class="text-button" id="resetButton" type="button">Reset example</button>
         </div>
-        <p class="privacy-note">The report and detailed clinical facts stay local. Organ, histology, and an optional city/ZIP are sent to ClinicalTrials.gov; the city/ZIP is also sent to OpenStreetMap for distance calculation. Do not enter an exact home address.</p>
         <div class="source-tabs" role="group" aria-label="Patient profile input method">
           <button class="source-tab active" id="reportMode" type="button">Paste a report</button>
           <button class="source-tab" id="manualMode" type="button">Enter facts manually</button>
@@ -136,7 +135,7 @@ Synthetic example.</textarea>
       <div class="site-line hidden"></div>
       <section class="research-panel">
         <div class="research-heading">
-          <div><h4>Independent public sources</h4><p>Finds participating-centre pages with possible recruitment contacts, trial-specific papers or protocols, and sponsor updates. Sources must visibly mention this NCT ID; ClinicalTrials.gov mirrors are excluded. This uses the NCT ID only—not patient information.</p></div>
+          <div><h4>Independent public sources</h4><p>Adds public context from hospital, publication, and sponsor pages: recruitment contacts, study design, treatment details, and updates.</p></div>
           <button class="research-button" type="button">Find independent sources</button>
         </div>
         <p class="research-status hidden"></p>

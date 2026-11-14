@@ -33,7 +33,7 @@ class FakeKeenableClient:
             content = "NCT06058377 is recruiting at our cancer center. Contact the trial office for details."
             title = "Cancer Center trial listing for NCT06058377"
         else:
-            content = "NCT06058377 is a protocol evaluating the study design and treatment schedule."
+            content = "NCT06058377 is a published protocol evaluating the study design and treatment schedule for patients."
             title = "Protocol publication for NCT06058377"
         return SimpleNamespace(
             url=url,
@@ -66,7 +66,10 @@ class KeenableResearchTests(unittest.TestCase):
         self.assertTrue(all("NCT06058377" in source["evidence_quote"] for source in dossier["sources"]))
         self.assertEqual(dossier["registry_last_updated"], "2026-11-10")
         self.assertTrue(all("NCT06058377" in query for query, _ in client.calls))
-        expected_exclusions = ["clinicaltrials.gov", "clinicaltrialsfind.com", "eligibility.info"]
+        expected_exclusions = [
+            "clinicaltrials.gov", "clinicaltrialsfind.com", "eligibility.info",
+            "trialytics.ai", "medpath.com", "plaintrial.com", "tundraspace.com",
+        ]
         self.assertTrue(all(options["exclude_domains"] == expected_exclusions for _, options in client.calls))
 
     def test_drops_candidate_when_fetched_page_has_no_direct_evidence(self):
@@ -87,6 +90,16 @@ class KeenableResearchTests(unittest.TestCase):
                 )
 
         dossier = KeenableTrialResearchProvider(client=IdentifierOnlyClient()).research("NCT06058377")
+        self.assertEqual(dossier["sources"], [])
+
+    def test_drops_directory_style_short_passage(self):
+        class DirectoryClient(FakeKeenableClient):
+            def fetch(self, url, **options):
+                return SimpleNamespace(
+                    url=url, title="NCT06058377 - Cancer Center", content="NCT06058377 - Cancer Center", published_at=None,
+                )
+
+        dossier = KeenableTrialResearchProvider(client=DirectoryClient()).research("NCT06058377")
         self.assertEqual(dossier["sources"], [])
 
     def test_drops_results_that_only_match_a_search_url_or_other_trial(self):
