@@ -79,6 +79,16 @@ class KeenableResearchTests(unittest.TestCase):
         dossier = KeenableTrialResearchProvider(client=NoEvidenceClient()).research("NCT06058377")
         self.assertEqual(dossier["sources"], [])
 
+    def test_drops_identifier_only_evidence_that_lacks_source_specific_detail(self):
+        class IdentifierOnlyClient(FakeKeenableClient):
+            def fetch(self, url, **options):
+                return SimpleNamespace(
+                    url=url, title="Trial directory", content="ClinicalTrials.gov ID: NCT06058377", published_at=None,
+                )
+
+        dossier = KeenableTrialResearchProvider(client=IdentifierOnlyClient()).research("NCT06058377")
+        self.assertEqual(dossier["sources"], [])
+
     def test_drops_results_that_only_match_a_search_url_or_other_trial(self):
         class OffTargetClient:
             def search(self, query, **options):

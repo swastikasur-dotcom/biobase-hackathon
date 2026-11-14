@@ -129,7 +129,9 @@ It runs three narrow searches for institutional recruitment contacts, scholarly
 publication context, and sponsor updates; excludes ClinicalTrials.gov and low-value registry
 mirror domains, then fetches at most six high-quality candidate pages. A source
 is displayed only when the fetched page returns a direct NCT-specific evidence
-passage. It is grouped by source type, and duplicate evidence from the same domain
+passage with source-appropriate detail (for example, a recruitment contact/status
+for a centre page or design/treatment/result context for a paper). It is grouped
+by source type, and duplicate evidence from the same domain
 is collapsed while distinct evidence remains visible. Institutional, government,
 and scholarly domains are ranked first. The response records the official registry
 update date, source publication date when available, and the date the evidence was

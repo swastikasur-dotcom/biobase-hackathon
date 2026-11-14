@@ -62,6 +62,23 @@ def _clean_evidence_quote(content, nct_id):
     return quote[:900]
 
 
+def _is_useful_evidence(quote, category):
+    text = quote.lower()
+    required_terms = {
+        "recruitment_or_site": (
+            "recruit", "enroll", "contact", "investigator", "site", "center", "centre", "hospital", "location",
+        ),
+        "publication_or_protocol": (
+            "phase", "random", "intervention", "treatment", "study", "protocol", "result", "outcome", "design",
+        ),
+        "sponsor_update": (
+            "announce", "enroll", "milestone", "result", "completion", "data", "update",
+        ),
+    }
+    terms = required_terms.get(category)
+    return terms is None or any(term in text for term in terms)
+
+
 def _evidence_key(quote):
     return " ".join(re.findall(r"[a-z0-9]+", quote.lower()))
 
@@ -132,7 +149,7 @@ class KeenableTrialResearchProvider:
                 max_chars=1200,
             )
             quote = _clean_evidence_quote(page.content, nct_id)
-            if quote is None:
+            if quote is None or not _is_useful_evidence(quote, candidate["category"]):
                 continue
             key = (candidate["domain"].lower(), _evidence_key(quote))
             if key in seen_evidence:
