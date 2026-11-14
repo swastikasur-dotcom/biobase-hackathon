@@ -89,6 +89,20 @@ can replace it with a shared cache without changing the client contract.
 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s clinical_trials/tests -v
 ```
 
+## Disposable local demo UI
+
+The temporary UI is isolated in `demo_ui/`; the production frontend can replace
+that folder without changing the matching package. From this repository directory:
+
+```bash
+python3 -m clinical_trials.demo_ui.server
+```
+
+Open `http://127.0.0.1:8765`. The prefilled example calls the live
+ClinicalTrials.gov API, renders evidence and hidden mismatches, and posts
+Yes/No/Unknown clarification answers back through the stable contract. Stop it
+with `Ctrl-C`. Do not enter real identifying patient information into the demo.
+
 ## Deferred demo work
 
 After the end-to-end frontend flow is connected, add synthetic patient profiles
