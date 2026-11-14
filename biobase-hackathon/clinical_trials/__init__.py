@@ -6,5 +6,11 @@ contracts without importing one another.
 """
 
 from .models import PatientProfile, TrialRecord
+from .clinicaltrials_gov import ClinicalTrialsGovClient
+from .matching import assess
+from .service import build_discovery_result
 
-__all__ = ["PatientProfile", "TrialRecord"]
+__all__ = [
+    "PatientProfile", "TrialRecord", "ClinicalTrialsGovClient", "assess",
+    "build_discovery_result",
+]
