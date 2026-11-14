@@ -11,6 +11,14 @@ const template = document.querySelector('#trialTemplate');
 let answersByTrial = {};
 let hasSearched = false;
 
+function setInputMode(mode) {
+  const isReport = mode === 'report';
+  document.querySelector('#reportInput').classList.toggle('hidden', !isReport);
+  document.querySelector('#reportMode').classList.toggle('active', isReport);
+  document.querySelector('#manualMode').classList.toggle('active', !isReport);
+  document.querySelector('#profileDividerText').textContent = isReport ? 'Review extracted profile' : 'Enter patient profile';
+}
+
 function optionalNumber(data, name) {
   const value = data.get(name);
   return value === '' ? null : Number(value);
@@ -22,14 +30,8 @@ function profileFromForm() {
   for (const marker of ['ER', 'PR', 'HER2']) {
     if (data.get(marker) !== 'unknown') biomarkers[marker] = data.get(marker);
   }
-  const location = {};
-  const latitude = optionalNumber(data, 'latitude');
-  const longitude = optionalNumber(data, 'longitude');
-  if (latitude !== null && longitude !== null) {
-    location.latitude = latitude;
-    location.longitude = longitude;
-    location.radius_miles = optionalNumber(data, 'radius_miles') || 50;
-  }
+  const locationQuery = data.get('location_query').trim();
+  const treatmentValue = data.get('treatment_naive');
   return {
     patient_reference: 'local-demo',
     primary_organ: data.get('primary_organ').trim(),
@@ -39,11 +41,45 @@ function profileFromForm() {
     stage: data.get('stage').trim() || null,
     metastatic_status: data.get('metastatic_status'),
     tumor_size_mm: optionalNumber(data, 'tumor_size_mm'),
-    treatment_naive: data.get('treatment_naive') === 'on',
+    treatment_naive: treatmentValue === 'unknown' ? null : treatmentValue === 'yes',
     biomarkers,
-    location,
+    location: locationQuery ? {query: locationQuery} : {},
     fact_sources: {histology: 'demo_input', stage: 'demo_input', biomarkers: 'demo_input'}
   };
+}
+
+async function parseReport() {
+  const status = document.querySelector('#parseStatus');
+  status.className = 'parse-status';
+  status.textContent = 'Parsing report…';
+  try {
+    const response = await fetch('/api/parse-report', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({report_text: document.querySelector('#reportText').value})
+    });
+    const payload = await response.json();
+    if (!response.ok) throw new Error(payload.error || 'Could not parse report');
+    applyExtractedProfile(payload.profile);
+    status.classList.add('success');
+    status.textContent = 'Report parsed. Review the extracted profile; exact age, overall stage, metastatic status, and treatment history may still need confirmation.';
+  } catch (error) {
+    status.classList.add('failure');
+    status.textContent = error.message;
+  }
+}
+
+function applyExtractedProfile(profile) {
+  const set = (name, value) => { form.elements[name].value = value ?? ''; };
+  set('primary_organ', profile.primary_organ);
+  set('histology', profile.histology);
+  set('age_years', profile.age_years);
+  set('sex', profile.sex || 'unknown');
+  const overallStage = ['Stage 0', 'Stage I', 'Stage II', 'Stage III', 'Stage IV'].includes(profile.stage) ? profile.stage : '';
+  set('stage', overallStage);
+  set('tumor_size_mm', profile.tumor_size_mm);
+  set('metastatic_status', profile.metastatic_status || 'unknown');
+  set('treatment_naive', profile.treatment_naive == null ? 'unknown' : profile.treatment_naive ? 'yes' : 'no');
+  for (const marker of ['ER', 'PR', 'HER2']) set(marker, profile.biomarkers?.[marker] || 'unknown');
 }
 
 async function search() {
@@ -80,19 +116,19 @@ function render(payload) {
   summaryEl.innerHTML = `
     <div class="summary-item"><strong>${payload.summary.likely_relevant}</strong><span>Likely relevant</span></div>
     <div class="summary-item"><strong>${payload.summary.needs_more_information}</strong><span>Need information</span></div>
-    <div class="summary-item"><strong>${payload.summary.not_a_match}</strong><span>Filtered registry results</span></div>`;
+    <div class="summary-item"><strong>${payload.summary.not_a_match}</strong><span>Excluded by patient profile</span></div>`;
   summaryEl.classList.remove('hidden');
   if (payload.summary.not_a_match) {
     mismatchExplanation.textContent = showExcluded.checked
       ? `Showing ${payload.summary.not_a_match} additional result${payload.summary.not_a_match === 1 ? '' : 's'}. ClinicalTrials.gov returned these in the broad disease search, but the patient profile contradicts one or more explicit eligibility requirements.`
-      : `${payload.summary.not_a_match} broad ClinicalTrials.gov result${payload.summary.not_a_match === 1 ? ' was' : 's were'} hidden because the patient profile contradicts an explicit eligibility requirement. Turn on “Show filtered registry results” to inspect why.`;
+      : `${payload.summary.not_a_match} broad ClinicalTrials.gov result${payload.summary.not_a_match === 1 ? ' was' : 's were'} hidden because the patient profile contradicts an explicit eligibility requirement. Turn on “Show trials excluded by patient profile” to inspect why.`;
     mismatchExplanation.classList.remove('hidden');
   } else {
     mismatchExplanation.classList.add('hidden');
   }
   resultsEl.innerHTML = '';
   if (!payload.results.length) {
-    resultsEl.innerHTML = '<div class="error-state">No visible trials in this result set. Turn on “Show filtered registry results” to inspect records removed by the profile checks.</div>';
+    resultsEl.innerHTML = '<div class="error-state">No visible trials in this result set. Turn on “Show trials excluded by patient profile” to inspect records removed by the profile checks.</div>';
     return;
   }
   for (const result of payload.results) resultsEl.append(renderTrial(result));
@@ -125,7 +161,10 @@ function renderTrial(result) {
   if (result.nearest_site) {
     const site = node.querySelector('.site-line');
     site.classList.remove('hidden');
-    site.textContent = `Nearest site: ${result.nearest_site.facility || result.nearest_site.city} · ${result.distance_miles} miles · ${result.location_status.replaceAll('_', ' ')}`;
+    const locationName = [result.nearest_site.facility, result.nearest_site.city, result.nearest_site.state].filter(Boolean).join(' · ');
+    site.textContent = result.distance_miles == null
+      ? `Matching location: ${locationName}`
+      : `Nearest site: ${locationName} · ${result.distance_miles} miles`;
   }
   node.querySelector('.criteria-details pre').textContent = trial.eligibility_text || 'No eligibility text supplied.';
   node.querySelector('.source-line').textContent = `Source: ClinicalTrials.gov · Study updated ${trial.last_update_posted || 'date unavailable'}`;
@@ -169,5 +208,8 @@ function renderQuestion(nctId, question) {
 }
 
 form.addEventListener('submit', event => { event.preventDefault(); answersByTrial = {}; search(); });
+document.querySelector('#parseReport').addEventListener('click', parseReport);
+document.querySelector('#reportMode').addEventListener('click', () => setInputMode('report'));
+document.querySelector('#manualMode').addEventListener('click', () => setInputMode('manual'));
 showExcluded.addEventListener('change', () => { if (hasSearched) search(); });
 document.querySelector('#resetButton').addEventListener('click', () => { form.reset(); answersByTrial = {}; showExcluded.checked = false; resultsEl.innerHTML = ''; summaryEl.classList.add('hidden'); mismatchExplanation.classList.add('hidden'); errorEl.classList.add('hidden'); emptyEl.classList.remove('hidden'); hasSearched = false; });

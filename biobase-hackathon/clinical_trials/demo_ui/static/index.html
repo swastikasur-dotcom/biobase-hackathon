@@ -25,7 +25,30 @@
           <div><p class="step">01</p><h2>Patient profile</h2></div>
           <button class="text-button" id="resetButton" type="button">Reset example</button>
         </div>
-        <p class="privacy-note">Only organ and histology are sent to ClinicalTrials.gov. Other facts stay local.</p>
+        <p class="privacy-note">The report and clinical facts stay local. Only organ, histology, and an optional city/region are sent to ClinicalTrials.gov.</p>
+        <div class="source-tabs" role="group" aria-label="Patient profile input method">
+          <button class="source-tab active" id="reportMode" type="button">Paste a report</button>
+          <button class="source-tab" id="manualMode" type="button">Enter facts manually</button>
+        </div>
+        <section id="reportInput" class="report-input">
+          <label>Pathology report
+            <textarea id="reportText" rows="9">Patient: F, age band 45-49 | Report year: 2024
+SPECIMEN: Left breast, lumpectomy
+FINAL DIAGNOSIS:
+Invasive ductal carcinoma.
+Histologic type: Invasive ductal carcinoma
+Tumor size: 24 mm
+Nottingham grade: 3
+Lymph nodes: 2 of 12 positive
+Biomarkers: ER negative; PR negative; HER2 negative
+Pathologic stage (AJCC 8th ed.): pT2 pN1
+GROSS DESCRIPTION:
+Synthetic example.</textarea>
+          </label>
+          <button class="secondary-button" id="parseReport" type="button">Parse report into profile</button>
+          <p id="parseStatus" class="parse-status">Uses the synthetic report format from Task A. Review anything extracted below.</p>
+        </section>
+        <div class="profile-divider"><span id="profileDividerText">Review extracted profile</span></div>
         <form id="profileForm">
           <label>Primary organ<input name="primary_organ" required value="breast"></label>
           <label>Histology<input name="histology" value="invasive ductal carcinoma"></label>
@@ -55,15 +78,10 @@
               <label>HER2<select name="HER2"><option>negative</option><option>positive</option><option>mutated</option><option>unknown</option></select></label>
             </div>
           </fieldset>
-          <label class="check-row"><input name="treatment_naive" type="checkbox" checked><span>No prior treatment for this diagnosis</span></label>
-          <details>
-            <summary>Optional location radius</summary>
-            <div class="three-col location-inputs">
-              <label>Latitude<input name="latitude" type="number" step="any" placeholder="37.44"></label>
-              <label>Longitude<input name="longitude" type="number" step="any" placeholder="-122.14"></label>
-              <label>Miles<input name="radius_miles" type="number" min="1" value="50"></label>
-            </div>
-          </details>
+          <label>Prior treatment for this diagnosis
+            <select name="treatment_naive"><option value="unknown">Unknown / not available</option><option value="yes" selected>No prior treatment</option><option value="no">Has received treatment</option></select>
+          </label>
+          <label>Preferred city or region <span class="optional">Optional</span><input name="location_query" placeholder="e.g. Palo Alto, CA"></label>
           <div class="search-row">
             <label>Trials to fetch<select name="page_size"><option>5</option><option selected>10</option><option>20</option></select></label>
             <button class="primary-button" type="submit"><span>Search trials</span><span aria-hidden="true">→</span></button>
@@ -74,7 +92,7 @@
       <section class="results-panel" aria-live="polite">
         <div class="section-heading results-heading">
           <div><p class="step">02</p><h2>Review shortlist</h2></div>
-          <label class="toggle"><input id="showExcluded" type="checkbox"><span>Show filtered registry results</span></label>
+          <label class="toggle"><input id="showExcluded" type="checkbox"><span>Show trials excluded by patient profile</span></label>
         </div>
         <div id="mismatchExplanation" class="mismatch-explanation hidden"></div>
         <div id="emptyState" class="empty-state">
