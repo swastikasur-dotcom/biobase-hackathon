@@ -57,6 +57,20 @@ class ConservativeMatcherTests(unittest.TestCase):
         self.assertTrue(any("histology" in reason for reason in result.exclusions))
         self.assertTrue(any("ER is positive" in reason for reason in result.exclusions))
 
+    def test_common_ilc_and_er_staining_aliases_are_explicit_requirements(self):
+        alias_trial = trial()
+        alias_trial.eligibility_text = """Inclusion Criteria:
+* Newly diagnosed ILC confirmed on core-needle biopsy (greater than or equal to 1 percent ER staining)
+Exclusion Criteria:
+"""
+        profile = PatientProfile.from_dict({
+            "primary_organ": "breast", "age_years": 47, "sex": "female",
+            "histology": "invasive ductal carcinoma", "biomarkers": {"ER": "negative"},
+        })
+        result = assess(profile, alias_trial)
+        self.assertEqual(result.assessment, "not_a_match")
+        self.assertEqual(len(result.exclusions), 2)
+
     def test_missing_facts_create_questions_with_implications(self):
         profile = PatientProfile.from_dict({
             "primary_organ": "breast", "age_years": 47, "sex": "female",

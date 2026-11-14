@@ -13,7 +13,15 @@ from typing import Dict, List, Optional
 from .models import PatientProfile, TrialRecord
 
 
-HISTOLOGIES = ("lobular", "ductal", "squamous", "adenocarcinoma", "mucinous", "clear cell", "poorly cohesive")
+HISTOLOGY_PATTERNS = {
+    "lobular": r"\blobular\b|\bILC\b",
+    "ductal": r"\bductal\b|\bIDC\b",
+    "squamous": r"\bsquamous\b",
+    "adenocarcinoma": r"\badenocarcinoma\b",
+    "mucinous": r"\bmucinous\b",
+    "clear cell": r"\bclear cell\b",
+    "poorly cohesive": r"\bpoorly cohesive\b",
+}
 ROMAN_STAGE = {"I": 1, "II": 2, "III": 3, "IV": 4}
 
 
@@ -99,7 +107,7 @@ def _required_histologies(inclusion):
     found = []
     evidence = None
     for line in _criterion_lines(inclusion):
-        line_found = [name for name in HISTOLOGIES if re.search(r"\b{}\b".format(re.escape(name)), line, re.I)]
+        line_found = [name for name, pattern in HISTOLOGY_PATTERNS.items() if re.search(pattern, line, re.I)]
         if line_found:
             found.extend(line_found)
             evidence = evidence or line
@@ -118,7 +126,10 @@ def _biomarker_requirements(inclusion):
             positive = re.search(alias + r"\s*(?:\+|[- ]?positive\b)", line, re.I)
             negative = re.search(alias + r"\s*(?:-|[- ]?negative\b)", line, re.I)
             mutated = marker == "HER2" and re.search(alias + r"[- ]?mutat(?:ed|ion)", line, re.I)
-            state = "mutated" if mutated else "positive" if positive else "negative" if negative else None
+            percent_positive = marker in ("ER", "PR") and re.search(alias, line, re.I) and re.search(
+                r"(?:≥|>=|greater than or equal to)\s*1\s*(?:%|percent)", line, re.I,
+            )
+            state = "mutated" if mutated else "positive" if positive or percent_positive else "negative" if negative else None
             if state:
                 requirements.append((marker, state, line))
     unique = {}
