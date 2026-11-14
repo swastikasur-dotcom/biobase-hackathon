@@ -15,7 +15,12 @@ def _source_category(title, url, snippet):
         value in text for value in ("journal", "publication", "abstract", "protocol paper")
     ):
         return "publication_or_protocol"
-    if any(value in text for value in ("recruiting", "recruitment", "enrolling", "cancer center", "hospital")):
+    if any(value in host for value in ("studyfinder", "clinicaltrials.", "sncrf.org")) or any(
+        value in text for value in (
+            "recruiting", "recruitment", "enrolling", "cancer center", "hospital",
+            "principal investigator", "contact(s)", "nci site",
+        )
+    ):
         return "recruitment_or_site"
     if any(value in text for value in ("sponsor", "announces", "press release", "biopharma", "therapeutics")):
         return "sponsor_update"
@@ -54,7 +59,7 @@ class KeenableTrialResearchProvider:
             response = self.client.search(
                 query,
                 mode="pro",
-                exclude_domains=["clinicaltrials.gov"],
+                exclude_domains=["clinicaltrials.gov", "clinicaltrialsfind.com", "eligibility.info"],
                 snippet_max_length=700,
                 max_results=3,
             )

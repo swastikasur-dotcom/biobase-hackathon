@@ -43,7 +43,8 @@ class KeenableResearchTests(unittest.TestCase):
         self.assertEqual(dossier["sources"][0]["category"], "recruitment_or_site")
         self.assertEqual(dossier["sources"][1]["category"], "publication_or_protocol")
         self.assertTrue(all("NCT06058377" in query for query, _ in client.calls))
-        self.assertTrue(all(options["exclude_domains"] == ["clinicaltrials.gov"] for _, options in client.calls))
+        expected_exclusions = ["clinicaltrials.gov", "clinicaltrialsfind.com", "eligibility.info"]
+        self.assertTrue(all(options["exclude_domains"] == expected_exclusions for _, options in client.calls))
 
     def test_caches_dossier_by_public_trial_id(self):
         client = FakeKeenableClient()

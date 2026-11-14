@@ -118,13 +118,27 @@ the injected geocoder for a production deployment.
 
 ## Keenable boundary
 
-The core shortlist is now stable enough for a narrow Keenable integration. Add it
-behind a separate `TrialResearchProvider`-style adapter after matching, not inside
-the eligibility rules. Send only public trial identifiers and titles—not the
-patient profile or report—and use the result to show cited sponsor recruitment
-pages, trial-center pages, and recent public context. Keenable evidence may help a
-human investigate a shortlisted trial but must not silently change its match
-classification.
+`KeenableTrialResearchProvider` is a separate post-matching adapter. The demo's
+`POST /api/research` endpoint accepts only an NCT ID and public trial title:
+
+```json
+{"nct_id": "NCT06058377", "title": "Public trial title"}
+```
+
+It runs two narrow searches for recruitment/site/sponsor context and
+protocol/publication context, excludes ClinicalTrials.gov and low-value registry
+mirror domains, deduplicates URLs, and returns cited snippets grouped by source
+type. The patient profile, report, match facts, location, and clarification
+answers are never sent to Keenable. Search queries and results may be retained by
+Keenable under its default data policy, which is why this boundary is enforced.
+
+The official SDK works keyless for the local demo. For deployment, set
+`KEENABLE_API_KEY` only in the server environment; the SDK reads it automatically.
+Never expose the key in frontend code. Dossiers are cached for one hour.
+
+Keenable evidence may help a human investigate a shortlisted trial but never
+changes its match classification. A future cross-trial comparison can consume the
+same normalized source categories without coupling web research to eligibility.
 
 ## Deferred demo work
 
