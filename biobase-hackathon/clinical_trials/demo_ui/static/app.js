@@ -7,6 +7,10 @@ const errorEl = document.querySelector('#errorState');
 const mismatchExplanation = document.querySelector('#mismatchExplanation');
 const showExcluded = document.querySelector('#showExcluded');
 const template = document.querySelector('#trialTemplate');
+const useRadius = document.querySelector('#useRadius');
+const radiusFields = document.querySelector('#radiusFields');
+const radiusStatus = document.querySelector('#radiusStatus');
+const radiusNote = document.querySelector('#radiusNote');
 
 let answersByTrial = {};
 let hasSearched = false;
@@ -24,13 +28,26 @@ function optionalNumber(data, name) {
   return value === '' ? null : Number(value);
 }
 
+function setRadiusEnabled(enabled) {
+  useRadius.checked = enabled;
+  useRadius.setAttribute('aria-expanded', String(enabled));
+  radiusFields.classList.toggle('hidden', !enabled);
+  radiusNote.classList.toggle('hidden', !enabled);
+  radiusFields.querySelectorAll('input, select').forEach(field => { field.disabled = !enabled; });
+  form.elements.location_query.required = enabled;
+  radiusStatus.textContent = enabled
+    ? 'On — distances will be checked against trial sites'
+    : 'Off — location does not affect results';
+}
+
 function profileFromForm() {
   const data = new FormData(form);
   const biomarkers = {};
   for (const marker of ['ER', 'PR', 'HER2']) {
     if (data.get(marker) !== 'unknown') biomarkers[marker] = data.get(marker);
   }
-  const locationQuery = data.get('location_query').trim();
+  const radiusEnabled = data.get('use_radius') === 'on';
+  const locationQuery = (data.get('location_query') || '').trim();
   const treatmentValue = data.get('treatment_naive');
   return {
     patient_reference: 'local-demo',
@@ -43,7 +60,7 @@ function profileFromForm() {
     tumor_size_mm: optionalNumber(data, 'tumor_size_mm'),
     treatment_naive: treatmentValue === 'unknown' ? null : treatmentValue === 'yes',
     biomarkers,
-    location: locationQuery ? {
+    location: radiusEnabled && locationQuery ? {
       query: locationQuery,
       radius_miles: Number(data.get('radius_miles'))
     } : {},
@@ -134,10 +151,10 @@ function render(payload) {
     resultsEl.innerHTML = '<div class="error-state">No visible trials in this result set. Turn on “Show trials excluded by patient profile” to inspect records removed by the profile checks.</div>';
     return;
   }
-  for (const result of payload.results) resultsEl.append(renderTrial(result));
+  for (const result of payload.results) resultsEl.append(renderTrial(result, payload.profile.location));
 }
 
-function renderTrial(result) {
+function renderTrial(result, profileLocation = {}) {
   const node = template.content.firstElementChild.cloneNode(true);
   const trial = result.trial;
   node.dataset.assessment = result.assessment;
@@ -165,9 +182,15 @@ function renderTrial(result) {
     const site = node.querySelector('.site-line');
     site.classList.remove('hidden');
     const locationName = [result.nearest_site.facility, result.nearest_site.city, result.nearest_site.state].filter(Boolean).join(' · ');
-    site.textContent = result.distance_miles == null
-      ? `Matching location: ${locationName}`
-      : `Nearest site: ${locationName} · ${result.distance_miles} miles`;
+    if (result.distance_miles == null) {
+      site.textContent = `Matching location: ${locationName}`;
+    } else {
+      const radiusLabel = result.location_status === 'within_preferred_radius'
+        ? `Within ${profileLocation.radius_miles}-mile radius`
+        : `Outside ${profileLocation.radius_miles}-mile radius`;
+      site.classList.toggle('outside-radius', result.location_status === 'outside_preferred_radius');
+      site.textContent = `${radiusLabel} · Nearest site: ${locationName} · ${result.distance_miles} miles`;
+    }
   }
   node.querySelector('.criteria-details pre').textContent = trial.eligibility_text || 'No eligibility text supplied.';
   node.querySelector('.source-line').textContent = `Source: ClinicalTrials.gov · Study updated ${trial.last_update_posted || 'date unavailable'}`;
@@ -214,5 +237,7 @@ form.addEventListener('submit', event => { event.preventDefault(); answersByTria
 document.querySelector('#parseReport').addEventListener('click', parseReport);
 document.querySelector('#reportMode').addEventListener('click', () => setInputMode('report'));
 document.querySelector('#manualMode').addEventListener('click', () => setInputMode('manual'));
+useRadius.addEventListener('change', () => setRadiusEnabled(useRadius.checked));
 showExcluded.addEventListener('change', () => { if (hasSearched) search(); });
-document.querySelector('#resetButton').addEventListener('click', () => { form.reset(); answersByTrial = {}; showExcluded.checked = false; resultsEl.innerHTML = ''; summaryEl.classList.add('hidden'); mismatchExplanation.classList.add('hidden'); errorEl.classList.add('hidden'); emptyEl.classList.remove('hidden'); hasSearched = false; });
+document.querySelector('#resetButton').addEventListener('click', () => { form.reset(); setRadiusEnabled(false); answersByTrial = {}; showExcluded.checked = false; resultsEl.innerHTML = ''; summaryEl.classList.add('hidden'); mismatchExplanation.classList.add('hidden'); errorEl.classList.add('hidden'); emptyEl.classList.remove('hidden'); hasSearched = false; });
+setRadiusEnabled(false);

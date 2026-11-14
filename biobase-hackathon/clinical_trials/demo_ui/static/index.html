@@ -81,19 +81,25 @@ Synthetic example.</textarea>
           <label>Prior treatment for this diagnosis
             <select name="treatment_naive"><option value="unknown">Unknown / not available</option><option value="yes" selected>No prior treatment</option><option value="no">Has received treatment</option></select>
           </label>
-          <div class="two-col location-inputs">
-            <label>Preferred city or ZIP <span class="optional">Optional</span><input name="location_query" placeholder="e.g. Palo Alto, CA"></label>
-            <label>Travel radius
-              <select name="radius_miles">
-                <option value="10">10 miles</option>
-                <option value="25">25 miles</option>
-                <option value="50" selected>50 miles</option>
-                <option value="100">100 miles</option>
-                <option value="250">250 miles</option>
-              </select>
+          <section class="location-filter">
+            <label class="radius-toggle" for="useRadius">
+              <span><strong>Use travel radius</strong><small id="radiusStatus">Off — location does not affect results</small></span>
+              <input id="useRadius" name="use_radius" type="checkbox" role="switch" aria-controls="radiusFields" aria-expanded="false">
             </label>
-          </div>
-          <p class="geocoder-note">Location lookup © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>. Radius is measured straight-line to listed trial sites.</p>
+            <div id="radiusFields" class="two-col location-inputs hidden">
+              <label>Preferred city or ZIP<input name="location_query" placeholder="e.g. Palo Alto, CA" disabled></label>
+              <label>Maximum distance
+                <select name="radius_miles" disabled>
+                  <option value="10">10 miles</option>
+                  <option value="25">25 miles</option>
+                  <option value="50" selected>50 miles</option>
+                  <option value="100">100 miles</option>
+                  <option value="250">250 miles</option>
+                </select>
+              </label>
+            </div>
+            <p id="radiusNote" class="geocoder-note hidden">Location lookup © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>. Radius is measured straight-line to listed trial sites.</p>
+          </section>
           <div class="search-row">
             <label>Trials to fetch<select name="page_size"><option>5</option><option selected>10</option><option>20</option></select></label>
             <button class="primary-button" type="submit"><span>Search trials</span><span aria-hidden="true">→</span></button>
