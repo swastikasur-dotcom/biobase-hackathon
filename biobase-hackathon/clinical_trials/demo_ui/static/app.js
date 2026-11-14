@@ -201,6 +201,7 @@ function renderTrial(result, profileLocation = {}) {
 async function researchTrial(node, trial) {
   const button = node.querySelector('.research-button');
   const status = node.querySelector('.research-status');
+  const dates = node.querySelector('.research-dates');
   const sources = node.querySelector('.research-sources');
   button.disabled = true;
   button.textContent = 'Searching public sources…';
@@ -208,19 +209,29 @@ async function researchTrial(node, trial) {
   status.textContent = 'Searching participating-centre pages, related research, and sponsor updates…';
   sources.classList.add('hidden');
   sources.innerHTML = '';
+  dates.classList.add('hidden');
   try {
     const response = await fetch('/api/research', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({nct_id: trial.nct_id, title: trial.title})
+      body: JSON.stringify({
+        nct_id: trial.nct_id,
+        title: trial.title,
+        registry_last_updated: trial.last_update_posted
+      })
     });
     const dossier = await response.json();
     if (!response.ok) throw new Error(dossier.error || 'Public-web research failed');
-    renderResearchSources(sources, dossier.sources);
+    renderResearchSources(sources, dossier.sources, dossier.researched_at);
     sources.classList.remove('hidden');
+    dates.textContent = [
+      dossier.registry_last_updated ? `ClinicalTrials.gov record last updated: ${dossier.registry_last_updated}` : null,
+      `Sources checked: ${formatDate(dossier.researched_at)}`
+    ].filter(Boolean).join(' · ');
+    dates.classList.remove('hidden');
     status.textContent = dossier.sources.length
-      ? `${dossier.sources.length} public source${dossier.sources.length === 1 ? '' : 's'} found. These are context, not eligibility evidence.`
-      : 'No additional public sources were found for this trial.';
+      ? `${dossier.sources.length} source${dossier.sources.length === 1 ? '' : 's'} with direct NCT-specific evidence found. These do not establish eligibility.`
+      : 'No fetched source contained a direct NCT-specific evidence passage.';
     button.textContent = 'Sources found';
   } catch (error) {
     status.classList.add('failure');
@@ -230,7 +241,7 @@ async function researchTrial(node, trial) {
   }
 }
 
-function renderResearchSources(container, sources) {
+function renderResearchSources(container, sources, researchedAt) {
   const labels = {
     recruitment_or_site: 'Participating-centre / recruitment page',
     publication_or_protocol: 'Research or protocol context',
@@ -257,13 +268,22 @@ function renderResearchSources(container, sources) {
     link.target = '_blank';
     link.rel = 'noopener';
     link.textContent = `${source.title} ↗`;
-    const snippet = document.createElement('p');
-    snippet.textContent = source.snippet || 'Keenable found this page for the trial identifier.';
+    const evidence = document.createElement('blockquote');
+    evidence.className = 'evidence-quote';
+    evidence.textContent = source.evidence_quote;
     const meta = document.createElement('small');
-    meta.textContent = [source.domain, source.published_at ? `Published ${source.published_at.slice(0, 10)}` : null].filter(Boolean).join(' · ');
-    article.append(category, purpose, link, snippet, meta);
+    meta.textContent = [
+      source.domain,
+      source.published_at ? `Source published: ${source.published_at.slice(0, 10)}` : 'Source publication date unavailable',
+      `Evidence checked: ${formatDate(researchedAt)}`
+    ].join(' · ');
+    article.append(category, purpose, link, evidence, meta);
     container.append(article);
   }
+}
+
+function formatDate(value) {
+  return value ? value.slice(0, 10) : 'today';
 }
 
 function listItem(text) {

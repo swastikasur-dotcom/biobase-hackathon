@@ -73,7 +73,11 @@ def run_parse_report(payload):
 
 
 def run_research(payload):
-    return RESEARCH_PROVIDER.research(payload.get("nct_id"), title=payload.get("title"))
+    return RESEARCH_PROVIDER.research(
+        payload.get("nct_id"),
+        title=payload.get("title"),
+        registry_last_updated=payload.get("registry_last_updated"),
+    )
 
 
 class DemoHandler(BaseHTTPRequestHandler):

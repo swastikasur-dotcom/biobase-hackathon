@@ -42,6 +42,30 @@ def _mentions_trial_identifier(title, snippet, nct_id):
     return nct_id in extracted_text
 
 
+def _evidence_prompt(category, nct_id):
+    focus = {
+        "recruitment_or_site": "a participating centre, recruitment status, or contact details",
+        "publication_or_protocol": "the treatment, study design, intervention, or result",
+        "sponsor_update": "a sponsor milestone, enrollment update, or study result",
+    }.get(category, "a concrete fact about the study")
+    return (
+        "Find direct evidence about clinical trial {} on this page. Return ONLY one or two short "
+        "verbatim sentences that include {} and describe {}. If the page does not contain that "
+        "evidence, return exactly NOT_FOUND. Do not infer or summarize."
+    ).format(nct_id, nct_id, focus)
+
+
+def _clean_evidence_quote(content, nct_id):
+    quote = " ".join(str(content or "").replace("FOUND:", "").split()).strip()
+    if not quote or quote.upper().startswith("NOT_FOUND") or nct_id not in quote.upper():
+        return None
+    return quote[:900]
+
+
+def _evidence_key(quote):
+    return " ".join(re.findall(r"[a-z0-9]+", quote.lower()))
+
+
 class KeenableTrialResearchProvider:
     """Create a cited public-web dossier from an NCT identifier only."""
 
@@ -54,7 +78,7 @@ class KeenableTrialResearchProvider:
         self.cache = cache
         self.now = now or (lambda: datetime.now(timezone.utc))
 
-    def research(self, nct_id, title=None):
+    def research(self, nct_id, title=None, registry_last_updated=None):
         nct_id = str(nct_id or "").strip().upper()
         if not NCT_ID_PATTERN.fullmatch(nct_id):
             raise ValueError("nct_id must use the format NCT followed by eight digits")
@@ -69,7 +93,7 @@ class KeenableTrialResearchProvider:
             '"{}" site:pubmed.ncbi.nlm.nih.gov OR site:pmc.ncbi.nlm.nih.gov'.format(nct_id),
             '"{}" sponsor announces results'.format(nct_id),
         ]
-        collected = []
+        candidates = []
         seen_urls = set()
         for query in queries:
             response = self.client.search(
@@ -88,7 +112,7 @@ class KeenableTrialResearchProvider:
                 if not _mentions_trial_identifier(result.title, snippet, nct_id):
                     continue
                 seen_urls.add(url)
-                collected.append({
+                candidates.append({
                     "title": str(result.title or parsed.netloc).strip(),
                     "url": url,
                     "domain": parsed.netloc,
@@ -98,13 +122,34 @@ class KeenableTrialResearchProvider:
                     "trial_specific": True,
                 })
 
-        collected.sort(key=_source_priority)
+        candidates.sort(key=_source_priority)
+        collected = []
+        seen_evidence = set()
+        for candidate in candidates[:6]:
+            page = self.client.fetch(
+                candidate["url"],
+                prompt=_evidence_prompt(candidate["category"], nct_id),
+                max_chars=1200,
+            )
+            quote = _clean_evidence_quote(page.content, nct_id)
+            if quote is None:
+                continue
+            key = (candidate["domain"].lower(), _evidence_key(quote))
+            if key in seen_evidence:
+                continue
+            seen_evidence.add(key)
+            candidate["url"] = str(page.url or candidate["url"])
+            candidate["title"] = str(page.title or candidate["title"])
+            candidate["evidence_quote"] = quote
+            candidate["published_at"] = page.published_at or candidate["published_at"]
+            collected.append(candidate)
 
         dossier = {
             "nct_id": nct_id,
             "trial_title": str(title or "").strip()[:500],
             "provider": "Keenable",
             "researched_at": self.now().isoformat(),
+            "registry_last_updated": str(registry_last_updated or "").strip() or None,
             "sources": collected,
             "review_note": (
                 "Public-web context only. Sources may be stale or incomplete and do not change the "

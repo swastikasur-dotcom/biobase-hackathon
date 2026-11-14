@@ -19,7 +19,8 @@ class DemoUiTests(unittest.TestCase):
         self.assertIn('participating-centre pages', html)
         self.assertIn('Sources must visibly mention this NCT ID', html)
         self.assertIn("fetch('/api/research'", script)
-        self.assertIn("{nct_id: trial.nct_id, title: trial.title}", script)
+        self.assertIn('registry_last_updated: trial.last_update_posted', script)
+        self.assertIn('source.evidence_quote', script)
 
     def test_synthetic_report_can_prefill_profile(self):
         report = """Patient: F, age band 45-49 | Report year: 2024
@@ -86,9 +87,13 @@ Synthetic example.
     def test_research_endpoint_passes_only_public_trial_metadata(self):
         expected = {"nct_id": "NCT00000004", "sources": []}
         with patch("clinical_trials.demo_ui.server.RESEARCH_PROVIDER.research", return_value=expected) as research:
-            output = run_research({"nct_id": "NCT00000004", "title": "Public title", "patient": "ignored"})
+            output = run_research({
+                "nct_id": "NCT00000004", "title": "Public title", "registry_last_updated": "2026-11-10", "patient": "ignored",
+            })
         self.assertEqual(output, expected)
-        research.assert_called_once_with("NCT00000004", title="Public title")
+        research.assert_called_once_with(
+            "NCT00000004", title="Public title", registry_last_updated="2026-11-10",
+        )
 
 
 if __name__ == "__main__":
