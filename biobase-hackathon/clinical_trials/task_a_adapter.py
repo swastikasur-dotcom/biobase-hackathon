@@ -21,6 +21,7 @@ def profile_from_task_a_fields(fields, patient_reference=None):
         raise ValueError("Task A fields need an organ before trial discovery")
     sex = {"F": "female", "M": "male"}.get(fields.get("sex"), "unknown")
     biomarkers = _biomarkers(fields)
+    tumor_size_mm = _tumor_size_mm(fields.get("Tumor size", ""))
     facts = {}
     for source, target in (
         ("age_band", "age_band"),
@@ -38,8 +39,10 @@ def profile_from_task_a_fields(fields, patient_reference=None):
         sex=sex,
         histology=fields.get("Histologic type") or fields.get("Diagnosis"),
         stage=fields.get("Pathologic stage (AJCC 8th ed.)") or fields.get("Pathologic stage"),
+        tumor_size_mm=tumor_size_mm,
         biomarkers=biomarkers,
         pathology_facts=facts,
+        fact_sources={key: "pathology_report" for key in facts},
     )
 
 
@@ -55,3 +58,11 @@ def _biomarkers(fields):
         if match:
             values["HER2"] = match.group(1).lower()
     return values
+
+
+def _tumor_size_mm(text):
+    match = re.search(r"([\d.]+)\s*(mm|cm)\b", text, re.I)
+    if not match:
+        return None
+    value = float(match.group(1))
+    return value * 10 if match.group(2).lower() == "cm" else value

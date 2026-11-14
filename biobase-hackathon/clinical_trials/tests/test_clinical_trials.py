@@ -75,11 +75,14 @@ class ClinicalTrialsContractTests(unittest.TestCase):
             "sex": "F",
             "age_band": "45-49",
             "Biomarkers": "ER negative; PR negative; HER2 negative",
+            "Tumor size": "2.4 cm",
             "Pathologic stage (AJCC 8th ed.)": "pT2 pN1",
         }, patient_reference="case-42")
         self.assertEqual(profile.biomarkers["HER2"], "negative")
         self.assertIsNone(profile.age_years)
+        self.assertEqual(profile.tumor_size_mm, 24)
         self.assertEqual(profile.pathology_facts["age_band"], "45-49")
+        self.assertEqual(profile.fact_sources["tumor_size"], "pathology_report")
 
 
 if __name__ == "__main__":
