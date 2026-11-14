@@ -119,8 +119,8 @@ def _summary(fields, n_matches):
     if findings:
         parts.append("Key findings: " + "; ".join(findings) + ".")
     parts.append(
-        f"It matches {n_matches} of the {len(RULES)} search criteria."
-        if n_matches else f"It matches none of the {len(RULES)} search criteria."
+        f"It meets {n_matches} of the {len(RULES)} trial criteria."
+        if n_matches else f"It meets none of the {len(RULES)} trial criteria."
     )
     return " ".join(parts)
 

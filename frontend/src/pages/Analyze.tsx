@@ -53,8 +53,8 @@ export default function Analyze() {
       <Breadcrumbs items={[{ label: 'Find patients', to: '/patients' }, { label: 'Analyse a report' }]} />
       <h1 className="text-2xl font-semibold">Analyse a pathology report</h1>
       <p className="mt-1 max-w-2xl text-slate-600">
-        Upload or paste a report. It is read by the same rules used for the hackathon search, categorised against the 30
-        criteria, and explained. The report is processed by the local service only and is not stored.
+        Upload or paste a report. It is read by the hackathon rules and by Jev, categorised against the 30 criteria, and
+        summarised. The rules run in the local service and nothing is stored; Jev receives the report text to score it.
       </p>
 
       <form

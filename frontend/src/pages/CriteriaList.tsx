@@ -27,17 +27,17 @@ export default function CriteriaList() {
   return (
     <div>
       <Breadcrumbs items={[{ label: 'Find patients' }]} />
-      <header className="flex flex-wrap items-start justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">Browse cohorts</h1>
           <p className="mt-1 max-w-2xl text-slate-600">
-            Choose a trial criterion to see the matching pathology reports among the 979 test reports, then export the cohort.
+            Choose a trial criterion to see the matching pathology reports among the 979 test reports.
           </p>
         </div>
-        <Link to="/patients/analyze" className="rounded bg-slate-900 px-3 py-1.5 text-sm font-medium text-white">
-          Analyse a pathology report
+        <Link to="/patients/analyze" className="rounded bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">
+          Analyse a report
         </Link>
-      </header>
+      </div>
       <div className="mt-6">
         <Status queries={[criteria, cohorts, reports]}>
           {groups.map(([organ, items]) => (

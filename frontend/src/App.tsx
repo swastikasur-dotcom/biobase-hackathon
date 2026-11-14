@@ -1,9 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
-import About from './pages/About'
 import AnalysisResultPage from './pages/AnalysisResultPage'
 import Analyze from './pages/Analyze'
+import About from './pages/About'
 import NotFound from './pages/NotFound'
 import Cohort from './pages/Cohort'
 import CriteriaList from './pages/CriteriaList'
@@ -13,6 +13,7 @@ import SlideBrowser from './pages/SlideBrowser'
 import SlideDetail from './pages/SlideDetail'
 import SlideMap from './pages/SlideMap'
 import SlideUploadResult from './pages/SlideUploadResult'
+import TrialMatch from './pages/TrialMatch'
 import DraftProvider from './state/DraftProvider'
 
 const queryClient = new QueryClient()
@@ -26,6 +27,7 @@ export default function App() {
             <Route element={<Layout />}>
               <Route index element={<Home />} />
               <Route path="patients" element={<CriteriaList />} />
+              <Route path="patients/match" element={<TrialMatch />} />
               <Route path="patients/analyze" element={<Analyze />} />
               <Route path="patients/result" element={<AnalysisResultPage />} />
               <Route path="patients/browse" element={<Navigate to="/patients" replace />} />

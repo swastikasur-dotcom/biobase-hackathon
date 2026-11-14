@@ -7,3 +7,6 @@ httpx>=0.27
 # Data export script (frontend/scripts/export_data.py): 2D projection of the GigaPath slide embeddings
 numpy>=1.24
 scikit-learn>=1.3
+
+# Public-source research for shortlisted trials (POST /api/trials/research); the route returns 503 if this is not installed
+keenable==0.1.5

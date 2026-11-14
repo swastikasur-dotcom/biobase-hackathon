@@ -96,6 +96,9 @@ export interface AnalysisResult {
   not_matched: CriterionResult[]
   summary: string
   warnings: string[]
+  /** Jev's probability that the report meets each criterion; null when Jev could not be asked. */
+  jev: Record<string, number> | null
+  jev_error: string | null
 }
 
 /** Router state passed from the upload page to the result page. */
@@ -103,6 +106,102 @@ export interface ResultLocationState {
   result: AnalysisResult
   /** The text that was analysed. */
   text: string
+}
+
+/** De-identified patient profile used to search ClinicalTrials.gov (see clinical_trials/models.py). */
+export interface TrialProfile {
+  primary_organ: string
+  patient_reference?: string | null
+  age_years?: number | null
+  sex?: string | null
+  histology?: string | null
+  stage?: string | null
+  metastatic_status?: string | null
+  tumor_size_mm?: number | null
+  treatment_naive?: boolean | null
+  biomarkers: Record<string, string>
+  pathology_facts: Record<string, string>
+  location: { query?: string; radius_miles?: number }
+}
+
+/** Response of POST /api/trials/profile. */
+export interface ProfileFromReport {
+  profile: TrialProfile
+  parsed_fields: Record<string, FieldValue>
+  review_note: string
+}
+
+export type TrialAssessment = 'likely_relevant' | 'needs_more_information' | 'not_a_match'
+export type Answer = 'yes' | 'no' | 'unknown'
+/** NCT id -> question id -> the user's answer. */
+export type TrialAnswers = Record<string, Record<string, Answer>>
+
+export interface ClarificationQuestion {
+  question_id: string
+  prompt: string
+  criterion_evidence: string
+  yes_effect: string
+  no_effect: string
+}
+
+export interface TrialSite {
+  facility?: string
+  city?: string
+  state?: string
+  country?: string
+}
+
+export interface TrialMatch {
+  nct_id: string
+  status: string
+  assessment: TrialAssessment
+  matched_facts: string[]
+  exclusions: string[]
+  unknown_requirements: string[]
+  clarification_questions: ClarificationQuestion[]
+  nearest_site: TrialSite | null
+  distance_miles: number | null
+  location_status: string | null
+  source_url: string | null
+  source_last_updated: string | null
+  review_note: string
+  trial: {
+    nct_id: string
+    title: string
+    status: string
+    conditions: string[]
+    interventions: string[]
+    official_url: string | null
+    eligibility_text: string | null
+    last_update_posted: string | null
+  }
+}
+
+/** Response of POST /api/trials/search. */
+export interface TrialSearchResult {
+  summary: Record<TrialAssessment, number>
+  results: TrialMatch[]
+  not_matches_hidden: boolean
+  disclaimer: string
+  profile: TrialProfile
+  /** The condition text actually sent to ClinicalTrials.gov. */
+  search_term: string
+}
+
+export interface TrialSource {
+  title: string
+  url: string
+  domain: string
+  category: string
+  evidence_quote: string
+  published_at?: string | null
+}
+
+/** Response of POST /api/trials/research. */
+export interface TrialDossier {
+  nct_id: string
+  sources: TrialSource[]
+  review_note: string
 }
 
 /** Router state for the slide analysis page (demo mode: a file, if any, is never read or sent anywhere). */

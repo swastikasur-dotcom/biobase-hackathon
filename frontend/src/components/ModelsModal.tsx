@@ -13,12 +13,14 @@ const hide = (e: React.SyntheticEvent<HTMLImageElement>) => {
 
 type Tone = 'plain' | 'soft' | 'strong'
 
-function Box({ x, y, w, h, title, sub, tone = 'plain' }: { x: number; y: number; w: number; h: number; title: string; sub?: string; tone?: Tone }) {
+const delay = (d: number) => ({ '--d': `${d}s` }) as React.CSSProperties
+
+function Box({ x, y, w, h, title, sub, tone = 'plain', d = 0 }: { x: number; y: number; w: number; h: number; title: string; sub?: string; tone?: Tone; d?: number }) {
   const box = { plain: 'fill-white stroke-slate-300', soft: 'fill-slate-100 stroke-slate-300', strong: 'fill-slate-900 stroke-slate-900' }[tone]
   const head = tone === 'strong' ? 'fill-white' : 'fill-slate-900'
   const subtle = tone === 'strong' ? 'fill-slate-300' : 'fill-slate-500'
   return (
-    <g>
+    <g className="svg-pop" style={delay(d)}>
       <rect x={x} y={y} width={w} height={h} rx={6} className={box} strokeWidth={1.25} />
       <text x={x + w / 2} y={y + (sub ? h / 2 - 3 : h / 2 + 5)} textAnchor="middle" className={`${head} text-[13px] font-semibold`}>
         {title}
@@ -32,8 +34,8 @@ function Box({ x, y, w, h, title, sub, tone = 'plain' }: { x: number; y: number;
   )
 }
 
-const Arrow = ({ d }: { d: string }) => (
-  <path d={d} className="fill-none stroke-slate-400" strokeWidth={1.5} markerEnd="url(#arrow)" />
+const Arrow = ({ d, t = 0 }: { d: string; t?: number }) => (
+  <path d={d} pathLength={1} className="svg-draw fill-none stroke-slate-400" style={delay(t)} strokeWidth={1.5} markerEnd="url(#arrow)" />
 )
 
 const Defs = () => (
@@ -50,24 +52,24 @@ function DiagramA() {
     <svg viewBox="0 0 720 220" role="img" aria-label="A pathology report is read by rules and by Jev, giving matches and probabilities for 30 criteria" className="w-full min-w-[560px]">
       <Defs />
       {/* report page */}
-      <rect x={10} y={40} width={110} height={140} rx={6} className="fill-white stroke-slate-400" strokeWidth={1.5} />
+      <rect x={10} y={40} width={110} height={140} rx={6} className="svg-pop fill-white stroke-slate-400" strokeWidth={1.5} />
       {[62, 76, 90, 104, 118, 132, 146].map((y, i) => (
-        <rect key={y} x={24} y={y} width={i === 0 ? 60 : 82 - (i % 3) * 14} height={5} rx={2} className="fill-slate-300" />
+        <rect key={y} x={24} y={y} width={i === 0 ? 60 : 82 - (i % 3) * 14} height={5} rx={2} className="svg-grow fill-slate-300" style={delay(0.08 * i)} />
       ))}
       <text x={65} y={30} textAnchor="middle" className="fill-slate-700 text-[12px] font-medium">Pathology report</text>
       <text x={65} y={198} textAnchor="middle" className="fill-slate-500 text-[11px]">free text</text>
 
-      <Arrow d="M124 90 H166 V68 H186" />
-      <Arrow d="M124 130 H166 V152 H186" />
+      <Arrow d="M124 90 H166 V68 H186" t={0.3} />
+      <Arrow d="M124 130 H166 V152 H186" t={0.3} />
 
-      <Box x={190} y={36} w={250} h={64} title="Rules" sub="parse fields, then one rule per criterion" tone="plain" />
-      <Box x={190} y={120} w={250} h={64} title="Jev" sub="reads the text and the criterion wording" tone="soft" />
+      <Box x={190} y={36} w={250} h={64} title="Rules" sub="parse fields, then one rule per criterion" tone="plain" d={0.5} />
+      <Box x={190} y={120} w={250} h={64} title="Jev" sub="reads the text and the criterion wording" tone="soft" d={0.6} />
 
-      <Arrow d="M444 68 H494" />
-      <Arrow d="M444 152 H494" />
+      <Arrow d="M444 68 H494" t={0.85} />
+      <Arrow d="M444 152 H494" t={0.95} />
 
-      <Box x={498} y={36} w={212} h={64} title="Match / no match" sub="for each of 30 criteria" tone="plain" />
-      <Box x={498} y={120} w={212} h={64} title="Probability 0-100%" sub="for each of 30 criteria" tone="soft" />
+      <Box x={498} y={36} w={212} h={64} title="Match / no match" sub="for each of 30 criteria" tone="plain" d={1.05} />
+      <Box x={498} y={120} w={212} h={64} title="Probability 0-100%" sub="for each of 30 criteria" tone="soft" d={1.15} />
     </svg>
   )
 }
@@ -77,17 +79,17 @@ function DiagramC1() {
   return (
     <svg viewBox="190 0 530 130" role="img" aria-label="A slide becomes a GigaPath embedding, then logistic regression predicts one of 15 organs with a confidence" className="w-full min-w-[420px]">
       <Defs />
-      <Box x={200} y={30} w={160} h={70} title="GigaPath" sub="slide embedding" tone="plain" />
+      <Box x={200} y={30} w={160} h={70} title="GigaPath" sub="slide embedding" tone="plain" d={0.1} />
       {/* the vector */}
-      <Arrow d="M364 65 H402" />
+      <Arrow d="M364 65 H402" t={0.4} />
       {Array.from({ length: 12 }, (_, i) => (
-        <rect key={i} x={408} y={14 + i * 8.6} width={34} height={7} rx={2} className="fill-slate-500" opacity={0.25 + ((i * 37) % 10) / 14} />
+        <rect key={i} x={408} y={14 + i * 8.6} width={34} height={7} rx={2} className="svg-grow fill-slate-500" style={delay(0.55 + i * 0.04)} opacity={0.25 + ((i * 37) % 10) / 14} />
       ))}
       <text x={425} y={124} textAnchor="middle" className="fill-slate-500 text-[11px]">1,536 numbers</text>
-      <Arrow d="M448 65 H486" />
-      <Box x={490} y={30} w={110} h={70} title="Logistic" sub="regression" tone="soft" />
-      <Arrow d="M604 65 H630" />
-      <Box x={634} y={30} w={80} h={70} title="Organ" sub="+ confidence" tone="strong" />
+      <Arrow d="M448 65 H486" t={1.05} />
+      <Box x={490} y={30} w={110} h={70} title="Logistic" sub="regression" tone="soft" d={1.2} />
+      <Arrow d="M604 65 H630" t={1.45} />
+      <Box x={634} y={30} w={80} h={70} title="Organ" sub="+ confidence" tone="strong" d={1.6} />
     </svg>
   )
 }
@@ -98,12 +100,12 @@ function DiagramC2() {
     <svg viewBox="0 0 720 150" role="img" aria-label="Slides in the predicted organ are ranked first by embedding similarity, then all others" className="w-full min-w-[560px]">
       <Defs />
       <Box x={10} y={50} w={130} h={50} title="Query slide" sub="organ from C1" tone="strong" />
-      <Arrow d="M144 75 H186" />
-      <Box x={190} y={20} w={210} h={50} title="1. Same predicted organ" sub="ordered by GigaPath similarity" tone="soft" />
-      <Box x={190} y={85} w={210} h={50} title="2. All other slides" sub="ordered by GigaPath similarity" tone="plain" />
-      <Arrow d="M404 45 H466" />
-      <Arrow d="M404 110 H466" />
-      <Box x={470} y={50} w={240} h={50} title="Top 10 slides" sub="the same-organ group fills it first" tone="plain" />
+      <Arrow d="M144 75 H186" t={0.25} />
+      <Box x={190} y={20} w={210} h={50} title="1. Same predicted organ" sub="ordered by GigaPath similarity" tone="soft" d={0.45} />
+      <Box x={190} y={85} w={210} h={50} title="2. All other slides" sub="ordered by GigaPath similarity" tone="plain" d={0.6} />
+      <Arrow d="M404 45 H466" t={0.9} />
+      <Arrow d="M404 110 H466" t={1.0} />
+      <Box x={470} y={50} w={240} h={50} title="Top 10 slides" sub="the same-organ group fills it first" tone="plain" d={1.15} />
     </svg>
   )
 }
@@ -114,7 +116,7 @@ const Stat = ({ children }: { children: ReactNode }) => (
 
 function Section({ id, tag, title, children }: { id: string; tag: string; title: string; children: ReactNode }) {
   return (
-    <section role="tabpanel" id={`models-panel-${id}`} aria-labelledby={`models-tab-${id}`} className="px-5 py-5">
+    <section role="tabpanel" id={`models-panel-${id}`} aria-labelledby={`models-tab-${id}`} className="tab-enter px-5 py-5">
       <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{tag}</p>
       <h3 className="mt-0.5 text-lg font-semibold">{title}</h3>
       {children}
@@ -201,7 +203,7 @@ export default function ModelsModal({ onClose }: { onClose: () => void }) {
         <div className="mt-3 overflow-x-auto rounded border border-slate-200 bg-white p-2">
           <DiagramA />
         </div>
-        <ul className="mt-3 flex flex-wrap gap-2">
+        <ul className="stagger mt-3 flex flex-wrap gap-2">
           <Stat>Rules: F1 1.000 on 9,010 training reports</Stat>
           <Stat>Jev agrees on 29,365 of 29,370 decisions</Stat>
           <Stat>Jev under 50% on a match → “review”</Stat>
@@ -217,7 +219,7 @@ export default function ModelsModal({ onClose }: { onClose: () => void }) {
           confidence. Predictions under 50% confidence are flagged for manual review.
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-3 overflow-x-auto rounded border border-slate-200 bg-white p-3">
-          <div className="flex gap-3">
+          <div className="stagger flex gap-3">
             <Img src={thumbUrl(EXAMPLE)} label="Whole slide" className="h-24 w-24" />
             <Img src={tileUrl(EXAMPLE, EXAMPLE_TILE)} label="One 20x tile" className="h-24 w-24" />
             <span aria-hidden className="mt-9 text-slate-400">→</span>
@@ -226,7 +228,7 @@ export default function ModelsModal({ onClose }: { onClose: () => void }) {
             <DiagramC1 />
           </div>
         </div>
-        <ul className="mt-3 flex flex-wrap gap-2">
+        <ul className="stagger mt-3 flex flex-wrap gap-2">
           <Stat>87.4% accuracy (leave-one-out)</Stat>
           <Stat>Copying the nearest slide: 77.9%</Stat>
           <Stat>Other models and metadata did not help</Stat>
@@ -242,7 +244,7 @@ export default function ModelsModal({ onClose }: { onClose: () => void }) {
           prediction therefore pulls in the wrong slides.
         </p>
         <div className="mt-3 rounded border border-slate-200 bg-white p-3">
-          <div className="flex flex-wrap items-start gap-3">
+          <div className="stagger flex flex-wrap items-start gap-3">
             <Img src={thumbUrl(EXAMPLE)} label="Query (Kidney)" className="h-20 w-20 ring-2 ring-slate-900" />
             <span aria-hidden className="mt-8 text-slate-400">→</span>
             {SIMILAR.map((id, i) => (
@@ -254,7 +256,7 @@ export default function ModelsModal({ onClose }: { onClose: () => void }) {
             <DiagramC2 />
           </div>
         </div>
-        <ul className="mt-3 flex flex-wrap gap-2">
+        <ul className="stagger mt-3 flex flex-wrap gap-2">
           <Stat>Precision@10: 0.83 (plain similarity: 0.45)</Stat>
           <Stat>Precision@1: 0.87</Stat>
         </ul>

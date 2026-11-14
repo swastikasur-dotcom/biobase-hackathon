@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import ModelsModal from './ModelsModal'
 
 const link = ({ isActive }: { isActive: boolean }) =>
@@ -10,6 +10,7 @@ const link = ({ isActive }: { isActive: boolean }) =>
 export default function Layout() {
   const { pathname } = useLocation()
   const [showModels, setShowModels] = useState(false)
+  const findPatientsActive = pathname.startsWith('/patients') && pathname !== '/patients/match'
   return (
     <div className="min-h-screen">
       <a
@@ -23,8 +24,12 @@ export default function Layout() {
           <NavLink to="/" end className="mr-4 text-lg font-semibold">
             Biobase
           </NavLink>
-          <NavLink to="/patients" className={link}>
+          {/* /patients/match is its own tab, so "Find patients" must not stay highlighted there. */}
+          <Link to="/patients" aria-current={findPatientsActive ? 'page' : undefined} className={link({ isActive: findPatientsActive })}>
             Find patients
+          </Link>
+          <NavLink to="/patients/match" className={link}>
+            Find trials
           </NavLink>
           <NavLink to="/slides" end className={link}>
             Explore slides

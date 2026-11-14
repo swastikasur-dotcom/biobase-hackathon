@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom'
+import JevBadge from './JevBadge'
+import { JEV_REVIEW_BELOW } from '../lib/jev'
 import { useReports } from '../data/api'
 import { REPORT_ORGAN_TO_SLIDE_GROUP, titleCase } from '../lib/organs'
 import { similarReports } from '../lib/similar'
@@ -26,6 +28,16 @@ export default function AnalysisResultView({ result }: { result: AnalysisResult 
     reports.data ?? [],
   )
   const slideGroup = REPORT_ORGAN_TO_SLIDE_GROUP[result.organ]
+  const jev = result.jev
+  const ruleIds = new Set(result.matches.map((m) => m.id))
+  // Criteria Jev says yes to (>= 50%), most confident first, with the ones the rules also matched marked.
+  const jevYes = jev
+    ? Object.entries(jev)
+        .filter(([, p]) => p >= JEV_REVIEW_BELOW)
+        .sort((a, b) => b[1] - a[1])
+    : []
+  const bothCount = jevYes.filter(([id]) => ruleIds.has(id)).length
+  const texts = new Map([...result.matches, ...result.not_matched].map((c) => [c.id, c.text]))
 
   return (
     <div className="stagger space-y-8">
@@ -46,6 +58,14 @@ export default function AnalysisResultView({ result }: { result: AnalysisResult 
             {titleCase(result.organ)}
           </span>
           <p className="leading-relaxed">{result.summary}</p>
+          {jev && (
+            <p className="mt-2 leading-relaxed">
+              Jev says yes to {jevYes.length} criteri{jevYes.length === 1 ? 'on' : 'a'}; {bothCount} of them also match the rules
+              {result.matches.length > bothCount
+                ? `, and ${result.matches.length - bothCount} rule match${result.matches.length - bothCount === 1 ? '' : 'es'} Jev is unsure about.`
+                : '.'}
+            </p>
+          )}
           <p className="mt-2 text-xs text-slate-500">
             Generated from the fields read from the report, not a clinical interpretation.
           </p>
@@ -69,6 +89,11 @@ export default function AnalysisResultView({ result }: { result: AnalysisResult 
                   <p>
                     <span className="mr-2 font-mono text-xs text-slate-500">{m.id}</span>
                     {m.text}
+                    {jev && (
+                      <span className="ml-2 align-middle">
+                        <JevBadge p={jev[m.id] ?? 0} />
+                      </span>
+                    )}
                   </p>
                   <Link to={`/patients/${m.id}`} className="shrink-0 text-sm text-blue-700 hover:underline">
                     See cohort
@@ -98,6 +123,34 @@ export default function AnalysisResultView({ result }: { result: AnalysisResult 
               ))}
             </ul>
           </details>
+        )}
+      </section>
+
+      <section aria-labelledby="jev-h">
+        <h2 id="jev-h" className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
+          Jev
+        </h2>
+        {!jev ? (
+          <p role="status" className="rounded border border-slate-200 bg-white p-4 text-sm text-slate-600">
+            {result.jev_error ?? 'Jev was not asked.'} The rule results above are unaffected.
+          </p>
+        ) : jevYes.length === 0 ? (
+          <p className="rounded border border-slate-200 bg-white p-4 text-slate-600">Jev does not think this report meets any of the 30 criteria.</p>
+        ) : (
+          <ul className="divide-y divide-slate-100 rounded border border-slate-200 bg-white">
+            {jevYes.map(([id, p]) => (
+              <li key={id} className="flex items-start justify-between gap-3 px-3 py-2 text-sm">
+                <span>
+                  <span className="mr-2 font-mono text-xs text-slate-500">{id}</span>
+                  {texts.get(id) ?? ''}
+                  <span className={`ml-2 text-xs ${ruleIds.has(id) ? 'text-emerald-700' : 'text-amber-800'}`}>
+                    {ruleIds.has(id) ? 'rules agree' : 'rules do not match'}
+                  </span>
+                </span>
+                <JevBadge p={p} />
+              </li>
+            ))}
+          </ul>
         )}
       </section>
 
