@@ -22,7 +22,7 @@ HISTOLOGY_PATTERNS = {
     "clear cell": r"\bclear cell\b",
     "poorly cohesive": r"\bpoorly cohesive\b",
 }
-ROMAN_STAGE = {"I": 1, "II": 2, "III": 3, "IV": 4}
+STAGE_VALUES = {"0": 0, "I": 1, "II": 2, "III": 3, "IV": 4}
 
 
 @dataclass
@@ -140,19 +140,19 @@ def _biomarker_requirements(inclusion):
 
 def _stage_requirement(inclusion):
     for line in _criterion_lines(inclusion):
-        match = re.search(r"\bstage\s+(I{1,3}|IV)\s*[-–]\s*(I{1,3}|IV)\b", line, re.I)
+        match = re.search(r"\bstage\s+(0|I{1,3}|IV)\s*[-–]\s*(0|I{1,3}|IV)\b", line, re.I)
         if match:
-            low, high = ROMAN_STAGE[match.group(1).upper()], ROMAN_STAGE[match.group(2).upper()]
+            low, high = STAGE_VALUES[match.group(1).upper()], STAGE_VALUES[match.group(2).upper()]
             return set(range(low, high + 1)), line
-        match = re.search(r"\bstage\s+(I{1,3}|IV)\b", line, re.I)
+        match = re.search(r"\bstage\s+(0|I{1,3}|IV)\b", line, re.I)
         if match:
-            return {ROMAN_STAGE[match.group(1).upper()]}, line
+            return {STAGE_VALUES[match.group(1).upper()]}, line
     return None, None
 
 
 def _profile_stage(stage):
-    match = re.search(r"\bstage\s+(I{1,3}|IV)\b", stage or "", re.I)
-    return ROMAN_STAGE.get(match.group(1).upper()) if match else None
+    match = re.search(r"\bstage\s+(0|I{1,3}|IV)\b", stage or "", re.I)
+    return STAGE_VALUES.get(match.group(1).upper()) if match else None
 
 
 def _minimum_tumor_size(inclusion):
@@ -280,7 +280,7 @@ def assess(profile: PatientProfile, trial: TrialRecord, answers=None) -> MatchAs
     if allowed_stages:
         observed_stage = _profile_stage(profile.stage)
         actual = None if observed_stage is None else observed_stage in allowed_stages
-        inverse_stage = {value: key for key, value in ROMAN_STAGE.items()}
+        inverse_stage = {value: key for key, value in STAGE_VALUES.items()}
         label = "overall stage is within " + ", ".join("Stage " + inverse_stage[n] for n in sorted(allowed_stages))
         _check_boolean_requirement(
             "stage_matches", "Is the patient's overall stage within the trial range?", evidence,

@@ -107,6 +107,16 @@ Exclusion Criteria:
         result = assess(profile, trial(), answers={"treatment_naive": "no"})
         self.assertEqual(result.assessment, "not_a_match")
 
+    def test_stage_zero_is_a_supported_overall_stage(self):
+        stage_zero_trial = trial()
+        stage_zero_trial.eligibility_text = "Inclusion Criteria:\n* Stage 0 breast cancer\nExclusion Criteria:\n"
+        profile = PatientProfile.from_dict({
+            "primary_organ": "breast", "age_years": 47, "sex": "female", "stage": "Stage 0",
+        })
+        result = assess(profile, stage_zero_trial)
+        self.assertEqual(result.assessment, "likely_relevant")
+        self.assertIn("overall stage is within Stage 0", result.matched_facts)
+
     def test_location_is_ranked_locally(self):
         profile = PatientProfile.from_dict({
             "primary_organ": "breast", "age_years": 47, "sex": "female",
