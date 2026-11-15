@@ -43,6 +43,9 @@ export default function Layout() {
           <NavLink to="/slides/map" className={link}>
             Slide map
           </NavLink>
+          <NavLink to="/compounds" className={link}>
+            Find compounds
+          </NavLink>
           <button
             type="button"
             onClick={() => setShowModels(true)}

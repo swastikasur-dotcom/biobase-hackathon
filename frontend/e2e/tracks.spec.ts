@@ -652,3 +652,13 @@ test('Browse cohorts: link a ClinicalTrials.gov trial to see the patients that f
   await page.getByRole('link', { name: /SYN-aaa/ }).click()
   await expect(page).toHaveURL(/\/patients\/all\/SYN-aaa$/)
 })
+
+test('Find compounds: the KIT/GIST workbench is embedded and external links open in a new tab', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Find compounds' }).click()
+  await expect(page).toHaveURL(/\/compounds$/)
+  await expect(page.getByRole('heading', { level: 1, name: 'Find compounds' })).toBeVisible()
+  const frame = page.frameLocator('iframe[title="KIT / GIST evidence workbench"]')
+  await expect(frame.locator('h1').first()).toBeVisible()
+  await expect(frame.locator('a[href^="https://clinicaltrials.gov"]').first()).toHaveAttribute('target', '_blank')
+})
