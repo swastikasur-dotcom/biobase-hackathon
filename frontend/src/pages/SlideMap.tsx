@@ -69,7 +69,7 @@ export default function SlideMap() {
 
       <Status queries={[slides, umap]}>
         {slides.data && umap.data && (
-          <div className="mt-5 grid items-start gap-6 lg:grid-cols-[17rem_1fr]">
+          <div className="stagger mt-5 grid items-start gap-6 lg:grid-cols-[17rem_1fr]">
             {/* ---------- Filters ---------- */}
             <aside aria-label="Map filters" className="space-y-5 rounded-lg border border-slate-200 bg-white p-4 lg:sticky lg:top-4 lg:max-h-[calc(100dvh-2rem)] lg:overflow-y-auto">
               <div>
@@ -115,7 +115,7 @@ export default function SlideMap() {
                     </button>
                   )}
                 </div>
-                <ul className="grid grid-cols-2 gap-x-2 gap-y-0.5 lg:grid-cols-1">
+                <ul className="stagger grid grid-cols-2 gap-x-2 gap-y-0.5 lg:grid-cols-1">
                   {organGroups.map((g, i) => {
                     const n = counts.get(g) ?? 0
                     const on = filters.organs.has(g)
@@ -173,7 +173,9 @@ export default function SlideMap() {
             <div className="min-w-0">
               <div className="mb-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-sm">
                 <p aria-live="polite" className="font-medium">
-                  {filtered ? `Showing ${inView.length} of ${mapped.length} slides` : `${mapped.length} slides`}
+                  <span key={`${filtered}-${inView.length}`} className="fade-in inline-block">
+                    {filtered ? `Showing ${inView.length} of ${mapped.length} slides` : `${mapped.length} slides`}
+                  </span>
                 </p>
                 <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
                   <span className="flex items-center gap-1.5">
@@ -220,7 +222,7 @@ export default function SlideMap() {
                     </button>
                   </p>
                 ) : (
-                  <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+                  <ul key={`${inView.length}-${inView[0]?.id}-${showAll}`} className="stagger mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
                     {(showAll ? inView : inView.slice(0, SHOWN)).map((s) => {
                       const { organ, predicted } = slideOrgan(s)
                       return (

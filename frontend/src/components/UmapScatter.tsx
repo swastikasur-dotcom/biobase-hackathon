@@ -100,7 +100,7 @@ export default function UmapScatter({
           focus.similarIds.map((id) => {
             const a = pos.get(focus.queryId)!
             const b = pos.get(id)
-            return b && <line key={id} x1={pxX(a.x)} y1={pxY(a.y)} x2={pxX(b.x)} y2={pxY(b.y)} stroke="#94a3b8" strokeOpacity={0.45} strokeDasharray="3 3" />
+            return b && <line key={id} className="map-line" style={{ '--d': `${0.05 * (rank.get(id) ?? 0)}s` } as React.CSSProperties} pathLength={1} x1={pxX(a.x)} y1={pxY(a.y)} x2={pxX(b.x)} y2={pxY(b.y)} stroke="#94a3b8" strokeOpacity={0.45} strokeDasharray="3 3" />
           })}
 
         {ordered.map((p) => {
@@ -131,6 +131,9 @@ export default function UmapScatter({
               onKeyDown={(e: KeyboardEvent) => e.key === 'Enter' && navigate(`/slides/${p.id}`)}
             >
               <circle cx={pxX(p.x)} cy={pxY(p.y)} r={Math.max(radius, 9)} fill="transparent" />
+              {emphasised && !dimmed && (
+                <circle cx={pxX(p.x)} cy={pxY(p.y)} r={radius} fill="none" stroke={color} strokeWidth={2} className="map-ping" pointerEvents="none" />
+              )}
               <circle
                 cx={pxX(p.x)}
                 cy={pxY(p.y)}
@@ -139,7 +142,8 @@ export default function UmapScatter({
                 fillOpacity={out ? 0.45 : dimmed ? 0.7 : 1}
                 stroke={role === 'query' ? '#0f172a' : emphasised ? '#1d4ed8' : dimmed ? GREY : color}
                 strokeWidth={role === 'query' ? 3 : emphasised ? 3 : hollow ? 2 : 1}
-                style={{ transition: 'r 0.15s ease, fill 0.2s ease' }}
+                className="map-dot"
+                style={{ transition: 'r 0.15s ease, fill 0.25s ease, fill-opacity 0.3s ease, stroke 0.2s ease', '--d': `${(p.x * 0.9 + p.y * 0.3).toFixed(2)}s` } as React.CSSProperties}
               />
               {role === 'similar' && (
                 <text x={pxX(p.x)} y={pxY(p.y)} textAnchor="middle" dominantBaseline="central" fontSize="10" fontWeight="700" fill="white" pointerEvents="none">
