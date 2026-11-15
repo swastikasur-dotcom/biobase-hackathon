@@ -83,7 +83,7 @@ export default function Cohort() {
                 type="button"
                 onClick={exportCsv}
                 disabled={shown.length === 0}
-                className="rounded bg-slate-900 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-40"
+                className="rounded bg-blue-700 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-40"
               >
                 Export CSV
               </button>

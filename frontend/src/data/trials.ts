@@ -1,4 +1,4 @@
-import type { ProfileFromReport, TrialAnswers, TrialDossier, TrialProfile, TrialSearchResult } from '../types'
+import type { PatientsForTrial, ProfileFromReport, TrialAnswers, TrialDossier, TrialProfile, TrialSearchResult } from '../types'
 
 export class TrialsError extends Error {}
 
@@ -32,6 +32,9 @@ export const searchTrials = (args: { profile: TrialProfile; answers: TrialAnswer
     include_not_matches: args.includeExcluded,
     page_size: 10,
   })
+
+/** The test reports that best fit one registered trial. The trial is the only thing sent to ClinicalTrials.gov. */
+export const patientsForTrial = (trial: string) => post<PatientsForTrial>('patients', { trial, limit: 50 })
 
 /** Cited public-web sources for one trial. Needs the optional research provider on the backend. */
 export const researchTrial = (trial: { nct_id: string; title: string; last_update_posted: string | null }) =>

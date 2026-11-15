@@ -68,7 +68,7 @@ export default function TileViewer({ slide }: { slide: Slide }) {
                 type="button"
                 onClick={() => setZoom(z)}
                 aria-pressed={zoom === z}
-                className={`rounded px-2 py-0.5 ${zoom === z ? 'bg-slate-900 text-white' : 'bg-slate-200'}`}
+                className={`rounded px-2 py-0.5 ${zoom === z ? 'bg-blue-700 text-white' : 'bg-slate-200'}`}
               >
                 {z}x
               </button>

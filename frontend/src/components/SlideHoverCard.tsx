@@ -17,7 +17,7 @@ export default function SlideHoverCard({ slide, badge }: { slide: Slide; badge?:
     <div className="fade-in w-56 overflow-hidden rounded-lg border border-slate-200 bg-white text-xs shadow-xl">
       <div className="relative aspect-[4/3] bg-slate-100">
         <img src={thumbUrl(slide.id)} alt="" className="h-full w-full object-contain" />
-        {badge && <span className="absolute left-1.5 top-1.5 rounded bg-slate-900 px-1.5 py-0.5 font-medium text-white">{badge}</span>}
+        {badge && <span className="absolute left-1.5 top-1.5 rounded bg-blue-700 px-1.5 py-0.5 font-medium text-white">{badge}</span>}
       </div>
       <div className="space-y-1.5 p-2.5">
         <div className="truncate font-mono text-[11px] text-slate-500" title={slide.id}>

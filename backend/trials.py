@@ -19,7 +19,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(HERE), "biobase-hackathon"))
 
 from clinical_trials.cache import TTLCache  # noqa: E402
-from clinical_trials.clinicaltrials_gov import ClinicalTrialsGovClient  # noqa: E402
+from clinical_trials.clinicaltrials_gov import BASE_URL, ClinicalTrialsGovClient, normalize_study  # noqa: E402
+from clinical_trials.matching import assess  # noqa: E402
 from clinical_trials.geocoding import NominatimGeocoder  # noqa: E402
 from clinical_trials.models import PatientProfile  # noqa: E402
 from clinical_trials.service import build_discovery_result  # noqa: E402
@@ -122,3 +123,81 @@ def research(payload):
     return _research_provider.research(
         payload.get("nct_id"), title=payload.get("title"), registry_last_updated=payload.get("registry_last_updated")
     )
+
+
+# ---- Reverse matching: which of the 979 test reports best fit one registered trial ----
+
+NCT_RE = re.compile(r"NCT\d{8}", re.I)
+_report_profiles = None
+ORDER = {"likely_relevant": 0, "needs_more_information": 1, "not_a_match": 2}
+
+
+def fetch_trial(nct_id):
+    payload = CLIENT._get_json(f"{BASE_URL}/{nct_id}?format=json")
+    return normalize_study(payload)
+
+
+def _age_from_band(band):
+    """Midpoint of a band like '60-69'. A first-pass estimate: the report never gives an exact age."""
+    m = re.match(r"\s*(\d+)\s*-\s*(\d+)", band or "")
+    return (int(m.group(1)) + int(m.group(2))) // 2 if m else None
+
+
+def _profiles():
+    global _report_profiles
+    if _report_profiles is None:
+        path = os.path.join(analysis.BIOBASE, "pack_reports", "test.jsonl")
+        out = []
+        with open(path) as f:
+            for line in f:
+                row = __import__("json").loads(line)
+                parsed = parse_pathology_report(row["report_text"])
+                try:
+                    profile = profile_from_task_a_fields(parsed, patient_reference=row["id"])
+                except ValueError:
+                    continue
+                profile.age_years = _age_from_band(parsed.get("age_band"))
+                out.append((row["id"], profile, parsed))
+        _report_profiles = out
+    return _report_profiles
+
+
+def patients_for_trial(payload):
+    match = NCT_RE.search(str(payload.get("trial") or ""))
+    if not match:
+        raise ValueError("Enter an NCT number (like NCT01234567) or a ClinicalTrials.gov link.")
+    trial = fetch_trial(match.group(0).upper())
+    limit = max(1, min(int(payload.get("limit", 50)), 200))
+    rows, counts = [], {"likely_relevant": 0, "needs_more_information": 0, "not_a_match": 0}
+    for report_id, profile, parsed in _profiles():
+        a = assess(profile, trial)
+        counts[a.assessment] += 1
+        rows.append({
+            "report_id": report_id,
+            "assessment": a.assessment,
+            "matched_facts": a.matched_facts,
+            "exclusions": a.exclusions,
+            "unknown_requirements": a.unknown_requirements,
+            "questions": [q.prompt for q in a.clarification_questions],
+            "profile": {
+                "organ": profile.primary_organ, "histology": profile.histology, "sex": profile.sex,
+                "age_band": parsed.get("age_band"), "stage": profile.stage,
+            },
+        })
+    rows.sort(key=lambda r: (ORDER[r["assessment"]], -len(r["matched_facts"]), len(r["questions"]), r["report_id"]))
+    # Every category is returned, each capped at `limit`, so the page can show all of them by default.
+    kept, per = [], {k: 0 for k in counts}
+    for r in rows:
+        if per[r["assessment"]] < limit:
+            per[r["assessment"]] += 1
+            kept.append(r)
+    return {
+        "trial": _trial_summary(trial),
+        "summary": counts,
+        "results": kept,
+        "shown": per,
+        "review_note": (
+            "Ages are the middle of each report's age band. First-pass pre-screening only: the study team "
+            "must confirm eligibility from the full record."
+        ),
+    }

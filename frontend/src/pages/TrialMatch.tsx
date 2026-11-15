@@ -1,12 +1,13 @@
 import { useMutation } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import TrialCard from '../components/TrialCard'
+import TrialRow from '../components/TrialRow'
 import { useReports } from '../data/api'
 import { profileFromReport, searchTrials } from '../data/trials'
 import { emptyForm, formFromProfile, profileFromForm, type ProfileForm } from '../lib/trialForm'
 import { useDocumentTitle } from '../lib/useDocumentTitle'
 import { useDraft } from '../state/draft'
-import type { Answer, TrialAnswers, TrialProfile } from '../types'
+import type { Answer, TrialAnswers, TrialAssessment, TrialProfile } from '../types'
 
 const MAX_BYTES = 200_000
 
@@ -46,26 +47,12 @@ const Marker = ({ id, text, value, onChange }: { id: string; text: string; value
   </Field>
 )
 
-/** Counts up to `value` once; shows the final number straight away if motion is reduced. */
-function CountUp({ value }: { value: number }) {
-  const [shown, setShown] = useState(0)
-  useEffect(() => {
-    if (value === 0 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      const t = setTimeout(() => setShown(value), 0)
-      return () => clearTimeout(t)
-    }
-    const start = performance.now()
-    let raf = 0
-    const tick = (now: number) => {
-      const p = Math.min(1, (now - start) / 700)
-      setShown(Math.round(value * (1 - (1 - p) ** 3)))
-      if (p < 1) raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [value])
-  return <span data-final={value}>{shown}</span>
-}
+const FILTERS: { key: 'all' | TrialAssessment; label: string }[] = [
+  { key: 'all', label: 'All' },
+  { key: 'likely_relevant', label: 'Likely relevant' },
+  { key: 'needs_more_information', label: 'Needs information' },
+  { key: 'not_a_match', label: 'Excluded' },
+]
 
 export default function TrialMatch() {
   useDocumentTitle('Find trials')
@@ -86,6 +73,8 @@ export default function TrialMatch() {
   const [fileError, setFileError] = useState('')
   const [answers, setAnswers] = useState<TrialAnswers>({})
   const [includeExcluded, setIncludeExcluded] = useState(false)
+  const [filter, setFilter] = useState<'all' | TrialAssessment>('all')
+  const [openId, setOpenId] = useState<string | null>(null)
 
   // The example is read automatically when the page opens. If the user has already started editing the form by the
   // time that finishes, their edits win.
@@ -170,6 +159,10 @@ export default function TrialMatch() {
   }
 
   const result = search.data
+  // The list you are looking at (after the filter) and the one trial opened from it, if any.
+  const shown = (result?.results ?? []).filter((m) => filter === 'all' || m.assessment === filter)
+  const openIndex = shown.findIndex((m) => m.nct_id === openId)
+  const opened = openIndex >= 0 ? shown[openIndex] : null
   const usingExample = exampleIndex >= 0
 
   return (
@@ -254,7 +247,7 @@ export default function TrialMatch() {
                   type="button"
                   onClick={() => run()}
                   disabled={search.isPending || !form.organ.trim()}
-                  className="rounded bg-slate-900 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-40"
+                  className="rounded bg-blue-700 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-40"
                 >
                   Find trials
                 </button>
@@ -341,7 +334,7 @@ export default function TrialMatch() {
             type="button"
             onClick={() => run()}
             disabled={search.isPending || !form.organ.trim()}
-            className="mt-4 w-full rounded bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
+            className="mt-4 w-full rounded bg-blue-700 px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
           >
             {search.isPending ? 'Searching ClinicalTrials.gov…' : 'Find trials'}
           </button>
@@ -405,33 +398,75 @@ export default function TrialMatch() {
                   profile contradicts an explicit eligibility requirement. Turn on “Show trials excluded by patient profile” to inspect why.
                 </p>
               )}
-              <dl className="stagger mt-4 grid grid-cols-3 gap-3 text-center">
-                {(
-                  [
-                    ['likely_relevant', 'Likely relevant'],
-                    ['needs_more_information', 'Need information'],
-                    ['not_a_match', 'Excluded by profile'],
-                  ] as const
-                ).map(([k, name]) => (
-                  <div key={k} className="rounded border border-slate-200 bg-slate-50 px-3 py-3 text-left">
-                    <dd className="text-2xl font-semibold tabular-nums"><CountUp value={result.summary[k]} /></dd>
-                    <dt className="text-xs text-slate-600">{name}</dt>
-                  </div>
-                ))}
-              </dl>
-
               {result.results.length === 0 ? (
                 <p className="mt-6 rounded border border-slate-200 p-4 text-slate-600">
                   {result.summary.likely_relevant + result.summary.needs_more_information + result.summary.not_a_match === 0
                     ? `No open trials were found for “${result.search_term}”. Try a broader histology.`
                     : 'No trials to review.'}
                 </p>
-              ) : (
-                <div className="stagger mt-5 space-y-4">
-                  {result.results.map((m) => (
-                    <TrialCard key={m.nct_id} match={m} answers={answers[m.nct_id]} onAnswer={answer} busy={search.isPending} />
-                  ))}
+              ) : opened ? (
+                <div key={opened.nct_id} className="tab-enter mt-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <button type="button" onClick={() => setOpenId(null)} className="text-sm font-medium text-blue-700 hover:underline">
+                      ← All trials
+                    </button>
+                    <div className="flex items-center gap-1 text-sm text-slate-600">
+                      <button
+                        type="button"
+                        aria-label="Previous trial"
+                        disabled={openIndex <= 0}
+                        onClick={() => setOpenId(shown[openIndex - 1].nct_id)}
+                        className="rounded border border-slate-300 px-2 py-0.5 hover:bg-blue-50 disabled:opacity-30"
+                      >
+                        ‹
+                      </button>
+                      <span className="px-1 tabular-nums">
+                        {openIndex + 1} of {shown.length}
+                      </span>
+                      <button
+                        type="button"
+                        aria-label="Next trial"
+                        disabled={openIndex >= shown.length - 1}
+                        onClick={() => setOpenId(shown[openIndex + 1].nct_id)}
+                        className="rounded border border-slate-300 px-2 py-0.5 hover:bg-blue-50 disabled:opacity-30"
+                      >
+                        ›
+                      </button>
+                    </div>
+                  </div>
+                  <div className="mt-3">
+                    <TrialCard match={opened} answers={answers[opened.nct_id]} onAnswer={answer} busy={search.isPending} />
+                  </div>
                 </div>
+              ) : (
+                <>
+                  <div role="group" aria-label="Filter trials" className="mt-4 flex flex-wrap gap-2">
+                    {FILTERS.map((f) => {
+                      const n = f.key === 'all' ? result.results.length : result.results.filter((m) => m.assessment === f.key).length
+                      if (f.key !== 'all' && n === 0) return null
+                      return (
+                        <button
+                          key={f.key}
+                          type="button"
+                          aria-pressed={filter === f.key}
+                          onClick={() => setFilter(f.key)}
+                          className={`rounded-full border px-3 py-1 text-sm font-medium ${
+                            filter === f.key ? 'border-blue-700 bg-blue-700 text-white' : 'border-slate-300 bg-white text-slate-700 hover:bg-blue-50'
+                          }`}
+                        >
+                          {f.label} <span className="tabular-nums opacity-80">{n}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                  <ul className="stagger mt-3 divide-y divide-slate-100 overflow-hidden rounded-lg border border-slate-200">
+                    {shown.map((m) => (
+                      <li key={m.nct_id}>
+                        <TrialRow match={m} onOpen={() => setOpenId(m.nct_id)} />
+                      </li>
+                    ))}
+                  </ul>
+                </>
               )}
               <p className="mt-5 text-xs text-slate-500">{result.disclaimer}</p>
             </div>

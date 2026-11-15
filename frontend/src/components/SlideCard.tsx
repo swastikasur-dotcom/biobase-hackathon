@@ -28,7 +28,7 @@ export default function SlideCard({
       <div className="relative aspect-square bg-slate-100">
         <img src={thumbUrl(slide.id)} alt={`Thumbnail of slide ${shortId(slide.id)}`} loading="lazy" className="h-full w-full object-contain" />
         {rank != null && (
-          <span className="absolute left-1 top-1 rounded bg-slate-900 px-1.5 text-xs font-medium text-white">#{rank}</span>
+          <span className="absolute left-1 top-1 rounded bg-blue-700 px-1.5 text-xs font-medium text-white">#{rank}</span>
         )}
       </div>
       <div className="space-y-1 p-2 text-sm">

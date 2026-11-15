@@ -1,9 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
-import AnalysisResultPage from './pages/AnalysisResultPage'
 import Analyze from './pages/Analyze'
-import About from './pages/About'
 import NotFound from './pages/NotFound'
 import Cohort from './pages/Cohort'
 import CriteriaList from './pages/CriteriaList'
@@ -29,7 +27,7 @@ export default function App() {
               <Route path="patients" element={<CriteriaList />} />
               <Route path="patients/match" element={<TrialMatch />} />
               <Route path="patients/analyze" element={<Analyze />} />
-              <Route path="patients/result" element={<AnalysisResultPage />} />
+              <Route path="patients/result" element={<Navigate to="/patients/analyze" replace />} />
               <Route path="patients/browse" element={<Navigate to="/patients" replace />} />
               <Route path="patients/:criterionId" element={<Cohort />} />
               <Route path="patients/:criterionId/:reportId" element={<ReportDetail />} />
@@ -37,7 +35,7 @@ export default function App() {
               <Route path="slides/map" element={<SlideMap />} />
               <Route path="slides/analysis" element={<SlideUploadResult />} />
               <Route path="slides/:slideId" element={<SlideDetail />} />
-              <Route path="about" element={<About />} />
+              <Route path="about" element={<Navigate to="/" replace />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>

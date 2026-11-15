@@ -20,11 +20,11 @@ export default function ReportDetail() {
   return (
     <div>
       <Breadcrumbs
-        items={[
-          { label: 'Find patients', to: '/patients' },
-          { label: criterionId, to: `/patients/${criterionId}` },
-          { label: reportId },
-        ]}
+        items={
+          criterionId === 'all'
+            ? [{ label: 'Find patients', to: '/patients' }, { label: reportId }]
+            : [{ label: 'Find patients', to: '/patients' }, { label: criterionId, to: `/patients/${criterionId}` }, { label: reportId }]
+        }
       />
       <Status queries={[criteria, reports]}>
         {!report ? (

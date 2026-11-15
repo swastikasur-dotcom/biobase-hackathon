@@ -118,8 +118,8 @@ test('Motion: pages animate in and cards lift on hover', async ({ page }) => {
   await expect.poll(() => card.evaluate((el) => getComputedStyle(el).transform)).not.toBe('none')
 
   // Moving to another page re-runs the entrance animation on a fresh wrapper.
-  await page.getByRole('link', { name: 'About the data' }).click()
-  await expect(page).toHaveURL(/\/about$/)
+  await page.getByRole('link', { name: 'Slide map' }).click()
+  await expect(page).toHaveURL(/\/slides\/map$/)
   await expect(page.locator('.page-enter')).toHaveCSS('animation-duration', '0.3s')
 })
 
@@ -363,10 +363,20 @@ test('Find trials: opens on the example, reads it into a profile locally, then s
 
   await expect(page.getByText('5 broad', { exact: false })).toHaveCount(0)
   await expect(page.getByText('1 broad ClinicalTrials.gov result was hidden')).toBeVisible()
+  // The shortlist is a compact list; each row says why, and opens one trial at a time.
+  const row = (id: string) => page.getByRole('button', { name: new RegExp(id) })
+  await expect(page.getByRole('article')).toHaveCount(0)
+  await expect(row('NCT00000001')).toContainText('HER2 is negative')
+  await expect(row('NCT00000002')).toContainText('1 question to answer')
+  await expect(page.getByRole('button', { name: /^Likely relevant 1$/ })).toBeVisible()
+
+  await row('NCT00000001').click()
   const card = page.getByRole('article', { name: 'Trial NCT00000001' })
   await expect(card.getByText('Likely relevant')).toBeVisible()
   await expect(card.getByText('HER2 is negative')).toBeVisible()
   await expect(card.getByRole('link', { name: /NCT00000001/ })).toHaveAttribute('href', 'https://clinicaltrials.gov/study/NCT00000001')
+  await expect(page.getByText('1 of 2')).toBeVisible()
+  await page.getByRole('button', { name: 'Next trial' }).click()
 
   // A clarification question: answering it re-ranks the trial.
   const second = page.getByRole('article', { name: 'Trial NCT00000002' })
@@ -374,10 +384,14 @@ test('Find trials: opens on the example, reads it into a profile locally, then s
   await second.getByRole('button', { name: 'No', exact: true }).click()
   await expect(second.getByText('Likely relevant')).toBeVisible()
   expect(searches.at(-1).answers_by_trial).toEqual({ NCT00000002: { has_metastatic_disease: 'no' } })
+  await page.getByRole('button', { name: '← All trials' }).click()
 
   // Excluded trials are hidden until asked for, then explain why.
-  await expect(page.getByRole('article', { name: 'Trial NCT00000003' })).toHaveCount(0)
+  await expect(row('NCT00000003')).toHaveCount(0)
   await page.getByLabel('Show trials excluded by patient profile').check()
+  await page.getByRole('button', { name: /^Excluded 1$/ }).click()
+  await expect(row('NCT00000001')).toHaveCount(0) // the filter narrows the list
+  await row('NCT00000003').click()
   const excluded = page.getByRole('article', { name: 'Trial NCT00000003' })
   await expect(excluded.getByText('Excluded by profile')).toBeVisible()
   await expect(excluded.getByText('requires metastatic disease')).toBeVisible()
@@ -406,6 +420,7 @@ test('Find trials: public sources are optional, and say so when the provider is 
   await page.goto('/patients/match')
   await expect(page.getByLabel('Primary organ')).toHaveValue('breast')
   await page.getByRole('button', { name: 'Find trials', exact: true }).first().click()
+  await page.getByRole('button', { name: /NCT00000001/ }).click()
   await page.getByRole('button', { name: 'Find public sources' }).click()
   await expect(page.getByRole('alert').filter({ hasText: 'keenable' })).toBeVisible()
 })
@@ -449,7 +464,8 @@ test('Browse cohorts: Analyse a report runs the rules and Jev and summarises bot
   await expect(page).toHaveURL(/\/patients\/analyze$/)
   await page.getByLabel('Report text').fill('FINAL DIAGNOSIS: breast, triple negative')
   await page.getByRole('button', { name: 'Analyse report' }).click()
-  await expect(page).toHaveURL(/\/patients\/result$/)
+  await expect(page).toHaveURL(/\/patients\/analyze$/)
+  await expect(page.getByLabel('Report text')).toHaveValue(/FINAL DIAGNOSIS/)
   await expect(page.getByText('Jev says yes to 2 criteria; 1 of them also match the rules')).toBeVisible()
   await expect(page.getByText('93%').first()).toBeVisible()
   await expect(page.getByText('rules do not match')).toBeVisible()
@@ -569,4 +585,70 @@ test('Slide map: hovering a slide in the list highlights its dot on the map', as
   const item = page.getByRole('region', { name: 'Slides in view' }).getByRole('link').first()
   await item.hover()
   await expect(page.locator('svg circle[stroke="#1d4ed8"]')).toHaveCount(1)
+})
+
+test('About the data: nav button opens a modal with reports, slides and caveats, Escape closes it', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'About the data' }).click()
+  const modal = page.getByRole('dialog', { name: 'About the data' })
+  await expect(modal).toBeVisible()
+  await expect(modal.getByRole('tab')).toHaveCount(3)
+  await expect(modal.getByText('979', { exact: true }).first()).toBeVisible()
+  await modal.getByRole('tab', { name: 'Slides' }).click()
+  await expect(modal.getByText('263', { exact: true })).toBeVisible()
+  await modal.getByRole('tab', { name: 'What to keep in mind' }).click()
+  await expect(modal.getByText('Reports and slides are separate.')).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(modal).toBeHidden()
+})
+
+test('Browse cohorts: filter criteria by text and organ', async ({ page }) => {
+  await page.goto('/patients')
+  const count = page.getByText(/^\d+ of 30$/)
+  await expect(count).toHaveText('30 of 30')
+  await page.getByLabel('Filter criteria').fill('HER2')
+  await expect(count).not.toHaveText('30 of 30')
+  await expect(page.getByText('Triple-negative breast cancer')).toBeVisible()
+  await page.getByLabel('Filter criteria').fill('zzzz')
+  await expect(page.getByText('No criteria match these filters.')).toBeVisible()
+  await page.getByLabel('Filter criteria').fill('')
+  await page.getByLabel('Organ').selectOption('colon')
+  await expect(page.getByRole('heading', { level: 2, name: 'Colon' })).toBeVisible()
+  await expect(page.getByRole('heading', { level: 2, name: 'Breast' })).toHaveCount(0)
+})
+
+test('Browse cohorts: link a ClinicalTrials.gov trial to see the patients that fit it best', async ({ page }) => {
+  const asked: string[] = []
+  await page.route('**/api/trials/patients', (route) => {
+    asked.push(route.request().postDataJSON().trial)
+    return route.fulfill({
+      json: {
+        trial: { nct_id: 'NCT03201861', title: 'Addition of Cisplatin in Early Stage Breast Cancer', status: 'RECRUITING', conditions: ['Breast Cancer'], official_url: 'https://clinicaltrials.gov/study/NCT03201861', eligibility_text: null, last_update_posted: null, interventions: [] },
+        summary: { likely_relevant: 2, needs_more_information: 1, not_a_match: 976 },
+        results: [
+          { report_id: 'SYN-aaa', assessment: 'likely_relevant', matched_facts: ['condition mentions breast', 'HER2 is negative'], exclusions: [], unknown_requirements: [], questions: [], profile: { organ: 'breast', histology: 'Invasive ductal', sex: 'female', age_band: '50-59', stage: 'pT2 pN0' } },
+          { report_id: 'SYN-bbb', assessment: 'needs_more_information', matched_facts: ['condition mentions breast'], exclusions: [], unknown_requirements: [], questions: ['Is the patient within the stage range?'], profile: { organ: 'breast', histology: null, sex: 'female', age_band: '60-69', stage: null } },
+          { report_id: 'SYN-ccc', assessment: 'not_a_match', matched_facts: [], exclusions: ['trial condition does not mention lung'], unknown_requirements: [], questions: [], profile: { organ: 'lung', histology: null, sex: 'male', age_band: '70-79', stage: null } },
+        ],
+        shown: { likely_relevant: 1, needs_more_information: 1, not_a_match: 1 }, review_note: 'First-pass.',
+      },
+    })
+  })
+  await page.goto('/patients')
+  await page.getByRole('tab', { name: 'For a clinical trial' }).click()
+  await page.getByLabel('ClinicalTrials.gov trial').fill('https://clinicaltrials.gov/study/NCT03201861')
+  await page.getByRole('button', { name: 'Find matching patients' }).click()
+  await expect(page.getByRole('heading', { name: /Addition of Cisplatin/ })).toBeVisible()
+  expect(asked).toEqual(['https://clinicaltrials.gov/study/NCT03201861'])
+  await expect(page).toHaveURL(/trial=NCT03201861/)
+  // Every category is shown by default; the pills narrow it down.
+  await expect(page.getByRole('link', { name: /SYN-ccc/ })).toContainText('does not mention lung')
+  await expect(page.getByRole('button', { name: /^All 979$/ })).toHaveAttribute('aria-pressed', 'true')
+  await page.getByRole('button', { name: /^Ruled out/ }).click()
+  await expect(page.getByRole('link', { name: /SYN-aaa/ })).toHaveCount(0)
+  await page.getByRole('button', { name: /^All/ }).click()
+  const row = page.getByRole('link', { name: /SYN-bbb/ })
+  await expect(row).toContainText('1 to confirm')
+  await page.getByRole('link', { name: /SYN-aaa/ }).click()
+  await expect(page).toHaveURL(/\/patients\/all\/SYN-aaa$/)
 })

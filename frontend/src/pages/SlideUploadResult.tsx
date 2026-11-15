@@ -48,7 +48,7 @@ export default function SlideUploadResult() {
           >
             ← Back to slides
           </button>
-          <button type="button" onClick={another} className="rounded bg-slate-900 px-3 py-1.5 text-sm font-medium text-white">
+          <button type="button" onClick={another} className="rounded bg-blue-700 px-3 py-1.5 text-sm font-medium text-white">
             Show another random slide
           </button>
         </div>

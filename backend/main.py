@@ -5,7 +5,7 @@ from analysis import MAX_CHARS, UnsupportedReport, analyze
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
-app = FastAPI(title="Biobase report analysis")
+app = FastAPI(title="Veritome report analysis")
 
 
 class AnalyzeRequest(BaseModel):
@@ -48,6 +48,11 @@ class TrialSearchRequest(BaseModel):
     page_size: int = Field(default=10, ge=1, le=50)
 
 
+class PatientsForTrialRequest(BaseModel):
+    trial: str = Field(max_length=500)
+    limit: int = Field(default=50, ge=1, le=200)
+
+
 class TrialResearchRequest(BaseModel):
     nct_id: str
     title: str | None = None
@@ -68,6 +73,16 @@ def trials_profile(req: ParseReportRequest):
         return trials.parse_report(req.report_text)
     except ValueError as e:
         raise _bad_request(e) from None
+
+
+@app.post("/api/trials/patients")
+def trials_patients(req: PatientsForTrialRequest):
+    try:
+        return trials.patients_for_trial(req.model_dump())
+    except (ValueError, TypeError) as e:
+        raise _bad_request(e) from None
+    except Exception as e:
+        raise _upstream("ClinicalTrials.gov", e) from None
 
 
 @app.post("/api/trials/search")

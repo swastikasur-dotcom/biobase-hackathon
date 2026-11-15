@@ -3,7 +3,7 @@ import { researchTrial } from '../data/trials'
 import type { Answer, TrialAnswers, TrialAssessment, TrialMatch } from '../types'
 
 const BADGE: Record<TrialAssessment, { label: string; className: string }> = {
-  likely_relevant: { label: 'Likely relevant', className: 'bg-slate-900 text-white' },
+  likely_relevant: { label: 'Likely relevant', className: 'bg-blue-700 text-white' },
   needs_more_information: { label: 'Needs information', className: 'border border-slate-400 text-slate-800' },
   not_a_match: { label: 'Excluded by profile', className: 'bg-slate-200 text-slate-600' },
 }
@@ -146,7 +146,7 @@ export default function TrialCard({
                       aria-pressed={answers?.[q.question_id] === a.value}
                       onClick={() => onAnswer(match.nct_id, q.question_id, a.value)}
                       className={`rounded border px-3 py-1 text-xs font-medium disabled:opacity-50 ${
-                        answers?.[q.question_id] === a.value ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-300 bg-white hover:bg-slate-100'
+                        answers?.[q.question_id] === a.value ? 'border-slate-900 bg-blue-700 text-white' : 'border-slate-300 bg-white hover:bg-slate-100'
                       }`}
                     >
                       {a.label}

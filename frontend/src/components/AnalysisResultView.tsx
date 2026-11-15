@@ -54,7 +54,7 @@ export default function AnalysisResultView({ result }: { result: AnalysisResult 
           Summary
         </h2>
         <div className="rounded border border-slate-200 bg-white p-4">
-          <span className="mb-2 inline-block rounded-full bg-slate-900 px-2.5 py-0.5 text-xs font-medium text-white">
+          <span className="mb-2 inline-block rounded-full bg-blue-700 px-2.5 py-0.5 text-xs font-medium text-white">
             {titleCase(result.organ)}
           </span>
           <p className="leading-relaxed">{result.summary}</p>

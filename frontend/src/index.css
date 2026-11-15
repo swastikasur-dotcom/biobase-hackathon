@@ -1,8 +1,44 @@
 @import "tailwindcss";
 
-body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+/* The app's palette is the stain pathologists read: hematoxylin (blue-violet, the accent) and eosin (pink, a
+   light wash). Existing slate-* and blue-* classes map onto it, so every page picks it up. */
+@theme {
+  --font-sans: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --color-slate-50: #f6f6fb;
+  --color-slate-100: #eceef7;
+  --color-slate-200: #dcdfee;
+  --color-slate-300: #c2c6dc;
+  --color-slate-400: #9399b8;
+  --color-slate-500: #6a7092;
+  --color-slate-600: #4f5476;
+  --color-slate-700: #3a3f60;
+  --color-slate-800: #272a47;
+  --color-slate-900: #1b1936;
+  --color-slate-950: #110f26;
+  --color-blue-50: #eef0ff;
+  --color-blue-100: #e0e3fb;
+  --color-blue-200: #c4c9f5;
+  --color-blue-300: #9ea6ec;
+  --color-blue-400: #7a82df;
+  --color-blue-500: #5a5fcc;
+  --color-blue-600: #4a4bb5;
+  --color-blue-700: #3a3a9c;
+  --color-blue-800: #2f2f80;
+  --color-blue-900: #25255f;
 }
+
+body {
+  @apply text-slate-900 antialiased;
+  background:
+    radial-gradient(64rem 22rem at 85% -8rem, #fcebf0 0%, transparent 70%),
+    radial-gradient(48rem 18rem at 0% -6rem, #e6e8fb 0%, transparent 70%),
+    var(--color-slate-50);
+  background-repeat: no-repeat;
+}
+h1, h2, h3 { letter-spacing: -0.015em; }
+h1 { font-weight: 700; }
+::selection { background: #fcd9e3; }
 
 /* ---------- Motion ---------- */
 
@@ -190,3 +226,18 @@ body:has(dialog[open]) { overflow: hidden; }
   .landing .hl { background-size: 100% 100%; animation: none; }
   .landing .verdict { opacity: 1; animation: none; }
 }
+
+/* ---------- App-wide polish ---------- */
+input[type='checkbox'], input[type='radio'] { accent-color: var(--color-blue-700); }
+input:not([type='checkbox']):not([type='radio']):not([type='file']):focus, textarea:focus, select:focus {
+  outline: 2px solid var(--color-blue-300);
+  outline-offset: 0;
+  border-color: var(--color-blue-500);
+}
+/* Panels and cards get a soft indigo-tinted shadow instead of a grey one. */
+.shadow-sm { box-shadow: 0 1px 2px rgb(27 25 54 / 0.06), 0 4px 14px -6px rgb(58 58 156 / 0.14); }
+thead th { color: var(--color-slate-600); }
+
+/* A bar that sweeps back and forth while a long request runs. */
+@keyframes scan { from { transform: translateX(-100%); } to { transform: translateX(300%); } }
+.scan-bar { animation: scan 1.1s ease-in-out infinite alternate; }

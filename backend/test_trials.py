@@ -123,3 +123,17 @@ def test_analyze_returns_rules_even_when_jev_is_unavailable(monkeypatch):
         assert body["jev"] is None and "JEV_API_KEY" in body["jev_error"]
     with __import__("pytest").raises(jev.JevUnavailable):
         jev.score("x")
+
+
+def test_patients_for_trial_ranks_reports_and_validates_input(monkeypatch):
+    monkeypatch.setattr(trials, "fetch_trial", lambda nct: TrialRecord(
+        nct_id=nct, title="Breast study", status="RECRUITING", conditions=["Breast Cancer"],
+        eligibility_text="Inclusion Criteria:\n- Breast cancer\nExclusion Criteria:\n- None", sexes_eligible="ALL", minimum_age="18 Years"))
+    r = client.post("/api/trials/patients", json={"trial": "see https://clinicaltrials.gov/study/NCT00000009 ok", "limit": 3})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["trial"]["nct_id"] == "NCT00000009" and len(body["results"]) <= 9
+    assert sum(body["summary"].values()) > 0
+    assert set(body["shown"]) == {"likely_relevant", "needs_more_information", "not_a_match"}
+    assert all(v <= 3 for v in body["shown"].values())  # the limit applies to each category
+    assert client.post("/api/trials/patients", json={"trial": "not a trial"}).status_code == 422

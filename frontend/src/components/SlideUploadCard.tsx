@@ -35,7 +35,7 @@ export default function SlideUploadCard() {
         }}
         title="Choose a slide file, or drop one here"
         className={`cursor-pointer rounded px-3 py-1.5 text-sm font-medium text-white focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-blue-700 ${
-          dragging ? 'bg-blue-700' : 'bg-slate-900'
+          dragging ? 'bg-blue-700' : 'bg-blue-700'
         } ${ready ? '' : 'opacity-40'}`}
       >
         Analyse a slide

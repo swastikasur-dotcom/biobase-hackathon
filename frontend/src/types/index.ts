@@ -101,13 +101,6 @@ export interface AnalysisResult {
   jev_error: string | null
 }
 
-/** Router state passed from the upload page to the result page. */
-export interface ResultLocationState {
-  result: AnalysisResult
-  /** The text that was analysed. */
-  text: string
-}
-
 /** De-identified patient profile used to search ClinicalTrials.gov (see clinical_trials/models.py). */
 export interface TrialProfile {
   primary_organ: string
@@ -175,6 +168,26 @@ export interface TrialMatch {
     eligibility_text: string | null
     last_update_posted: string | null
   }
+}
+
+/** One test report that fits a given trial (POST /api/trials/patients). */
+export interface TrialPatient {
+  report_id: string
+  assessment: TrialAssessment
+  matched_facts: string[]
+  exclusions: string[]
+  unknown_requirements: string[]
+  questions: string[]
+  profile: { organ: string; histology: string | null; sex: string | null; age_band: string | null; stage: string | null }
+}
+
+export interface PatientsForTrial {
+  trial: TrialMatch['trial']
+  summary: Record<TrialAssessment, number>
+  results: TrialPatient[]
+  /** How many of each category are in `results` (each is capped). */
+  shown: Record<TrialAssessment, number>
+  review_note: string
 }
 
 /** Response of POST /api/trials/search. */

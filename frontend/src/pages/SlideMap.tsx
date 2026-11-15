@@ -97,7 +97,7 @@ export default function SlideMap() {
                       aria-pressed={filters.scope === s.value}
                       onClick={() => update({ scope: s.value })}
                       className={`rounded border px-2 py-1.5 text-sm font-medium ${
-                        filters.scope === s.value ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-300 hover:bg-slate-100'
+                        filters.scope === s.value ? 'border-slate-900 bg-blue-700 text-white' : 'border-slate-300 hover:bg-slate-100'
                       }`}
                     >
                       {s.label}

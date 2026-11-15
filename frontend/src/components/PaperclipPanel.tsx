@@ -79,7 +79,7 @@ export default function PaperclipPanel({ organ, onClose }: { organ: string; onCl
                   setTab(t.id)
                   setSelected(null)
                 }}
-                className={`rounded px-3 py-1.5 text-sm font-medium ${tab === t.id ? 'bg-slate-900 text-white' : 'bg-slate-100 hover:bg-slate-200'}`}
+                className={`rounded px-3 py-1.5 text-sm font-medium ${tab === t.id ? 'bg-blue-700 text-white' : 'bg-slate-100 hover:bg-slate-200'}`}
               >
                 {t.label}
                 {t.count != null && <span className="ml-1.5 opacity-70">{t.count}</span>}
