@@ -47,7 +47,7 @@ export default function CriteriaList() {
 
   const field = 'rounded border border-slate-300 bg-white px-3 py-1.5 text-sm'
   const tab = (active: boolean) =>
-    `rounded px-3 py-1.5 text-sm font-medium ${active ? 'bg-white shadow-sm' : 'text-slate-600'}`
+    `relative z-10 rounded px-4 py-1.5 text-center text-sm font-medium transition-colors ${active ? 'text-slate-900' : 'text-slate-600 hover:text-slate-900'}`
 
   return (
     <div>
@@ -60,7 +60,13 @@ export default function CriteriaList() {
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
-        <div role="tablist" aria-label="Find patients by" className="inline-flex gap-1 rounded-lg bg-slate-100 p-1">
+        <div role="tablist" aria-label="Find patients by" className="relative inline-grid grid-cols-2 gap-1 rounded-lg bg-slate-100 p-1">
+          {/* The white pill slides to the chosen tab. */}
+          <span
+            aria-hidden
+            className="absolute inset-y-1 left-1 w-[calc(50%-0.375rem)] rounded bg-white shadow-sm transition-transform duration-300 ease-out"
+            style={{ transform: view === 'trial' ? 'translateX(calc(100% + 0.25rem))' : 'none' }}
+          />
           <button type="button" role="tab" aria-selected={view === 'criteria'} onClick={() => setView('criteria')} className={tab(view === 'criteria')}>
             By criterion
           </button>
@@ -97,7 +103,7 @@ export default function CriteriaList() {
         )}
       </div>
 
-      <div className="mt-6">
+      <div key={view} className="tab-enter mt-6">
         {view === 'trial' ? (
           <TrialPatients
             initial={params.get('trial') ?? ''}

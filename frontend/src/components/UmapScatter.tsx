@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type KeyboardEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { categoryColor } from '../lib/colors'
 import { cardLeft, cardTop } from '../lib/hovercard'
@@ -59,6 +59,13 @@ export default function UmapScatter({
   const navigate = useNavigate()
   const box = useRef<HTMLDivElement>(null)
   const [hover, setHover] = useState<Hover | null>(null)
+  // The dots sweep in once when the page opens. After that, filtering changes them instantly (and re-ordering
+  // them in the DOM must not replay the sweep), so the intro class is dropped once it has played.
+  const [intro, setIntro] = useState(true)
+  useEffect(() => {
+    const t = setTimeout(() => setIntro(false), 1500)
+    return () => clearTimeout(t)
+  }, [])
 
   const colors = useMemo(() => new Map(organGroups.map((g, i) => [g, categoryColor(i, organGroups.length)])), [organGroups])
   const rank = useMemo(() => new Map((focus?.similarIds ?? []).map((id, i) => [id, i + 1])), [focus])
@@ -142,8 +149,8 @@ export default function UmapScatter({
                 fillOpacity={out ? 0.45 : dimmed ? 0.7 : 1}
                 stroke={role === 'query' ? '#0f172a' : emphasised ? '#1d4ed8' : dimmed ? GREY : color}
                 strokeWidth={role === 'query' ? 3 : emphasised ? 3 : hollow ? 2 : 1}
-                className="map-dot"
-                style={{ transition: 'r 0.15s ease, fill 0.25s ease, fill-opacity 0.3s ease, stroke 0.2s ease', '--d': `${(p.x * 0.5 + p.y * 0.15).toFixed(2)}s` } as React.CSSProperties}
+                className={intro ? 'map-dot' : undefined}
+                style={intro ? ({ '--d': `${(p.x * 0.5 + p.y * 0.15).toFixed(2)}s` } as React.CSSProperties) : undefined}
               />
               {role === 'similar' && (
                 <text x={pxX(p.x)} y={pxY(p.y)} textAnchor="middle" dominantBaseline="central" fontSize="10" fontWeight="700" fill="white" pointerEvents="none">
