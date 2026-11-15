@@ -1,0 +1,1240 @@
+{
+ "schema_version": "1.0",
+ "target": {
+  "gene": "KIT",
+  "uniprot": "P10721",
+  "indication": "GIST"
+ },
+ "evidence": [
+  {
+   "id": "S1",
+   "title": "Complementary activity of tyrosine kinase inhibitors against secondary kit mutations in imatinib-resistant gastrointestinal stromal tumours.",
+   "published_on": "2019-02-22",
+   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6462042/",
+   "pmid": "30792533",
+   "doi": "10.1038/s41416-019-0389-6",
+   "evidence_type": "preclinical",
+   "finding": "Patient-derived GIST models show complementary inhibitor activity across secondary KIT mutations. V654A, T670I and activation-loop variants do not share one sensitivity profile. This supports genotype-resolved screening rather than WT-only ranking.",
+   "tags": [
+    "resistance",
+    "mutant_panel"
+   ],
+   "retrieval": "Paperclip document metadata; source findings curated against primary publication",
+   "source_lines": [
+    44,
+    51,
+    52,
+    53,
+    57,
+    58,
+    59,
+    60
+   ],
+   "source_document": "PMC6462042",
+   "source_sha256": "d2cea6160e3d93cb74e78fda304729e437459115f92de676bdca43aaf04962c5"
+  },
+  {
+   "id": "S2",
+   "title": "Avapritinib Versus Regorafenib in Locally Advanced Unresectable or Metastatic GI Stromal Tumor: A Randomized, Open-Label Phase III Study.",
+   "published_on": "2021-08-03",
+   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8478403/",
+   "pmid": "34343033",
+   "doi": "10.1200/jco.21.00217",
+   "evidence_type": "clinical_paper",
+   "finding": "VOYAGER did not demonstrate superior PFS for avapritinib over regorafenib in molecularly unselected third-line or later GIST. This finding is population-specific and does not negate activity in PDGFRA D842V disease.",
+   "tags": [
+    "clinical",
+    "failure",
+    "population_context"
+   ],
+   "retrieval": "Paperclip document metadata; source findings curated against primary publication"
+  },
+  {
+   "id": "S3",
+   "title": "Ripretinib Versus Sunitinib in Patients With Advanced Gastrointestinal Stromal Tumor After Treatment With Imatinib (INTRIGUE): A Randomized, Open-Label, Phase III Trial.",
+   "published_on": "2022-08-10",
+   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9746771/",
+   "pmid": "35947817",
+   "doi": "10.1200/jco.22.00294",
+   "evidence_type": "clinical_paper",
+   "finding": "INTRIGUE did not demonstrate superior PFS for second-line ripretinib over sunitinib. Activity and tolerability findings remain relevant; a missed superiority endpoint is not proof of no activity.",
+   "tags": [
+    "clinical",
+    "failure",
+    "population_context"
+   ],
+   "retrieval": "Paperclip document metadata; source findings curated against primary publication"
+  },
+  {
+   "id": "S4",
+   "title": "Ripretinib versus sunitinib in gastrointestinal stromal tumor: ctDNA biomarker analysis of the phase 3 INTRIGUE trial.",
+   "published_on": "2024-01-05",
+   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10878977/",
+   "pmid": "38182785",
+   "doi": "10.1038/s41591-023-02734-5",
+   "evidence_type": "clinical_paper",
+   "finding": "Exploratory INTRIGUE ctDNA analyses suggest different relative treatment effects in KIT exon 11 plus 13/14 versus exon 11 plus 17/18 populations. These subgroup results are hypothesis-generating, not a replacement for a prospective genotype-specific trial.",
+   "tags": [
+    "clinical",
+    "genotype_context"
+   ],
+   "retrieval": "Paperclip document metadata; source findings curated against primary publication"
+  },
+  {
+   "id": "S5",
+   "title": "Heterogeneity of kinase inhibitor resistance mechanisms in GIST.",
+   "published_on": "2008-09-01",
+   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2693040/",
+   "pmid": "18623623",
+   "doi": "10.1002/path.2382",
+   "evidence_type": "preclinical",
+   "finding": "Different metastases and subclones can harbor different secondary resistance mutations; KIT loss and amplification were also observed. A single mutation model cannot represent every escape mechanism.",
+   "tags": [
+    "resistance",
+    "heterogeneity"
+   ],
+   "retrieval": "Europe PMC metadata; analyst-reviewed primary publication"
+  },
+  {
+   "id": "S6",
+   "title": "Phase I dose escalation study of NMS-1286937, an orally available Polo-Like Kinase 1 inhibitor, in patients with advanced or metastatic solid tumors.",
+   "published_on": "2017-07-20",
+   "url": "https://pubmed.ncbi.nlm.nih.gov/28726132/",
+   "pmid": "28726132",
+   "doi": "10.1007/s10637-017-0491-7",
+   "evidence_type": "clinical_paper",
+   "finding": "A phase I study of the PLK1 inhibitor NMS-1286937 reported thrombocytopenia and neutropenia as major dose-limiting toxicities. This motivates PLK1 as an anti-target to assess; it does not establish PLK1 as the cause of toxicity for KIT inhibitors.",
+   "tags": [
+    "clinical",
+    "plk1_antitarget"
+   ],
+   "retrieval": "Europe PMC metadata; analyst-reviewed primary publication",
+   "scope": "External anti-target background; not a GIST program or evidence of KIT-inhibitor toxicity causality"
+  },
+  {
+   "id": "S7",
+   "title": "Experimental and computational approaches to estimate solubility and permeability in drug discovery and development settings.",
+   "published_on": "2001-03-01",
+   "url": "https://pubmed.ncbi.nlm.nih.gov/11259830/",
+   "pmid": "11259830",
+   "doi": "10.1016/s0169-409x(00)00129-0",
+   "evidence_type": "preclinical",
+   "finding": "Physicochemical heuristics identify oral absorption and permeation risk. Treat molecular weight, lipophilicity and hydrogen-bond counts as triage flags rather than universal exclusion rules for kinase inhibitors.",
+   "tags": [
+    "static_physchem"
+   ],
+   "retrieval": "Europe PMC metadata; analyst-reviewed primary publication"
+  },
+  {
+   "id": "S8",
+   "title": "Association of Combination of Conformation-Specific KIT Inhibitors With Clinical Benefit in Patients With Refractory Gastrointestinal Stromal Tumors: A Phase 1b/2a Nonrandomized Clinical Trial.",
+   "published_on": "2021-09-01",
+   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8267845/",
+   "pmid": "34236401",
+   "doi": "10.1001/jamaoncol.2021.2086",
+   "evidence_type": "clinical_paper",
+   "finding": "A small nonrandomized phase 1b/2a study investigated conformation-complementary KIT inhibitors PLX9486 and sunitinib in refractory GIST. Combination activity is an experimental clinical observation, not evidence that arbitrary co-dependent targets make effective combinations.",
+   "tags": [
+    "clinical",
+    "combo"
+   ],
+   "retrieval": "Europe PMC metadata; analyst-reviewed primary publication"
+  },
+  {
+   "id": "S9",
+   "title": "ADMET-AI: a machine learning ADMET platform for evaluation of large-scale chemical libraries",
+   "published_on": "2024-06-19",
+   "url": "https://doi.org/10.1093/bioinformatics/btae416",
+   "evidence_type": "preclinical",
+   "tags": [
+    "admet"
+   ],
+   "finding": "ADMET-AI provides learned ADMET endpoints and computed physicochemical descriptors. Half-life and distribution predictions require particular caution; endpoint predictions do not establish a dose-to-tumor-response PK/PD model.",
+   "retrieval": "Primary methods paper and current model endpoint metadata"
+  },
+  {
+   "id": "S10",
+   "title": "Ptarmigan-1 API reference",
+   "published_on": null,
+   "url": "https://ptarmigan.app/docs/api",
+   "evidence_type": "tool_documentation",
+   "tags": [
+    "screen"
+   ],
+   "finding": "Only catalog human proteins may be screened through the current API. Engagement probability is a prediction, not IC50; fixed probability cutoffs do not establish binding. Reference proteome off-target predictions are web-app only.",
+   "retrieval": "Official OpenAPI and agent documentation"
+  },
+  {
+   "id": "S11",
+   "title": "DepMap co-dependency scoring",
+   "published_on": "2022-05-06",
+   "url": "https://forum.depmap.org/t/how-is-co-dependency-determined-and-scored/1366",
+   "evidence_type": "data_documentation",
+   "tags": [
+    "depmap"
+   ],
+   "finding": "DepMap co-dependency is based on Pearson correlation of dependency profiles. Correlation alone does not establish synthetic lethality, resistance causality or clinical combination efficacy.",
+   "retrieval": "Official DepMap community explanation"
+  },
+  {
+   "id": "S12",
+   "title": "Proteome Phenome Atlas",
+   "published_on": null,
+   "url": "https://proteome-phenome-atlas.com/",
+   "evidence_type": "data_documentation",
+   "tags": [
+    "ppa"
+   ],
+   "finding": "Plasma protein associations are distinct from tumor somatic genotype and target-inhibition effects. KIT assay membership must be checked in an identified complete panel table before reporting presence or absence.",
+   "retrieval": "Official atlas"
+  },
+  {
+   "id": "S13",
+   "title": "Effects of CYP3A Inhibition, CYP3A Induction, and Gastric Acid Reduction on the Pharmacokinetics of Ripretinib, a Switch Control KIT Tyrosine Kinase Inhibitor.",
+   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9790248/",
+   "published_on": "2022-05-13",
+   "evidence_type": "clinical_paper",
+   "finding": "A healthy-participant drug-interaction study measured changes in ripretinib exposure, elimination half-life and apparent clearance with CYP3A inhibition or induction. These are observed, regimen-specific PK results; they cannot be transferred as numerical requirements for another compound.",
+   "tags": [
+    "clinical",
+    "pkpd"
+   ],
+   "retrieval": "Paperclip CLI gateway; full source passage checked locally",
+   "source_document": "PMC9790248",
+   "source_sha256": "59d2ef06ee45f25e58b2a88915c623295660dc43a87a81af6c40e83118057865"
+  },
+  {
+   "id": "S14",
+   "title": "Switch Control Inhibition of KIT and PDGFRA in Patients With Advanced Gastrointestinal Stromal Tumor: A Phase I Study of Ripretinib.",
+   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7526717/",
+   "published_on": "2020-08-17",
+   "evidence_type": "clinical_paper",
+   "finding": "The phase I ripretinib study reports dose- and time-specific plasma exposure, an active metabolite and a preclinical exposure rationale. Total plasma concentrations do not directly establish unbound tumor exposure or occupancy.",
+   "tags": [
+    "clinical",
+    "pkpd"
+   ],
+   "retrieval": "Paperclip CLI gateway; full source passage checked locally",
+   "source_document": "PMC7526717",
+   "source_sha256": "4a9d985791a73ba844fa17a05632666698ac3ca0ee39c7e06c4ac6c2af58822c"
+  },
+  {
+   "id": "C1",
+   "title": "Cambridge MedChem Consulting — ADME/T Properties",
+   "url": "https://cambridgemedchemconsulting.com/adme-properties/",
+   "published_on": null,
+   "evidence_type": "expert_guidance",
+   "finding": "MW and calculated lipophilicity jointly influence developability. The suggested favorable MW/logP region is a heuristic; compounds outside it can still be developable. Early model flags should lead to staged measurements.",
+   "tags": [
+    "cambridge",
+    "static_guidance"
+   ],
+   "retrieval": "User-specified guidance reviewed 2026-11-14; historical publication date not asserted"
+  },
+  {
+   "id": "C2",
+   "title": "Cambridge MedChem Consulting — Solubility",
+   "url": "https://cambridgemedchemconsulting.com/solubility-2/",
+   "published_on": null,
+   "evidence_type": "expert_guidance",
+   "finding": "Solubility interpretation depends on dose, pH, formulation and assay method. Poor assay solubility can distort activity and ADME results; kinetic and equilibrium solubility are distinct.",
+   "tags": [
+    "cambridge",
+    "static_guidance"
+   ],
+   "retrieval": "User-specified guidance reviewed 2026-11-14; historical publication date not asserted"
+  },
+  {
+   "id": "C3",
+   "title": "Cambridge MedChem Consulting — hERG Blockers",
+   "url": "https://cambridgemedchemconsulting.com/human-ether-a-go-go-related-gene-herg-blockers/",
+   "published_on": null,
+   "evidence_type": "expert_guidance",
+   "finding": "Assess functional hERG activity against exposure, with attention to free drug and additional cardiac ion channels. A roughly 30-fold hERG IC50/Cmax margin is discussed as a heuristic, not a guarantee of cardiac safety; global predictors can lose external performance.",
+   "tags": [
+    "cambridge",
+    "static_guidance"
+   ],
+   "retrieval": "User-specified guidance reviewed 2026-11-14; historical publication date not asserted"
+  },
+  {
+   "id": "C4",
+   "title": "Cambridge MedChem Consulting — Predicting Off-target Activity",
+   "url": "https://cambridgemedchemconsulting.com/predicting-off-target-activity/",
+   "published_on": null,
+   "evidence_type": "expert_guidance",
+   "finding": "Target profiling requires a distinct model or counter-screen. Predictions depend on annotated activity data and applicability; they can guide follow-up for potential cross-reactivity.",
+   "tags": [
+    "cambridge",
+    "static_guidance"
+   ],
+   "retrieval": "User-specified guidance reviewed 2026-11-14; historical publication date not asserted"
+  },
+  {
+   "id": "C5",
+   "title": "Cambridge MedChem Consulting — Separation of PK and PD",
+   "url": "https://cambridgemedchemconsulting.com/separation-of-pk-and-pd/",
+   "published_on": null,
+   "evidence_type": "expert_guidance",
+   "finding": "Duration of action may reflect binding residence time or active metabolites. Equilibrium affinity alone cannot determine off-rate; plasma half-life should not be substituted for pharmacodynamic duration.",
+   "tags": [
+    "cambridge",
+    "static_guidance"
+   ],
+   "retrieval": "User-specified guidance reviewed 2026-11-14; historical publication date not asserted"
+  },
+  {
+   "id": "C6",
+   "title": "Cambridge MedChem Consulting — Kinase Inhibitors",
+   "url": "https://cambridgemedchemconsulting.com/kinase-inhibitors/",
+   "published_on": null,
+   "evidence_type": "expert_guidance",
+   "finding": "Kinase binding depends on conserved catalytic-site features and conformation. Type I and type II binding modes highlight why mutant sequence and conformational context matter.",
+   "tags": [
+    "cambridge",
+    "static_guidance"
+   ],
+   "retrieval": "User-specified guidance reviewed 2026-11-14; historical publication date not asserted"
+  },
+  {
+   "id": "C7",
+   "title": "Cambridge MedChem Consulting — Lipophilicity",
+   "url": "https://cambridgemedchemconsulting.com/lipophilicity/",
+   "published_on": null,
+   "evidence_type": "expert_guidance",
+   "finding": "Calculated logP methods differ, and logP is distinct from pH-dependent logD. Lipophilicity influences solubility, distribution and off-target liabilities, supporting multi-property assessment rather than a single threshold.",
+   "tags": [
+    "cambridge",
+    "static_guidance"
+   ],
+   "retrieval": "User-specified guidance reviewed 2026-11-14; historical publication date not asserted"
+  },
+  {
+   "id": "S15",
+   "title": "Efficacy and safety of imatinib mesylate in advanced gastrointestinal stromal tumors.",
+   "published_on": "2002-08-15",
+   "url": "https://pubmed.ncbi.nlm.nih.gov/12181401/",
+   "pmid": "12181401",
+   "doi": "10.1056/NEJMoa020461",
+   "evidence_type": "clinical_paper",
+   "tags": [
+    "clinical",
+    "efficacy_benchmark"
+   ],
+   "finding": "In 147 patients with advanced GIST receiving 400 or 600 mg imatinib daily, 53.7% had a partial response and 27.9% stable disease. Imatinib is the successful efficacy benchmark; acquired resistance is a distinct limitation.",
+   "retrieval": "Primary trial publication, PubMed abstract checked"
+  },
+  {
+   "id": "S16",
+   "title": "Ripretinib in patients with advanced gastrointestinal stromal tumours (INVICTUS): a double-blind, randomised, placebo-controlled, phase 3 trial.",
+   "published_on": "2020-06-05",
+   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8383051/",
+   "pmid": "32511981",
+   "doi": "10.1016/S1470-2045(20)30168-6",
+   "evidence_type": "clinical_paper",
+   "tags": [
+    "clinical",
+    "efficacy_benchmark"
+   ],
+   "finding": "After at least imatinib, sunitinib and regorafenib, median progression-free survival was 6.3 months with ripretinib versus 1.0 with placebo. Its later second-line INTRIGUE superiority endpoint is a separate question.",
+   "retrieval": "Primary trial publication, results checked"
+  },
+  {
+   "id": "S17",
+   "title": "Efficacy and safety of sunitinib in patients with advanced gastrointestinal stromal tumour after failure of imatinib: a randomised controlled trial.",
+   "published_on": "2006-10-14",
+   "url": "https://pubmed.ncbi.nlm.nih.gov/17046465/",
+   "pmid": "17046465",
+   "doi": "10.1016/S0140-6736(06)69446-4",
+   "evidence_type": "clinical_paper",
+   "tags": [
+    "clinical",
+    "efficacy_benchmark"
+   ],
+   "finding": "In 312 randomized patients with imatinib-resistant or intolerant GIST, median time to tumour progression was 27.3 weeks on sunitinib versus 6.4 weeks on placebo.",
+   "retrieval": "Primary trial publication, PubMed abstract checked"
+  },
+  {
+   "id": "S18",
+   "title": "Efficacy and safety of regorafenib for advanced gastrointestinal stromal tumours after failure of imatinib and sunitinib (GRID).",
+   "published_on": "2012-11-22",
+   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3819942/",
+   "pmid": "23177515",
+   "doi": "10.1016/S0140-6736(12)61857-1",
+   "evidence_type": "clinical_paper",
+   "tags": [
+    "clinical",
+    "efficacy_benchmark"
+   ],
+   "finding": "In 199 randomized patients after imatinib and sunitinib, median progression-free survival was 4.8 months with regorafenib versus 0.9 with placebo.",
+   "retrieval": "Primary trial publication, results checked"
+  },
+  {
+   "id": "S19",
+   "title": "Evaluation of nilotinib in advanced GIST previously treated with imatinib and sunitinib",
+   "published_on": "2011-11-27",
+   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3313017/",
+   "evidence_type": "clinical_paper",
+   "finding": "Nilotinib was tolerated in imatinib- and sunitinib-refractory advanced GIST but did not deliver sufficient clinical benefit to support further development in the unselected refractory population; activity was suggested in an exon 17 subset.",
+   "tags": [
+    "discontinued",
+    "insufficient_efficacy"
+   ],
+   "retrieval": "Paperclip document metadata; curated against primary publication",
+   "source_document": "PMC3313017"
+  },
+  {
+   "id": "S20",
+   "title": "Emerging mechanisms of kinase inhibitor escape and clinical implications of ponatinib in advanced gastrointestinal stromal tumor",
+   "published_on": "2026-04-28",
+   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13187999/",
+   "evidence_type": "clinical_paper",
+   "finding": "Ponatinib covers the T670I gatekeeper and multiple activation-loop mutants but is resisted by the ATP-pocket V654A mutation. Early 45 mg dosing was limited by significant cardiovascular toxicity; at 30 mg clinical benefit remained limited (approximately 26% at 16 weeks second-line, 33% late-line). Cardiovascular toxicity is the defining concern.",
+   "tags": [
+    "dose_limiting_toxicity",
+    "partial_mutation_coverage",
+    "cardiovascular"
+   ],
+   "retrieval": "Paperclip document metadata; curated against primary publication",
+   "source_document": "PMC13187999"
+  },
+  {
+   "id": "S21",
+   "title": "Vatalanib for metastatic gastrointestinal stromal tumour (GIST) resistant to imatinib: final results of a phase II study",
+   "published_on": "2011-05-03",
+   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3111164/",
+   "evidence_type": "clinical_paper",
+   "finding": "Vatalanib showed activity in imatinib-resistant metastatic GIST in a single-arm phase II study, with clinical benefit in approximately 40% of patients. Development did not progress to a randomised registration trial in GIST.",
+   "tags": [
+    "phase2_only",
+    "not_advanced"
+   ],
+   "retrieval": "Paperclip document metadata; curated against primary publication",
+   "source_document": "PMC3111164"
+  }
+ ],
+ "criteria": [
+  {
+   "id": "S-MW",
+   "criterion": "Molecular weight flag",
+   "origin_drug": "general oral small-molecule triage",
+   "evidence": [
+    "S7"
+   ],
+   "evidence_type": "preclinical",
+   "direction": "minimize",
+   "metric": "molecular_weight",
+   "measurable_by": "PubChem or RDKit",
+   "hard_filter": false,
+   "layer": "static",
+   "weight": 1.0,
+   "threshold": 500,
+   "units": "Da",
+   "policy_rationale": "",
+   "supersedes": []
+  },
+  {
+   "id": "S-LOGP",
+   "criterion": "Lipophilicity flag",
+   "origin_drug": "general oral small-molecule triage",
+   "evidence": [
+    "S7",
+    "C7"
+   ],
+   "evidence_type": "preclinical",
+   "direction": "minimize",
+   "metric": "logP",
+   "measurable_by": "PubChem or RDKit",
+   "hard_filter": false,
+   "layer": "static",
+   "weight": 1.0,
+   "threshold": 5,
+   "units": "log-ratio",
+   "policy_rationale": "",
+   "supersedes": []
+  },
+  {
+   "id": "S-HBA",
+   "criterion": "Hydrogen-bond acceptor flag",
+   "origin_drug": "general oral small-molecule triage",
+   "evidence": [
+    "S7"
+   ],
+   "evidence_type": "preclinical",
+   "direction": "minimize",
+   "metric": "hba",
+   "measurable_by": "PubChem or RDKit",
+   "hard_filter": false,
+   "layer": "static",
+   "weight": 1.0,
+   "threshold": 10,
+   "units": "count",
+   "policy_rationale": "",
+   "supersedes": []
+  },
+  {
+   "id": "S-HBD",
+   "criterion": "Hydrogen-bond donor flag",
+   "origin_drug": "general oral small-molecule triage",
+   "evidence": [
+    "S7"
+   ],
+   "evidence_type": "preclinical",
+   "direction": "minimize",
+   "metric": "hbd",
+   "measurable_by": "PubChem or RDKit",
+   "hard_filter": false,
+   "layer": "static",
+   "weight": 1.0,
+   "threshold": 5,
+   "units": "count",
+   "policy_rationale": "",
+   "supersedes": []
+  },
+  {
+   "id": "S-SOL",
+   "criterion": "Predicted aqueous solubility",
+   "origin_drug": "general oral small-molecule triage",
+   "evidence": [
+    "S9",
+    "C2"
+   ],
+   "evidence_type": "preclinical",
+   "direction": "maximize",
+   "metric": "solubility_log_molar",
+   "measurable_by": "Tamarind ADMET-AI",
+   "hard_filter": false,
+   "layer": "static",
+   "weight": 1.0,
+   "threshold": -5,
+   "units": "log10(mol/L)",
+   "policy_rationale": "",
+   "supersedes": []
+  },
+  {
+   "id": "S-HERG",
+   "criterion": "Predicted hERG liability",
+   "origin_drug": "general oral small-molecule triage",
+   "evidence": [
+    "S9",
+    "C3"
+   ],
+   "evidence_type": "preclinical",
+   "direction": "minimize",
+   "metric": "herg_block_probability",
+   "measurable_by": "Tamarind ADMET-AI",
+   "hard_filter": false,
+   "layer": "static",
+   "weight": 1.0,
+   "threshold": 0.5,
+   "units": "probability",
+   "policy_rationale": "0.5 is a provisional model triage flag, not an exposure safety margin or a clinical QT threshold.",
+   "supersedes": []
+  },
+  {
+   "id": "D-GENOTYPE",
+   "criterion": "Activity against the chosen driver-plus-resistance profile",
+   "origin_drug": "imatinib / sunitinib / regorafenib",
+   "evidence": [
+    "S1",
+    "C6"
+   ],
+   "evidence_type": "preclinical",
+   "direction": "maximize",
+   "metric": "genotype_activity_coverage",
+   "measurable_by": "Genotype-matched functional assays or a calibrated mutant-capable model",
+   "hard_filter": true,
+   "layer": "derived",
+   "weight": 1.0,
+   "threshold": 1,
+   "units": "fraction",
+   "policy_rationale": "Require coverage of the declared mutation panel before calling a candidate genotype-qualified. Coverage definition and assay potency thresholds must be prespecified.",
+   "supersedes": [],
+   "required_context": {
+    "profile": "KIT_GIST_panel_v1"
+   }
+  },
+  {
+   "id": "D-VEGFR2",
+   "criterion": "VEGFR2 anti-target selectivity",
+   "origin_drug": "sunitinib / regorafenib",
+   "evidence": [
+    "S20"
+   ],
+   "evidence_type": "clinical_paper",
+   "direction": "maximize",
+   "metric": "vegfr2_selectivity_fold",
+   "measurable_by": "Matched kinase IC50 panel",
+   "hard_filter": false,
+   "layer": "derived",
+   "weight": 1.0,
+   "threshold": 30,
+   "units": "fold",
+   "policy_rationale": "Hypertension and hand-foot skin reaction are documented for the VEGFR-active multikinase inhibitors used in GIST (sunitinib, regorafenib). Mechanistic attribution to VEGFR2 is inference, not established causation, so this is a weighted flag rather than a hard gate. The 30-fold margin is configurable policy, not a published safe threshold.",
+   "supersedes": []
+  },
+  {
+   "id": "D-HET",
+   "criterion": "Polyclonal escape and KIT-independent disease",
+   "origin_drug": "imatinib",
+   "evidence": [
+    "S5"
+   ],
+   "evidence_type": "preclinical",
+   "direction": "minimize",
+   "metric": "heterogeneity_review",
+   "measurable_by": null,
+   "hard_filter": true,
+   "layer": "derived",
+   "weight": 1.0,
+   "threshold": null,
+   "units": "review",
+   "policy_rationale": "Sequence-level screening cannot establish control of heterogeneous or KIT-independent disease.",
+   "supersedes": []
+  },
+  {
+   "id": "D-POP",
+   "criterion": "Genotype and treatment-line applicability",
+   "origin_drug": "avapritinib / ripretinib",
+   "evidence": [
+    "S2",
+    "S3",
+    "S4"
+   ],
+   "evidence_type": "clinical_paper",
+   "direction": "minimize",
+   "metric": "population_review",
+   "measurable_by": null,
+   "hard_filter": true,
+   "layer": "derived",
+   "weight": 1.0,
+   "threshold": null,
+   "units": "review",
+   "policy_rationale": "Trial interpretation requires genotype, line of therapy and comparator; aggregate failure is not universal inactivity.",
+   "supersedes": []
+  },
+  {
+   "id": "D-PKPD",
+   "criterion": "Unbound exposure versus functional activity",
+   "origin_drug": "KIT inhibitor class",
+   "evidence": [
+    "S13",
+    "S14",
+    "C5"
+   ],
+   "evidence_type": "preclinical",
+   "direction": "minimize",
+   "metric": "unbound_exposure_review",
+   "measurable_by": null,
+   "hard_filter": true,
+   "layer": "derived",
+   "weight": 1.0,
+   "threshold": null,
+   "units": "review",
+   "policy_rationale": "ADMET endpoint predictions do not establish human unbound tumor exposure, target occupancy or dose-response. Published PK/PD and functional potency must be reconciled.",
+   "supersedes": []
+  },
+  {
+   "id": "C-REGION",
+   "criterion": "Coupled molecular-weight / lipophilicity risk",
+   "origin_drug": "general discovery guidance",
+   "evidence": [
+    "C1",
+    "C7"
+   ],
+   "evidence_type": "expert_guidance",
+   "direction": "minimize",
+   "metric": "coupled_developability_risk",
+   "measurable_by": "Computed molecular weight and logP",
+   "hard_filter": false,
+   "layer": "static",
+   "weight": 1,
+   "threshold": 0,
+   "units": "count",
+   "policy_rationale": "Flag MW >400 Da together with computed logP >4 as a less favorable developability region. This is a weighted risk flag; calculated methods differ and exceptions remain possible.",
+   "supersedes": []
+  },
+  {
+   "id": "C-CYP",
+   "criterion": "Predicted CYP3A4 inhibition flag",
+   "origin_drug": "general discovery guidance",
+   "evidence": [
+    "C1",
+    "S9"
+   ],
+   "evidence_type": "expert_guidance",
+   "direction": "minimize",
+   "metric": "cyp3a4_inhibition_probability",
+   "measurable_by": "Tamarind ADMET-AI",
+   "hard_filter": false,
+   "layer": "static",
+   "weight": 1,
+   "threshold": 0.5,
+   "units": "probability",
+   "policy_rationale": "Provisional 0.5 model probability flag. A substrate/inhibitor probability is an input to DDI assessment; it does not predict a clinical interaction magnitude.",
+   "supersedes": []
+  },
+  {
+   "id": "C-DILI",
+   "criterion": "Predicted liver-injury flag",
+   "origin_drug": "general discovery guidance",
+   "evidence": [
+    "S9"
+   ],
+   "evidence_type": "clinical_paper",
+   "direction": "minimize",
+   "metric": "dili_probability",
+   "measurable_by": "Tamarind ADMET-AI",
+   "hard_filter": false,
+   "layer": "static",
+   "weight": 1,
+   "threshold": 0.5,
+   "units": "probability",
+   "policy_rationale": "Provisional model probability flag for follow-up, not an observed clinical liver-injury rate.",
+   "supersedes": []
+  },
+  {
+   "id": "C-HERG-MARGIN",
+   "criterion": "Functional hERG-to-exposure margin",
+   "origin_drug": "general discovery guidance",
+   "evidence": [
+    "C3"
+   ],
+   "evidence_type": "expert_guidance",
+   "direction": "maximize",
+   "metric": "herg_exposure_margin",
+   "measurable_by": "Functional hERG IC50 and justified unbound Cmax",
+   "hard_filter": true,
+   "layer": "static",
+   "weight": 1,
+   "threshold": 30,
+   "units": "fold",
+   "policy_rationale": "30-fold is a configurable triage margin discussed in the guidance, not guaranteed freedom from cardiac toxicity. hERG classifier probability cannot populate this metric.",
+   "supersedes": [],
+   "required_context": {
+    "exposure": "unbound_Cmax"
+   }
+  },
+  {
+   "id": "C-SOL-ASSAY",
+   "criterion": "Dose-, pH- and assay-qualified solubility",
+   "origin_drug": "general discovery guidance",
+   "evidence": [
+    "C2"
+   ],
+   "evidence_type": "expert_guidance",
+   "direction": "minimize",
+   "metric": "solubility_assay_review",
+   "measurable_by": null,
+   "hard_filter": false,
+   "layer": "static",
+   "weight": 1,
+   "threshold": null,
+   "units": "review",
+   "policy_rationale": "Review experimental kinetic/equilibrium solubility, pH and intended concentration. A structure-only logS prediction cannot settle assay interference or dose feasibility.",
+   "supersedes": []
+  },
+  {
+   "id": "C-RESIDENCE",
+   "criterion": "Residence time and active metabolites",
+   "origin_drug": "general discovery guidance",
+   "evidence": [
+    "C5"
+   ],
+   "evidence_type": "expert_guidance",
+   "direction": "minimize",
+   "metric": "residence_time_review",
+   "measurable_by": null,
+   "hard_filter": false,
+   "layer": "static",
+   "weight": 1,
+   "threshold": null,
+   "units": "review",
+   "policy_rationale": "Affinity and plasma half-life do not determine target residence time or PD duration. Retain this as a review question until kinetics and metabolite data exist.",
+   "supersedes": []
+  },
+  {
+   "id": "D-CYP3A",
+   "criterion": "Class-informed CYP3A substrate liability flag",
+   "origin_drug": "ripretinib",
+   "evidence": [
+    "S13",
+    "S9"
+   ],
+   "evidence_type": "clinical_paper",
+   "direction": "minimize",
+   "metric": "cyp3a4_substrate_probability",
+   "measurable_by": "Tamarind ADMET-AI",
+   "hard_filter": false,
+   "layer": "derived",
+   "weight": 1,
+   "threshold": 0.5,
+   "units": "probability",
+   "policy_rationale": "Ripretinib DDI evidence motivates checking CYP3A-mediated clearance. A high substrate prediction is a weighted follow-up flag, not an exclusion or a forecast of clinical DDI magnitude.",
+   "supersedes": []
+  },
+  {
+   "id": "S-ENGAGEMENT",
+   "criterion": "Reference KIT engagement ranking signal",
+   "origin_drug": "screening model",
+   "evidence": [
+    "S10"
+   ],
+   "evidence_type": "tool_documentation",
+   "direction": "maximize",
+   "metric": "wt_engagement",
+   "measurable_by": "Ptarmigan catalog screen",
+   "hard_filter": false,
+   "layer": "static",
+   "weight": 20,
+   "threshold": 0,
+   "units": "probability",
+   "policy_rationale": "Use engagement as a continuous prioritization signal. The zero threshold denotes the valid score range, not an engagement cutoff. This signal never satisfies mutant-activity requirements. Weight 20 explicitly prioritizes the user-requested target-engagement signal over individual property flags; it is configurable policy, not an experimentally fitted weight.",
+   "supersedes": [],
+   "scoring": "continuous",
+   "utility_bounds": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "D-POTENCY",
+   "criterion": "Genotype-qualified KIT binding potency",
+   "origin_drug": "KIT inhibitor discovery",
+   "evidence": [
+    "S1",
+    "C4"
+   ],
+   "evidence_type": "preclinical",
+   "direction": "minimize",
+   "metric": "kit_binding_kd_nM",
+   "measurable_by": "Genotype-matched KIT Kd assay or independently calibrated affinity estimate",
+   "hard_filter": true,
+   "layer": "derived",
+   "weight": 1,
+   "threshold": 1000,
+   "units": "nM",
+   "supersedes": [],
+   "required_context": {
+    "target": "P10721",
+    "endpoint": "Kd"
+   },
+   "policy_rationale": "Provisional discovery gate of Kd ≤1 µM, pending target-specific calibration. Engagement probability, raw cosine, cellular IC50 and docking confidence cannot be substituted for Kd. Missing potency remains unqualified; the threshold does not establish efficacy."
+  }
+ ],
+ "mutations": [
+  {
+   "variant": "V559D",
+   "exon": 11,
+   "region": "juxtamembrane",
+   "role": "activating model background",
+   "evidence": [
+    "S1"
+   ]
+  },
+  {
+   "variant": "V654A",
+   "exon": 13,
+   "region": "ATP-binding pocket",
+   "role": "secondary resistance",
+   "evidence": [
+    "S1",
+    "S5"
+   ]
+  },
+  {
+   "variant": "T670I",
+   "exon": 14,
+   "region": "gatekeeper",
+   "role": "secondary resistance",
+   "evidence": [
+    "S1",
+    "S5"
+   ]
+  },
+  {
+   "variant": "D816E",
+   "exon": 17,
+   "region": "activation loop",
+   "role": "secondary resistance; exact substitution matters",
+   "evidence": [
+    "S1"
+   ]
+  },
+  {
+   "variant": "D820A",
+   "exon": 17,
+   "region": "activation loop",
+   "role": "secondary resistance",
+   "evidence": [
+    "S1"
+   ]
+  },
+  {
+   "variant": "D820G",
+   "exon": 17,
+   "region": "activation loop",
+   "role": "secondary resistance",
+   "evidence": [
+    "S5"
+   ]
+  },
+  {
+   "variant": "N822K",
+   "exon": 17,
+   "region": "activation loop",
+   "role": "secondary resistance",
+   "evidence": [
+    "S5"
+   ]
+  },
+  {
+   "variant": "Y823D",
+   "exon": 17,
+   "region": "activation loop",
+   "role": "secondary resistance",
+   "evidence": [
+    "S5"
+   ]
+  },
+  {
+   "variant": "A829P",
+   "exon": 18,
+   "region": "activation loop",
+   "role": "secondary resistance extension",
+   "evidence": [
+    "S1"
+   ]
+  }
+ ],
+ "programs": [
+  {
+   "drug": "imatinib",
+   "aliases": [
+    "STI571",
+    "Gleevec",
+    "Glivec"
+   ],
+   "role": "Published efficacy in advanced GIST; acquired resistance associated with secondary KIT mutations.",
+   "evidence": [
+    "S15",
+    "S1",
+    "S5"
+   ],
+   "status": "approved_or_active",
+   "why_stopped": null,
+   "failure_class": null
+  },
+  {
+   "drug": "sunitinib",
+   "aliases": [
+    "SU11248",
+    "Sutent"
+   ],
+   "role": "Demonstrated benefit after imatinib; secondary KIT mutation coverage and tolerability vary.",
+   "evidence": [
+    "S17",
+    "S1",
+    "S3"
+   ],
+   "status": "approved_or_active",
+   "why_stopped": null,
+   "failure_class": null
+  },
+  {
+   "drug": "regorafenib",
+   "aliases": [
+    "BAY 73-4506",
+    "Stivarga"
+   ],
+   "role": "Demonstrated later-line PFS benefit; mutation coverage complements but does not fully duplicate sunitinib.",
+   "evidence": [
+    "S18",
+    "S1"
+   ],
+   "status": "approved_or_active",
+   "why_stopped": null,
+   "failure_class": null
+  },
+  {
+   "drug": "ripretinib",
+   "aliases": [
+    "DCC-2618",
+    "Qinlock"
+   ],
+   "role": "INVICTUS demonstrated later-line benefit; INTRIGUE did not establish second-line PFS superiority over sunitinib.",
+   "evidence": [
+    "S16",
+    "S3",
+    "S4"
+   ],
+   "status": "approved_or_active",
+   "why_stopped": null,
+   "failure_class": null
+  },
+  {
+   "drug": "avapritinib",
+   "aliases": [
+    "BLU-285",
+    "Ayvakit"
+   ],
+   "role": "VOYAGER missed PFS superiority in unselected later-line GIST; PDGFRA D842V benefit is a separate population.",
+   "evidence": [
+    "S2"
+   ],
+   "status": "approved_or_active",
+   "why_stopped": null,
+   "failure_class": null
+  },
+  {
+   "drug": "bezuclastinib",
+   "aliases": [
+    "PLX9486",
+    "CGT9486"
+   ],
+   "role": "Investigational complementary KIT inhibition with sunitinib; the curated clinical paper is a small nonrandomized study.",
+   "evidence": [
+    "S8"
+   ],
+   "status": "approved_or_active",
+   "why_stopped": null,
+   "failure_class": null
+  },
+  {
+   "drug": "nilotinib",
+   "aliases": [
+    "AMN107",
+    "Tasigna"
+   ],
+   "status": "discontinued_in_GIST",
+   "why_stopped": "Insufficient clinical benefit in imatinib- and sunitinib-refractory GIST; not advanced in the unselected refractory population.",
+   "failure_class": "efficacy",
+   "role": "Developed as a second-generation KIT/ABL inhibitor for refractory GIST; did not establish benefit in the unselected refractory setting.",
+   "evidence": [
+    "S19"
+   ]
+  },
+  {
+   "drug": "ponatinib",
+   "aliases": [
+    "AP24534",
+    "Iclusig"
+   ],
+   "status": "investigational_limited",
+   "why_stopped": "Cardiovascular toxicity at 45 mg and limited overall activity; V654A ATP-pocket resistance restricts the eligible genotype.",
+   "failure_class": "toxicity_and_partial_coverage",
+   "role": "Type II inhibitor engineered for the T670I gatekeeper; covers activation-loop mutants but not V654A, and carries arterial occlusive risk.",
+   "evidence": [
+    "S20"
+   ]
+  },
+  {
+   "drug": "vatalanib",
+   "aliases": [
+    "PTK787",
+    "ZK222584"
+   ],
+   "status": "not_advanced_in_GIST",
+   "why_stopped": "Activity shown only in a single-arm phase II; no randomised registration trial followed in GIST.",
+   "failure_class": "development_halted",
+   "role": "VEGFR-directed multikinase inhibitor trialled in imatinib-resistant GIST.",
+   "evidence": [
+    "S21"
+   ]
+  }
+ ],
+ "pkpd": [
+  {
+   "compound": "ripretinib",
+   "endpoint": "elimination_half_life",
+   "value": 16,
+   "units": "hr",
+   "species": "human",
+   "population": "healthy participants",
+   "dose": "ripretinib 50 mg",
+   "route": "oral",
+   "schedule": "single ripretinib dose in fixed-sequence DDI study",
+   "matrix": "plasma",
+   "coadministration": "none",
+   "summary_statistic": "geometric mean",
+   "source_id": "S13",
+   "source_passage": "16 (33)",
+   "source_lines": [
+    65,
+    77
+   ],
+   "kind": "experimental"
+  },
+  {
+   "compound": "ripretinib",
+   "endpoint": "elimination_half_life",
+   "value": 24,
+   "units": "hr",
+   "species": "human",
+   "population": "healthy participants",
+   "dose": "ripretinib 50 mg",
+   "route": "oral",
+   "schedule": "single ripretinib dose in fixed-sequence DDI study",
+   "matrix": "plasma",
+   "coadministration": "itraconazole 200 mg once daily",
+   "summary_statistic": "geometric mean",
+   "source_id": "S13",
+   "source_passage": "24 (47)",
+   "source_lines": [
+    65,
+    77
+   ],
+   "kind": "experimental"
+  },
+  {
+   "compound": "ripretinib",
+   "endpoint": "apparent_clearance_CL_over_F",
+   "value": 12,
+   "units": "L/hr",
+   "species": "human",
+   "population": "healthy participants",
+   "dose": "ripretinib 50 mg",
+   "route": "oral",
+   "schedule": "single ripretinib dose in fixed-sequence DDI study",
+   "matrix": "plasma",
+   "coadministration": "none",
+   "summary_statistic": "geometric mean",
+   "source_id": "S13",
+   "source_passage": "12 (42)",
+   "source_lines": [
+    65,
+    80
+   ],
+   "kind": "experimental"
+  },
+  {
+   "compound": "ripretinib",
+   "endpoint": "apparent_clearance_CL_over_F",
+   "value": 6,
+   "units": "L/hr",
+   "species": "human",
+   "population": "healthy participants",
+   "dose": "ripretinib 50 mg",
+   "route": "oral",
+   "schedule": "single ripretinib dose in fixed-sequence DDI study",
+   "matrix": "plasma",
+   "coadministration": "itraconazole 200 mg once daily",
+   "summary_statistic": "geometric mean",
+   "source_id": "S13",
+   "source_passage": "6 (48)",
+   "source_lines": [
+    65,
+    80
+   ],
+   "kind": "experimental"
+  },
+  {
+   "compound": "ripretinib",
+   "endpoint": "Cmax",
+   "value": 502,
+   "units": "ng/mL",
+   "species": "human",
+   "population": "patients with advanced malignancies in dose-escalation study",
+   "dose": "150 mg",
+   "route": "oral",
+   "schedule": "cycle 1 day 1, single dose",
+   "matrix": "plasma",
+   "coadministration": "as described in protocol",
+   "summary_statistic": "mean",
+   "source_id": "S14",
+   "source_passage": "502 ng/mL",
+   "source_lines": [
+    63
+   ],
+   "kind": "experimental"
+  },
+  {
+   "compound": "ripretinib",
+   "endpoint": "AUC_0_24h",
+   "value": 6634,
+   "units": "ng*hr/mL",
+   "species": "human",
+   "population": "patients with advanced malignancies in dose-escalation study",
+   "dose": "150 mg",
+   "route": "oral",
+   "schedule": "cycle 1 day 1, single dose",
+   "matrix": "plasma",
+   "coadministration": "as described in protocol",
+   "summary_statistic": "mean",
+   "source_id": "S14",
+   "source_passage": "6634 ng × h/mL",
+   "source_lines": [
+    63
+   ],
+   "kind": "experimental"
+  }
+ ],
+ "scope_notes": [
+  "Exon 11 model V559D does not represent all exon 11 deletions; proposed double mutants are not all validated biological models.",
+  "Exon 9-driven disease is a separate context; no exon 9 construct is asserted in this first panel.",
+  "No derived override of a numeric physchem threshold is activated without target-specific support. The override mechanism is implemented and tested.",
+  "Static guidance incorporates the user-specified Cambridge MedChem ADME, solubility, lipophilicity, hERG, kinase, off-target and PK/PD pages. Guidance is dated by retrieval, not assigned a fabricated historical publication date."
+ ],
+ "activity_matrix": {
+  "source_id": "S1",
+  "source_lines": [
+   52,
+   53,
+   57,
+   58,
+   59,
+   60
+  ],
+  "endpoint": "cell viability IC50",
+  "units": "nM",
+  "kind": "experimental",
+  "note": "Different GIST cell models; not biochemical binding affinity or a matched isolated-mutant series. Do not infer patient response from these values.",
+  "drugs": [
+   "imatinib",
+   "sunitinib",
+   "regorafenib"
+  ],
+  "rows": [
+   {
+    "model": "GIST430/654",
+    "genotype": "exon 11 + V654A",
+    "exon": 13,
+    "values": [
+     2500,
+     45,
+     2000
+    ]
+   },
+   {
+    "model": "GIST-T1/670",
+    "genotype": "exon 11 + T670I",
+    "exon": 14,
+    "values": [
+     ">10000",
+     30,
+     60
+    ]
+   },
+   {
+    "model": "GIST-T1/816",
+    "genotype": "exon 11 + D816E",
+    "exon": 17,
+    "values": [
+     1500,
+     ">10000",
+     550
+    ]
+   },
+   {
+    "model": "GIST-T1/820",
+    "genotype": "exon 11 + D820A",
+    "exon": 17,
+    "values": [
+     1500,
+     ">10000",
+     600
+    ]
+   }
+  ]
+ }
+}
